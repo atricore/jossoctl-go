@@ -15,12 +15,17 @@ var startCmd = &cobra.Command{
 	Long: `Start an identity appliance.
 	
 	Depending on the appliance state, several actions may be required like building and deploying`,
-	Args: cobra.ExactArgs(1),
+	Args: cobra.MaximumNArgs(1),
 	Run:  startApplianceCobra,
 }
 
 func startApplianceCobra(cmd *cobra.Command, args []string) {
-	startAppliance(args[0])
+	if len(args) > 0 {
+		startAppliance(args[0])
+	} else {
+		startAppliance(id_or_name)
+
+	}
 }
 
 func startAppliance(a string) {

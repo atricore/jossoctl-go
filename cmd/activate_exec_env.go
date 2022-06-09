@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // appliancesCmd represents the appliances command
@@ -15,17 +14,40 @@ var activateAgentCmd = &cobra.Command{
 	Aliases: []string{"ee"},
 	Short:   "activate agent",
 	Long:    `activate agent in an appliance`,
-	Run:     activateAgentCobra,
+	RunE:    activateAgentCobra,
 	Args:    cobra.ExactArgs(1),
 }
 
-func activateAgentCobra(cmd *cobra.Command, args []string) {
+func activateAgentCobra(cmd *cobra.Command, args []string) error {
+
+	target, err := cmd.Flags().GetString("target")
+	if err != nil {
+		return err
+	}
+
+	force, err := cmd.Flags().GetBool("force")
+	if err != nil {
+		return err
+	}
+
+	replaceConfig, err := cmd.Flags().GetBool("replace-config")
+	if err != nil {
+		return err
+	}
+
+	activateSamples, err := cmd.Flags().GetBool("install-samples")
+	if err != nil {
+		return err
+	}
+
 	activateAgent(
 		args[0],
-		viper.GetString("target"),
-		viper.GetBool("force"),
-		viper.GetBool("replace-config"),
-		viper.GetBool("activate-samples"))
+		target,
+		force,
+		replaceConfig,
+		activateSamples)
+
+	return nil
 }
 
 func activateAgent(
@@ -35,6 +57,8 @@ func activateAgent(
 	replaceConfig bool,
 	activateSamples bool,
 ) {
+
+	//fmt.Printf("ee [%s], target [%s], force %t, replace-config %t, activate-samples %t\n", ee, target, force, replaceConfig, activateSamples)
 	err := client.Client().ActivateExecEnv(id_or_name, ee, target, force, replaceConfig, activateSamples)
 	if err != nil {
 		client.Error(err)
