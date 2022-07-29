@@ -28,8 +28,8 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "josso-cli-go",
-	Short: "josso iam cli",
+	Use:   "jossoctl-go",
+	Short: "josso control",
 	Long:  `josso is an open-source IAM platform. This is the command line interface application`,
 	// Run before any sub-command
 	PersistentPreRunE: preRunE,
