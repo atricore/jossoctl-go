@@ -17,7 +17,7 @@ const (
 	PrettyFormatKey = "pretty"
 	JSONFormatKey   = "json"
 
-	DefaultQuietFormat = "{{.ID}}"
+	DefaultQuietFormat = "{{.Name}}"
 	jsonFormat         = "{{json .}}"
 )
 

@@ -16,6 +16,7 @@ type idPWrapper struct {
 const (
 	idpPrettyFormat = `Name:		{{.Name}}
 Type:		{{.Type}}
+Location:	{{.Location}}
 `
 )
 
