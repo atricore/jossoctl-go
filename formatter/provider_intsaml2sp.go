@@ -15,6 +15,10 @@ type IntSaml2SpWrapper struct {
 
 const (
 	IntSaml2SpPrettyFormat = `Name:		{{.Name}}
+Type:		{{.Type}}
+Location:	{{.Location}}
+Description {{.Description}}
+ElementId	{{.ElementId}}
 `
 )
 
@@ -114,4 +118,8 @@ func (c *IntSaml2SpWrapper) Location() string {
 
 func (c *IntSaml2SpWrapper) Description() string {
 	return c.p.GetDescription()
+}
+
+func (c *IntSaml2SpWrapper) ElementId() string {
+	return c.p.GetElementId()
 }
