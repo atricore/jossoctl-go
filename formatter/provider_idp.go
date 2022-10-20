@@ -16,7 +16,6 @@ type idPWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.IdentityProviderDTO
-	// TODO: add keystore in this struct
 }
 
 type fcWrapper struct {
@@ -32,197 +31,184 @@ type amWrapper struct {
 
 const (
 	idpPrettyFormat = `
- ============================
-|Identity Provider (built-in)|
- ============================
+Identity Provider (built-in)
+ 
 
- =======
-|General|
- =======
-Name:		{{.Name}}
-Id:		{{.Id}}
-Location:	{{.Location}}
-Description {{.Description}}
+General
+
+	Name:		{{.Name}}
+	Id:		{{.Id}}
+	Location:	{{.Location}}
+	Description {{.Description}}
 
 
- =======
-|Session|
- =======
-SessionTimeout:			{{.SessionTimeout}}
-MaxSessionPerUser:		{{.MaxSessionPerUser}}
-DestroyPreviousSession:		{{.DestroyPreviousSession}}
-Session Manager:		{{.SessionManager}}
+	Session
+
+		SessionTimeout:			{{.SessionTimeout}}
+		MaxSessionPerUser:		{{.MaxSessionPerUser}}
+		DestroyPreviousSession:		{{.DestroyPreviousSession}}
+		Session Manager:		{{.SessionManager}}
 
 
- ===============
-|User Identifier|
- ===============
-Type:				{{.Type}}
-SingerValue:							{{.SingerValue}}
-Attribute:			{{.Attribute}}
-Ignore Requested UserIDType:	{{.IgnoreRequestedUserIDType}}
+	User Identifier
+
+		Type:				{{.Type}}
+		SingerValue:							{{.SingerValue}}
+		Attribute:			{{.Attribute}}
+		Ignore Requested UserIDType:	{{.IgnoreRequestedUserIDType}}
 
 
- ==============
-|Authentication|
- ==============
-{{ range $as := .Authns }}
-Name:		{{$as.Name}}
-Priority:	{{$as.Priority}}
-Class:		{{$as.Class}}
+	Authentication
+
+		{{ range $as := .Authns }}
+		Name:		{{$as.Name}}
+		Priority:	{{$as.Priority}}
+		Class:		{{$as.Class}}
+		{{- if $as.IsDirectoryAuthn }}
 
 
-{{- if $as.IsDirectoryAuthn }}
+			Directory Authentication Service
 
 
- ================================
-|Directory Authentication Service|
- ================================
-
-Priority:		{{$as.Priority}}
-InitialCtxFactory:	{{$as.InitialCtxFactory}}
-provider url:		{{$as.ProviderUrl}}
-Username:		{{$as.Username}}
-Authentication:		{{$as.Authentication}}
-PasswordPolicy:		{{$as.PasswordPolicy}}
-PerformDnSearch:	{{$as.PerformDnSearch}}
-UsersCtxDn:		{{$as.UsersCtxDn}}
-UserIdAttr:		{{$as.UserIdAttr}}
-SamlAuthnCtx:		{{$as.SamlAuthnCtx}}
-SearchScope:		{{$as.SearchScope}}
-Referrals:		{{$as.Referrals}}
-OperationalAttrs:	{{$as.OperationalAttrs}}
-{{ end }}
-{{- if $as.IsClientCertAuthn }}
+				Priority:		{{$as.Priority}}
+				InitialCtxFactory:	{{$as.InitialCtxFactory}}
+				provider url:		{{$as.ProviderUrl}}
+				Username:		{{$as.Username}}
+				Authentication:		{{$as.Authentication}}
+				PasswordPolicy:		{{$as.PasswordPolicy}}
+				PerformDnSearch:	{{$as.PerformDnSearch}}
+				UsersCtxDn:		{{$as.UsersCtxDn}}
+				UserIdAttr:		{{$as.UserIdAttr}}
+				SamlAuthnCtx:		{{$as.SamlAuthnCtx}}
+				SearchScope:		{{$as.SearchScope}}
+				Referrals:		{{$as.Referrals}}
+				OperationalAttrs:	{{$as.OperationalAttrs}}
+				{{ end }}
+				{{- if $as.IsClientCertAuthn }}
 
 
- ==========================
-|Client Cert Authentication| 
- ==========================
-
-Priority:	{{$as.Priority}}
-CrlRefreshSeconds:	{{$as.CrlRefreshSeconds}}
-CrlUrl:				{{$as.CrlUrl}}
-OcspServer:			{{$as.OcspServer}}
-Ocspserver:			{{$as.Ocspserver}}
-Uid:				{{$as.Uid}}
-{{ end }}
-{{- if $as.IsWindowsAuthn }}
+			Client Cert Authentication 
 
 
- =====================================
-|Windows	Integrated	Authentication|
- =====================================
-
-Priority:					{{$as.Priority}}
-Domain:						{{$as.Domain}}
-DomainController:			{{$as.DomainController}}
-Host:						{{$as.Host}}
-OverwriteKerberosSetup:		{{$as.OverwriteKerberosSetup}}
-GetOverwriteKerberosSetup:	{{$as.GetOverwriteKerberosSetup}}
-Protocol:					{{$as.Protocol}}
-ServiceClass:				{{$as.ServiceClass}}
-ServiceName:				{{$as.ServiceName}}
-Keytab:						{{$as.Keytab}}
-{{ end }}
-{{- if $as.IsOauth2PreAuthn }}
+				Priority:	{{$as.Priority}}
+				CrlRefreshSeconds:	{{$as.CrlRefreshSeconds}}
+				CrlUrl:				{{$as.CrlUrl}}
+				OcspServer:			{{$as.OcspServer}}
+				Ocspserver:			{{$as.Ocspserver}}
+				Uid:				{{$as.Uid}}
+				{{ end }}
+				{{- if $as.IsWindowsAuthn }}
 
 
- =================================
-|OAuth2 Pre Authentication Service|
- =================================
-
-Priority:	{{$as.Priority}}
-AuthnService:	{{$as.AuthnService}}
-ExternalAuth:	{{$as.ExternalAuth}}
-RememberMe:		{{$as.RememberMe}}
-{{ end }}
-{{ end }}
- ==============
-|User Interface|
- ==============
-Branding:		{{.Branding}}
-ErrorBinding:		{{.ErrorBinding}}
-DashboardUrl:	{{.DashboardUrl}}
+			Windows	Integrated	Authentication
 
 
- ======
-|SAML 2|
- ======
-Metadata Svc:				{{.MetadataSvc}}
-Profiles:				{{.Profiles}}
-Bindings:				{{.Bindings}}
-Want AuthnReq Signed:			{{.WantAuthnSigned}}
-Sign Request:				{{.SignReq}}
-Encrypt Assertion:			{{.EncryptAssertion}}
-Encryption Algorithm:			{{.EncrptionAlgorithm}}
-Signature Hash:				{{.SignatureHash}}
-Message TTL:				{{.MessageTTL}}
-External Msg TTL Tolerance:		{{.MessageTTLTolerance}}
+				Priority:					{{$as.Priority}}
+				Domain:						{{$as.Domain}}
+				DomainController:			{{$as.DomainController}}
+				Host:						{{$as.Host}}
+				OverwriteKerberosSetup:		{{$as.OverwriteKerberosSetup}}
+				GetOverwriteKerberosSetup:	{{$as.GetOverwriteKerberosSetup}}
+				Protocol:					{{$as.Protocol}}
+				ServiceClass:				{{$as.ServiceClass}}
+				ServiceName:				{{$as.ServiceName}}
+				Keytab:						{{$as.Keytab}}
+				{{ end }}
+				{{- if $as.IsOauth2PreAuthn }}
 
 
- ===============
-|Open ID Connect|
- ===============
-Enabled:			{{.EnabledOpenIdConnect}}
-Id token TTL (secs):		{{.IdTokenTTL}}
-Access token TTL (secs):	{{.AccessTokenTTL}}
-Authn code TTL (secs):		{{.AuthnCodeTTL}}
+			OAuth2 Pre Authentication Service
 
 
- ======
-|OAuth2|
- ======
-Enabled:	{{.EnabledOauth2}}
+				Priority:	{{$as.Priority}}
+				AuthnService:	{{$as.AuthnService}}
+				ExternalAuth:	{{$as.ExternalAuth}}
+				RememberMe:		{{$as.RememberMe}}
+				{{ end }}
+				{{ end }}
+	User Interface
 
 
- ==================
-|Subjets Attributes|
- ==================
-Profile:	{{.Profile}}
-Profile Type:	{{.ProfileType}}
-{{ range $am := .AttibuteMapping }}
-{{- if .IsCustomClass}}
-Atribute Name 					{{$am.AttrName}}
-Reported Atribute Name:			{{$am.ReportedAttrName}}
-Reported Atribute Name Format:	{{$am.ReportedAttrNameFormat}}
-{{ end 	}}	
-{{ end 	}}
-
- ========
-|Keystore|
- ========
-Certificate Alias:	{{.CertificateAlias}}
-Key Alias:	{{.KeyAlias}}
-Certificate: {{.Certificate}}
-Version:	{{.Version}}
-Serial Number:	{{.SerialNumber}}
-Issuer:		{{.Issuer}}
-Subjets:	{{.Subjets}}
-Not Before:	{{.NotBefore}}
-Not After:	{{.NotAfter}}
+		Branding:		{{.Branding}}
+		ErrorBinding:		{{.ErrorBinding}}
+		DashboardUrl:	{{.DashboardUrl}}
 
 
- =====================
-|Federated connections|
- =====================
+	SAML 2
 
-{{ range $fc := .FederatedConnections }}
-Channel Name:		{{$fc.ChannelName}}
-Connection Name:	{{$fc.ConnectionName}}
-Override Provider:	{{$fc.OverrideProvider}}
 
-{{- if $fc.OverrideProvider }}
-Signature hash:					{{$fc.SignatureHash}}
-Message TTL:					{{$fc.MessageTTL}}
-Message TTL Tolerance:			{{$fc.MessageTTLTolerance}}
-account Linkage Policy:			{{$fc.AccountLinkagePolicy}}
-Enable Proxy Extension:			{{$fc.EnableProxyExtension}}
-Identity Mapping Policy:		{{$fc.IdentityMappingPolicy}}
-Sing Authentication Requests:	{{$fc.SignAuthenticationRequests}}
-Want Assertion Signed:			{{$fc.WantAssertionSigned}}
-{{ end }}
-{{ end }}
+		Metadata Svc:				{{.MetadataSvc}}
+		Profiles:				{{.Profiles}}
+		Bindings:				{{.Bindings}}
+		Want AuthnReq Signed:			{{.WantAuthnSigned}}
+		Sign Request:				{{.SignReq}}
+		Encrypt Assertion:			{{.EncryptAssertion}}
+		Encryption Algorithm:			{{.EncrptionAlgorithm}}
+		Signature Hash:				{{.SignatureHash}}
+		Message TTL:				{{.MessageTTL}}
+		External Msg TTL Tolerance:		{{.MessageTTLTolerance}}
+
+
+	Open ID Connect
+
+
+		Enabled:			{{.EnabledOpenIdConnect}}
+		Id token TTL (secs):		{{.IdTokenTTL}}
+		Access token TTL (secs):	{{.AccessTokenTTL}}
+		Authn code TTL (secs):		{{.AuthnCodeTTL}}
+
+
+	OAuth2
+
+
+		Enabled:	{{.EnabledOauth2}}
+
+	
+	Subjets Attributes
+
+
+		Profile:	{{.Profile}}
+		Profile Type:	{{.ProfileType}}
+		{{ range $am := .AttibuteMapping }}
+		{{- if .IsCustomClass}}
+		Atribute Name 					{{$am.AttrName}}
+		Reported Atribute Name:			{{$am.ReportedAttrName}}
+		Reported Atribute Name Format:	{{$am.ReportedAttrNameFormat}}
+		{{ end 	}}	
+		{{ end 	}}
+
+	Keystore
+
+	
+		Certificate Alias:	{{.CertificateAlias}}
+		Key Alias:	{{.KeyAlias}}
+		Certificate: {{.Certificate}}
+		Version:	{{.Version}}
+		Serial Number:	{{.SerialNumber}}
+		Issuer:		{{.Issuer}}
+		Subjets:	{{.Subjets}}
+		Not Before:	{{.NotBefore}}
+		Not After:	{{.NotAfter}}
+
+
+	Federated connections
+
+		{{ range $fc := .FederatedConnections }}
+		Channel Name:		{{$fc.ChannelName}}
+		Connection Name:	{{$fc.ConnectionName}}
+		Override Provider:	{{$fc.OverrideProvider}}
+
+			{{- if $fc.OverrideProvider }}
+			Signature hash:					{{$fc.SignatureHash}}
+			Message TTL:					{{$fc.MessageTTL}}
+			Message TTL Tolerance:			{{$fc.MessageTTLTolerance}}
+			account Linkage Policy:			{{$fc.AccountLinkagePolicy}}
+			Enable Proxy Extension:			{{$fc.EnableProxyExtension}}
+			Identity Mapping Policy:		{{$fc.IdentityMappingPolicy}}
+			Sing Authentication Requests:	{{$fc.SignAuthenticationRequests}}
+			Want Assertion Signed:			{{$fc.WantAssertionSigned}}
+			{{ end }}
+			{{ end }}
 `
 )
 
@@ -733,26 +719,6 @@ func (c *fcWrapper) WantAssertionSigned() bool {
 		return false
 	}
 	return idpchannel.GetWantAssertionSigned()
-}
-
-func (c *idPWrapper) PCertificate() (*x509.Certificate, error) {
-	cfg := c.p.GetConfig()
-
-	idpCfg, err := cfg.ToSamlR2IDPConfig()
-	if err != nil {
-		return nil, err
-	}
-	signer := idpCfg.GetSigner()
-	store := signer.GetStore()
-	vl := store.GetValue()
-
-	// parse the certificate
-	cert, err := x509.ParseCertificate([]byte(vl))
-	if err != nil {
-		return nil, err
-	}
-
-	return cert, err
 }
 
 func (c *idPWrapper) Authns() []asWrapper {
