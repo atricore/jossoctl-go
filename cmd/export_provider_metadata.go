@@ -12,15 +12,16 @@ import (
 
 // ExportProviderCmd represents the ExportProvider command
 var exportProviderCmd = &cobra.Command{
-	Use:   "provider-md",
-	Short: "Export provider metadata to a file",
-	Long: `Export metadat for the give provider (SAML, OIDC, etc).
+	Use:        "provider-md name",
+	ArgAliases: []string{"provider-name"},
+	Short:      "Export provider metadata to a file",
+	Long: `Export metadat for the give provider's name to a file.
 
 SYNTAX
 	appliance:export-provider-metadata [options] appliance id/name name`,
-	Args: cobra.MaximumNArgs(1),
+	Args:      cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO!")
+		fmt.Println(fmt.Sprintf("TODO! %s", args[0]))
 	},
 }
 
