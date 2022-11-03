@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +15,9 @@ var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "remove identity appliance",
 	Long:  `Remove identity appliance.`,
-
-	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("TODO!")
+	},
 }
 
 func init() {

@@ -14,7 +14,7 @@ var importApplianceCmd = &cobra.Command{
 	Use:     "import appliance",
 	Aliases: []string{"a"},
 	Short:   "import Appliance ",
-	Long:    `importAppliance federated provider`,
+	Long:    `Import Identity Appliance definition.`,
 	Run:     importApplianceCobra,
 	Args:    cobra.MaximumNArgs(1),
 }

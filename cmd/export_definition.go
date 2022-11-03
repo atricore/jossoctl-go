@@ -11,7 +11,7 @@ import (
 // ExportDefinitionCmd represents the ExportDefinition command
 var exportDefinitionCmd = &cobra.Command{
 	Use:   "export definition",
-	Short: "export definition identity appliance",
+	Short: "Export Identity Appliance definition",
 	Long:  `Export definition identity appliance.`,
 
 	Args: cobra.MaximumNArgs(1),

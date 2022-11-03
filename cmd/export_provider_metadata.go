@@ -11,7 +11,7 @@ import (
 // ExportProviderCmd represents the ExportProvider command
 var exportProviderCmd = &cobra.Command{
 	Use:   "export provider",
-	Short: "export provider identity appliance",
+	Short: "Export provider metadata to a file",
 	Long:  `Export Provider identity appliance.`,
 
 	Args: cobra.MaximumNArgs(1),

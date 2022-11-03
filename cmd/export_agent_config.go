@@ -11,8 +11,8 @@ import (
 // exportagentCmd represents the exportagent command
 var exportagentCmd = &cobra.Command{
 	Use:   "Export agent",
-	Short: "Export agent identity appliance",
-	Long:  `Export agent identity appliance.`,
+	Short: "Export Identity Appliance definition",
+	Long:  `Export Identity Appliance definition.`,
 
 	Args: cobra.MaximumNArgs(1),
 }

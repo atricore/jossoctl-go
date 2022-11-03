@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +15,9 @@ var modifyCmd = &cobra.Command{
 	Use:   "modify",
 	Short: "modify identity appliance",
 	Long:  `Modify identity appliance.`,
-
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("modify called")
+	},
 	Args: cobra.MaximumNArgs(1),
 }
 
