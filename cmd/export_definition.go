@@ -12,11 +12,11 @@ import (
 
 // ExportDefinitionCmd represents the ExportDefinition command
 var exportDefinitionCmd = &cobra.Command{
-	Use:   "export",
+	Use:   "appliance",
 	Short: "Export Identity Appliance definition",
 	Long:  `Export definition identity appliance.`,
 
-	Args: cobra.MaximumNArgs(1),
+	Args: cobra.MaximumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("TODO!")
 	},

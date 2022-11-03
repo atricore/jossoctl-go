@@ -12,7 +12,7 @@ import (
 
 // ExportnCmd represents the Export command
 var exportCmd = &cobra.Command{
-	Use:     "export ",
+	Use:     "export",
 	Aliases: []string{"e"},
 	Short:   "export resource details",
 	Long:    `Export detailed information about a resource.`,
