@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +15,9 @@ var iayoutCmd = &cobra.Command{
 	Use:   "layout",
 	Short: "layout identity appliance",
 	Long:  `Layout identity appliance.`,
-
-	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("TODO!")
+	},
 }
 
 func init() {

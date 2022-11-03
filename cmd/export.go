@@ -5,16 +5,21 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
 // ExportnCmd represents the Export command
 var exportCmd = &cobra.Command{
-	Use:   "export ",
-	Short: "export  identity appliance",
-	Long:  `Export  identity appliance.`,
+	Use:     "export ",
+	Aliases: []string{"e"},
+	Short:   "export resource details",
+	Long:    `Export detailed information about a resource.`,
 
-	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("export called")
+	},
 }
 
 func init() {

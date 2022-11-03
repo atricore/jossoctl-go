@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +15,9 @@ var undeployCmd = &cobra.Command{
 	Use:   "undeploy",
 	Short: "undeploy identity appliance",
 	Long:  `Undeploy identity appliance.`,
-
-	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("TODO!")
+	},
 }
 
 func init() {
