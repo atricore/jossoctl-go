@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -15,6 +17,9 @@ var exportagentCmd = &cobra.Command{
 	Long:  `Export Identity Appliance definition.`,
 
 	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("TODO")
+	},
 }
 
 func init() {
