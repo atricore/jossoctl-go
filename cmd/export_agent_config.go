@@ -12,7 +12,7 @@ import (
 
 // exportagentCmd represents the exportagent command
 var exportAgentCfgCmd = &cobra.Command{
-	Use:   "agent-cfg",
+	Use:   "agent-cfg name",
 	Short: "Export agent configuartion file",
 	Long:  `Export JOSSO agent configurtion file for a given execution environment.`,
 

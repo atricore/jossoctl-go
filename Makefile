@@ -4,6 +4,10 @@ dep: # Download required dependencies
 	go mod tidy
 	go mod vendor
 
+
+install:
+	go install ./...
+
 build: fmtcheck
 	go install ./...
 	

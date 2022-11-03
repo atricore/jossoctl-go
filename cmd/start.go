@@ -21,14 +21,14 @@ var startCmd = &cobra.Command{
 
 func startApplianceCobra(cmd *cobra.Command, args []string) {
 	if len(args) > 0 {
-		startAppliance(args[0])
+		StartAppliance(args[0])
 	} else {
-		startAppliance(id_or_name)
+		StartAppliance(id_or_name)
 
 	}
 }
 
-func startAppliance(a string) {
+func StartAppliance(a string) {
 	err := client.Client().StartAppliance(a)
 	if err != nil {
 		printError(err)
