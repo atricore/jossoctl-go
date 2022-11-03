@@ -28,9 +28,9 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "jossoctl-go",
-	Short: "josso control",
-	Long:  `josso is an open-source IAM platform. This is the command line interface application`,
+	Use:   "jossoctl",
+	Short: "JOSSO EE control",
+	Long:  `JOSSO EE is an IAM platform. This is the command line interface application`,
 	// Run before any sub-command
 	PersistentPreRunE: preRunE,
 	// Uncomment the following line if your bare application
@@ -40,7 +40,21 @@ var rootCmd = &cobra.Command{
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func ExecuteJosso() {
+	rootCmd.Use = "jossoctl"
+	rootCmd.Short = "JOSSO EE control"
+	rootCmd.Long = `JOSSO EE is an IAM platform. This is the command line interface application`
+
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
+}
+func ExecuteIamtf() {
+	rootCmd.Use = "iamtfctl"
+	rootCmd.Short = "IAM.tf control"
+	rootCmd.Long = `IAM.tf is an IAM platform. This is the command line interface application`
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
