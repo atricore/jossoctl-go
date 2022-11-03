@@ -11,19 +11,19 @@ import (
 )
 
 // exportagentCmd represents the exportagent command
-var exportagentCmd = &cobra.Command{
-	Use:   "Export agent",
-	Short: "Export Identity Appliance definition",
-	Long:  `Export Identity Appliance definition.`,
+var exportAgentCfgCmd = &cobra.Command{
+	Use:   "agent-cfg",
+	Short: "Export agent configuartion file",
+	Long:  `Export JOSSO agent configurtion file for a given execution environment.`,
 
-	Args: cobra.MaximumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("TODO")
 	},
 }
 
 func init() {
-	exportCmd.AddCommand(exportagentCmd)
+	exportCmd.AddCommand(exportAgentCfgCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -34,4 +34,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	exportAgentCfgCmd.Flags().BoolP("replace", "r", false, "Replace out file")
+	exportAgentCfgCmd.Flags().StringP("output", "o", "", "Agent configuration destination file")
 }

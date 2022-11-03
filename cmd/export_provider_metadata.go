@@ -12,9 +12,9 @@ import (
 
 // ExportProviderCmd represents the ExportProvider command
 var exportProviderCmd = &cobra.Command{
-	Use:   "export provider",
+	Use:   "provider-md",
 	Short: "Export provider metadata to a file",
-	Long:  `Export Provider identity appliance.`,
+	Long:  `Export metadat for the give provider (SAML, OIDC, etc).`,
 
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
