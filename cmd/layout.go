@@ -11,17 +11,20 @@ import (
 )
 
 // LayoutCmd represents the Layout command
-var iayoutCmd = &cobra.Command{
+var layoutCmd = &cobra.Command{
 	Use:   "layout",
 	Short: "layout identity appliance",
-	Long:  `Layout identity appliance.`,
+	Long: `Layout identity appliance.
+	
+SYNTAX
+	appliance:layout [options] appliance id/name`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("TODO!")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(iayoutCmd)
+	rootCmd.AddCommand(layoutCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -32,4 +35,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	layoutCmd.Flags().StringP("out", "o", "", "Export layaout as graph")
+
 }

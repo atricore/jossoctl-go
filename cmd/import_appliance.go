@@ -11,7 +11,7 @@ import (
 
 // importCmd represents the importAppliance command
 var importApplianceCmd = &cobra.Command{
-	Use:     "import appliance",
+	Use:     "appliance",
 	Aliases: []string{"a"},
 	Short:   "import Appliance ",
 	Long:    `Import Identity Appliance definition.`,

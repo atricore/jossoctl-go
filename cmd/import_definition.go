@@ -12,10 +12,13 @@ import (
 
 // ImportProviderCmd represents the ImportProvider command
 var importDefinitionCmd = &cobra.Command{
-	Use:     "import definition",
+	Use:     "definition",
 	Aliases: []string{"d"},
 	Short:   "import definition",
-	Long:    `Import definition`,
+	Long: `Import definition
+	
+SYNTAX
+	appliance:import-definition [options]	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("TODO!")
 	},
@@ -34,4 +37,11 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	importDefinitionCmd.Flags().StringP("modify", "m", "", "Enable Identity Appliance modification")
+	importDefinitionCmd.Flags().StringP("description", "d", "", "New Identity Appliance description")
+	importDefinitionCmd.Flags().StringP("location", "l", "", "New Identity Appliance location")
+	importDefinitionCmd.Flags().StringP("input", "i", "", "Identity Appliance export file")
+	importDefinitionCmd.Flags().StringP("name", "n", "", "New Identity Appliance name")
+	importDefinitionCmd.Flags().StringP("realm", "r", "", "New Identity Appliance realm")
+
 }
