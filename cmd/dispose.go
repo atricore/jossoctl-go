@@ -5,8 +5,6 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -16,8 +14,21 @@ var disposeCmd = &cobra.Command{
 	Short: "dispose identity appliance",
 	Long:  `dispose identity appliance.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO!")
+		remove, _ := cmd.Flags().GetBool("remove")
+		DisposeAppliance(id_or_name, remove)
 	},
+}
+
+func DisposeAppliance(id_or_name string, remove bool) {
+	/*
+		// Dispose appliance using cli
+		err := client.Client().DisposeAppliance(a)
+
+		// if no error , remove if requested
+		if err != nil && remove {
+			RemoveAppliance(id_or_name)
+		}
+	*/
 }
 
 func init() {
@@ -32,4 +43,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	disposeCmd.Flags().BoolP("remove", "r", false, "Also remove the appliance")
 }

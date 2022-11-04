@@ -20,6 +20,13 @@ var removeCmd = &cobra.Command{
 	},
 }
 
+func RemoveAppliance(id_or_name string) {
+
+	// validate that the appliance exists
+	// check that the appliance is stopped
+	// remove appliance using CLI
+}
+
 func init() {
 	rootCmd.AddCommand(removeCmd)
 

@@ -36,4 +36,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	listCmd.PersistentFlags().BoolVarP(&print_raw, "raw", "r", false, "Display raw content")
+	listAppliancesCmd.Flags().BoolP("state", "s", false, "List appliance in the specified states")
 }
