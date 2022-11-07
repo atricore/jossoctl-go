@@ -48,5 +48,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	buildCmd.Flags().BoolP("deploy", "-d", false, "Deploy and start the Identity Appliance")
+	buildCmd.Flags().BoolP("deploy", "d", false, "Deploy and start the Identity Appliance")
 }
