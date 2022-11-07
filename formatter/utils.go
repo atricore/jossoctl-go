@@ -1,6 +1,8 @@
 package formatter
 
-import "strings"
+import (
+	"strings"
+)
 
 func TruncateID(id string, shortLen int) string {
 	if i := strings.IndexRune(id, ':'); i >= 0 {

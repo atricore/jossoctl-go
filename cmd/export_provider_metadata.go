@@ -39,5 +39,5 @@ func init() {
 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	exportProviderCmd.Flags().BoolP("replace", "r", false, "Replace out file")
 	exportProviderCmd.Flags().StringP("out", "o", "", "Path to new metadata file")
-	exportAgentCfgCmd.Flags().StringP("target-provider", "t", "", "Target provider, useful if a specific metadata is required for this provider")
+	exportExecEnvCfgCmd.Flags().StringP("target-provider", "t", "", "Target provider, useful if a specific metadata is required for this provider")
 }

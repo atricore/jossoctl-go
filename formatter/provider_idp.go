@@ -41,33 +41,23 @@ General
 	Location:	{{.Location}}
 	Description {{.Description}}
 
-
 	Session
-
 		SessionTimeout:			{{.SessionTimeout}}
 		MaxSessionPerUser:		{{.MaxSessionPerUser}}
 		DestroyPreviousSession:		{{.DestroyPreviousSession}}
 		Session Manager:		{{.SessionManager}}
 
-
 	User Identifier
-
 		Type:				{{.Type}}
-		SingerValue:							{{.SingerValue}}
 		Attribute:			{{.Attribute}}
 		Ignore Requested UserIDType:	{{.IgnoreRequestedUserIDType}}
 
-
-	Authentication
-
-		{{ range $as := .Authns }}
+	Authentication {{ range $as := .Authns }}
 		Name:		{{$as.Name}}
 		Priority:	{{$as.Priority}}
 		Class:		{{$as.Class}}
-	{{- if $as.IsDirectoryAuthn }}
-
+		{{- if $as.IsDirectoryAuthn }}
 		Directory Authentication Service
-
 			Priority:		{{$as.Priority}}
 			InitialCtxFactory:	{{$as.InitialCtxFactory}}
 			provider url:		{{$as.ProviderUrl}}
@@ -83,11 +73,7 @@ General
 			OperationalAttrs:	{{$as.OperationalAttrs}}
 		{{ end }}
 		{{- if $as.IsClientCertAuthn }}
-
-
 		Client Cert Authentication 
-
-
 			Priority:	{{$as.Priority}}
 			CrlRefreshSeconds:	{{$as.CrlRefreshSeconds}}
 			CrlUrl:				{{$as.CrlUrl}}
@@ -96,11 +82,7 @@ General
 			Uid:				{{$as.Uid}}
 		{{ end }}
 		{{- if $as.IsWindowsAuthn }}
-
-
 		Windows	Integrated	Authentication
-
-
 			Priority:					{{$as.Priority}}
 			Domain:						{{$as.Domain}}
 			DomainController:			{{$as.DomainController}}
@@ -113,11 +95,7 @@ General
 			Keytab:						{{$as.Keytab}}
 		{{ end }}
 		{{- if $as.IsOauth2PreAuthn }}
-
-
 		OAuth2 Pre Authentication Service
-
-
 			Priority:	{{$as.Priority}}
 			AuthnService:	{{$as.AuthnService}}
 			ExternalAuth:	{{$as.ExternalAuth}}
@@ -126,16 +104,12 @@ General
 		{{ end }}
 
 	User Interface
-
-
 		Branding:		{{.Branding}}
 		ErrorBinding:		{{.ErrorBinding}}
 		DashboardUrl:	{{.DashboardUrl}}
 
 
 	SAML 2
-
-
 		Metadata Svc:				{{.MetadataSvc}}
 		Profiles:				{{.Profiles}}
 		Bindings:				{{.Bindings}}
@@ -149,8 +123,6 @@ General
 
 
 	Open ID Connect
-
-
 		Enabled:			{{.EnabledOpenIdConnect}}
 		Id token TTL (secs):		{{.IdTokenTTL}}
 		Access token TTL (secs):	{{.AccessTokenTTL}}
@@ -158,14 +130,10 @@ General
 
 
 	OAuth2
-
-
 		Enabled:	{{.EnabledOauth2}}
 
 	
 	Subjets Attributes
-
-
 		Profile:	{{.Profile}}
 		Profile Type:	{{.ProfileType}}
 		{{ range $am := .AttibuteMapping }}
@@ -177,8 +145,6 @@ General
 		{{ end 	}}
 
 	Keystore
-
-	
 		Certificate Alias:	{{.CertificateAlias}}
 		Key Alias:	{{.KeyAlias}}
 		Certificate: {{.Certificate}}
@@ -189,15 +155,12 @@ General
 		Not Before:	{{.NotBefore}}
 		Not After:	{{.NotAfter}}
 
-
 	Federated connections
-
 		{{ range $fc := .FederatedConnections }}
 		Channel Name:		{{$fc.ChannelName}}
 		Connection Name:	{{$fc.ConnectionName}}
 		Override Provider:	{{$fc.OverrideProvider}}
-
-			{{- if $fc.OverrideProvider }}
+		{{- if $fc.OverrideProvider }}
 			Signature hash:					{{$fc.SignatureHash}}
 			Message TTL:					{{$fc.MessageTTL}}
 			Message TTL Tolerance:			{{$fc.MessageTTLTolerance}}
