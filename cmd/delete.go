@@ -17,6 +17,7 @@ var deleteCmd = &cobra.Command{
 	Short: "delete identity appliance",
 	Long:  `Remove identity appliance from the server.`,
 	Run:   deleteApplianceCobra,
+	Args:  cobra.ExactArgs(0),
 }
 
 func init() {
@@ -34,11 +35,7 @@ func init() {
 }
 
 func deleteApplianceCobra(cmd *cobra.Command, args []string) {
-	if len(args) > 0 {
-		DeleteAppliance(args[0])
-	} else {
-		DeleteAppliance(id_or_name)
-	}
+	DeleteAppliance(id_or_name)
 }
 
 func DeleteAppliance(a string) {
