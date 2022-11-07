@@ -5,6 +5,9 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/atricore/josso-cli-go/formatter"
 	"github.com/spf13/cobra"
 
@@ -26,6 +29,7 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 					providers = append(providers, p)
 				}
 			}
+
 			formatter.IdPWrite(ctx, providers)
 			return nil
 		},
@@ -55,10 +59,12 @@ var DefaultProviderFormatters = formatter.ProviderFormatter{
 	PFormat: formatter.NewProviderContainerFormat,
 	PWriter: func(ctx formatter.ProviderContext, containers []api.ProviderContainerDTO) error {
 		var providers []api.FederatedProviderDTO
+
 		for _, c := range containers {
 			providers = append(providers, *c.FederatedProvider)
 		}
 		formatter.ProviderWrite(ctx, providers)
+
 		return nil
 	},
 }
@@ -77,7 +83,12 @@ func viewProvider(cmd *cobra.Command, args []string) {
 	p, err := client.Client().GetProvider(id_or_name, args[0])
 	if err != nil {
 		client.Error(err)
-		return
+		os.Exit(1)
+	}
+
+	if p.Name == nil {
+		client.Error(fmt.Errorf("provider %s not found in appliance %s", args[0], id_or_name))
+		os.Exit(1)
 	}
 
 	source := func() string {
@@ -100,6 +111,7 @@ func viewProvider(cmd *cobra.Command, args []string) {
 	err = f.PWriter(ctx, lsa)
 	if err != nil {
 		client.Error(err)
+		os.Exit(1)
 	}
 }
 

@@ -64,68 +64,67 @@ General
 		Name:		{{$as.Name}}
 		Priority:	{{$as.Priority}}
 		Class:		{{$as.Class}}
-		{{- if $as.IsDirectoryAuthn }}
+	{{- if $as.IsDirectoryAuthn }}
+
+		Directory Authentication Service
+
+			Priority:		{{$as.Priority}}
+			InitialCtxFactory:	{{$as.InitialCtxFactory}}
+			provider url:		{{$as.ProviderUrl}}
+			Username:		{{$as.Username}}
+			Authentication:		{{$as.Authentication}}
+			PasswordPolicy:		{{$as.PasswordPolicy}}
+			PerformDnSearch:	{{$as.PerformDnSearch}}
+			UsersCtxDn:		{{$as.UsersCtxDn}}
+			UserIdAttr:		{{$as.UserIdAttr}}
+			SamlAuthnCtx:		{{$as.SamlAuthnCtx}}
+			SearchScope:		{{$as.SearchScope}}
+			Referrals:		{{$as.Referrals}}
+			OperationalAttrs:	{{$as.OperationalAttrs}}
+		{{ end }}
+		{{- if $as.IsClientCertAuthn }}
 
 
-			Directory Authentication Service
+		Client Cert Authentication 
 
 
-				Priority:		{{$as.Priority}}
-				InitialCtxFactory:	{{$as.InitialCtxFactory}}
-				provider url:		{{$as.ProviderUrl}}
-				Username:		{{$as.Username}}
-				Authentication:		{{$as.Authentication}}
-				PasswordPolicy:		{{$as.PasswordPolicy}}
-				PerformDnSearch:	{{$as.PerformDnSearch}}
-				UsersCtxDn:		{{$as.UsersCtxDn}}
-				UserIdAttr:		{{$as.UserIdAttr}}
-				SamlAuthnCtx:		{{$as.SamlAuthnCtx}}
-				SearchScope:		{{$as.SearchScope}}
-				Referrals:		{{$as.Referrals}}
-				OperationalAttrs:	{{$as.OperationalAttrs}}
-				{{ end }}
-				{{- if $as.IsClientCertAuthn }}
+			Priority:	{{$as.Priority}}
+			CrlRefreshSeconds:	{{$as.CrlRefreshSeconds}}
+			CrlUrl:				{{$as.CrlUrl}}
+			OcspServer:			{{$as.OcspServer}}
+			Ocspserver:			{{$as.Ocspserver}}
+			Uid:				{{$as.Uid}}
+		{{ end }}
+		{{- if $as.IsWindowsAuthn }}
 
 
-			Client Cert Authentication 
+		Windows	Integrated	Authentication
 
 
-				Priority:	{{$as.Priority}}
-				CrlRefreshSeconds:	{{$as.CrlRefreshSeconds}}
-				CrlUrl:				{{$as.CrlUrl}}
-				OcspServer:			{{$as.OcspServer}}
-				Ocspserver:			{{$as.Ocspserver}}
-				Uid:				{{$as.Uid}}
-				{{ end }}
-				{{- if $as.IsWindowsAuthn }}
+			Priority:					{{$as.Priority}}
+			Domain:						{{$as.Domain}}
+			DomainController:			{{$as.DomainController}}
+			Host:						{{$as.Host}}
+			OverwriteKerberosSetup:		{{$as.OverwriteKerberosSetup}}
+			GetOverwriteKerberosSetup:	{{$as.GetOverwriteKerberosSetup}}
+			Protocol:					{{$as.Protocol}}
+			ServiceClass:				{{$as.ServiceClass}}
+			ServiceName:				{{$as.ServiceName}}
+			Keytab:						{{$as.Keytab}}
+		{{ end }}
+		{{- if $as.IsOauth2PreAuthn }}
 
 
-			Windows	Integrated	Authentication
+		OAuth2 Pre Authentication Service
 
 
-				Priority:					{{$as.Priority}}
-				Domain:						{{$as.Domain}}
-				DomainController:			{{$as.DomainController}}
-				Host:						{{$as.Host}}
-				OverwriteKerberosSetup:		{{$as.OverwriteKerberosSetup}}
-				GetOverwriteKerberosSetup:	{{$as.GetOverwriteKerberosSetup}}
-				Protocol:					{{$as.Protocol}}
-				ServiceClass:				{{$as.ServiceClass}}
-				ServiceName:				{{$as.ServiceName}}
-				Keytab:						{{$as.Keytab}}
-				{{ end }}
-				{{- if $as.IsOauth2PreAuthn }}
+			Priority:	{{$as.Priority}}
+			AuthnService:	{{$as.AuthnService}}
+			ExternalAuth:	{{$as.ExternalAuth}}
+			RememberMe:		{{$as.RememberMe}}
+		{{ end }}
+		{{ end }}
 
-
-			OAuth2 Pre Authentication Service
-
-
-				Priority:	{{$as.Priority}}
-				AuthnService:	{{$as.AuthnService}}
-				ExternalAuth:	{{$as.ExternalAuth}}
-				RememberMe:		{{$as.RememberMe}}
-				{{ end }}
-				{{ end }}
 	User Interface
 
 
@@ -208,7 +207,7 @@ General
 			Sing Authentication Requests:	{{$fc.SignAuthenticationRequests}}
 			Want Assertion Signed:			{{$fc.WantAssertionSigned}}
 			{{ end }}
-			{{ end }}
+		{{ end }}
 `
 )
 
@@ -723,6 +722,7 @@ func (c *fcWrapper) WantAssertionSigned() bool {
 
 func (c *idPWrapper) Authns() []asWrapper {
 	var asWrappers []asWrapper
+
 	for _, am := range c.p.AuthenticationMechanisms {
 		asWrappers = append(asWrappers, asWrapper{as: &am})
 	}
@@ -735,7 +735,6 @@ func (c *asWrapper) Name() string {
 }
 
 func (c *asWrapper) Priority() int32 {
-
 	return c.as.GetPriority()
 }
 
@@ -754,6 +753,11 @@ func (c *asWrapper) Class() string {
 "saml_authn_ctx"*/
 
 func (c *asWrapper) IsDirectoryAuthn() bool {
+	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
+		// TODO : Improve errror handling
+		return false
+	}
+
 	return c.as.DelegatedAuthentication.AuthnService.IsDirectoryAuthnSvs()
 }
 
@@ -866,6 +870,11 @@ func (c *asWrapper) OperationalAttrs() bool {
 }
 
 func (c *asWrapper) IsClientCertAuthn() bool {
+	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
+		// TODO : Improve errror handling
+		return false
+	}
+
 	return c.as.DelegatedAuthentication.AuthnService.IsClientCertAuthnSvs()
 }
 
@@ -921,6 +930,11 @@ func (c *asWrapper) Uid() string {
 }
 
 func (c *asWrapper) IsOauth2PreAuthn() bool {
+	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
+		// TODO : Improve errror handling
+		return false
+	}
+
 	return c.as.DelegatedAuthentication.AuthnService.IsOauth2PreAuthnSvc()
 }
 
@@ -953,6 +967,11 @@ func (c *asWrapper) RememberMe() bool {
 
 // windows Integrated Authentication
 func (c *asWrapper) IsWindowsAuthn() bool {
+	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
+		// TODO : Improve errror handling
+		return false
+	}
+
 	return c.as.DelegatedAuthentication.AuthnService.IsWindowsIntegratedAuthn()
 }
 
