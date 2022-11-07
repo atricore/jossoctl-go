@@ -12,7 +12,7 @@ import (
 // appliancesCmd represents the appliances command
 var listAppliancesCmd = &cobra.Command{
 	Use:     "appliances",
-	Aliases: []string{"apps"},
+	Aliases: []string{"a"},
 	Short:   "list appliances",
 	Long:    `list identity appliances`,
 	Run:     listAppliancesCobra,
