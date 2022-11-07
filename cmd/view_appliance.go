@@ -14,7 +14,7 @@ import (
 // appliancesCmd represents the appliances command
 var viewApplianceCmd = &cobra.Command{
 	Use:     "appliance",
-	Aliases: []string{"app"},
+	Aliases: []string{"a"},
 	Short:   "view appliance",
 	Long:    `view identity appliance`,
 	Run:     viewAppliances,
