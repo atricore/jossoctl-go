@@ -13,7 +13,7 @@ import (
 // ImportProviderCmd represents the ImportProvider command
 var importDefinitionCmd = &cobra.Command{
 	Use:     "definition",
-	Aliases: []string{"d"},
+	Aliases: []string{"def"},
 	Short:   "import definition",
 	Long: `Import definition
 	
@@ -38,7 +38,7 @@ func init() {
 	// is called directly, e.g.:
 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	importDefinitionCmd.Flags().StringP("modify", "m", "", "Enable Identity Appliance modification")
-	importDefinitionCmd.Flags().StringP("description", "d", "", "New Identity Appliance description")
+	importDefinitionCmd.Flags().StringP("description", "", "", "New Identity Appliance description")
 	importDefinitionCmd.Flags().StringP("location", "l", "", "New Identity Appliance location")
 	importDefinitionCmd.Flags().StringP("input", "i", "", "Identity Appliance export file")
 	importDefinitionCmd.Flags().StringP("name", "n", "", "New Identity Appliance name")

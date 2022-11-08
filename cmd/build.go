@@ -10,8 +10,9 @@ import (
 
 // buildCmd represents the build command
 var buildCmd = &cobra.Command{
-	Use:   "build",
-	Short: "A brief description of your command",
+	Use:     "build",
+	Aliases: []string{"b"},
+	Short:   "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -25,15 +26,17 @@ to quickly create a Cobra application.`,
 }
 
 func BuildAppliance(id_or_name string, deploy bool) {
+
 	/*
 		// build appliance using cli
-		err := client.Client().DeployAppliance(a)
+		err := client.Client().BuildAppliance(a)
 
 		// if no error , deploy if requested
 		if err != nil && deploy {
-			DeployAppliance(id_or_name)
+			BuildAppliance(id_or_name)
 		}
 	*/
+
 }
 
 func init() {
@@ -48,5 +51,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	buildCmd.Flags().BoolP("deploy", "d", false, "Deploy and start the Identity Appliance")
+	buildCmd.Flags().BoolP("deploy", "", false, "Deploy and start the Identity Appliance")
 }
