@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -15,23 +17,19 @@ var startCmd = &cobra.Command{
 	Long: `Start an identity appliance.
 	
 	Depending on the appliance state, several actions may be required like building and deploying`,
-	Args: cobra.MaximumNArgs(1),
+	Args: cobra.ExactArgs(0),
 	Run:  startApplianceCobra,
 }
 
 func startApplianceCobra(cmd *cobra.Command, args []string) {
-	if len(args) > 0 {
-		StartAppliance(args[0])
-	} else {
-		StartAppliance(id_or_name)
-
-	}
+	StartAppliance(id_or_name)
 }
 
 func StartAppliance(a string) {
 	err := client.Client().StartAppliance(a)
 	if err != nil {
 		printError(err)
+		os.Exit(1)
 	}
 }
 

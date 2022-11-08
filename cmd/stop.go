@@ -5,20 +5,18 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
 // stopCmd represents the stop command
 var stopCmd = &cobra.Command{
 	Use:   "stop",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: stopApplianceCobra,
+	Short: "Stop the identity appliance",
+	Long:  `Stop the identity appliance`,
+	Run:   stopApplianceCobra,
+	Args:  cobra.ExactArgs(0),
 }
 
 func init() {
@@ -36,17 +34,13 @@ func init() {
 }
 
 func stopApplianceCobra(cmd *cobra.Command, args []string) {
-	if len(args) > 0 {
-		StopAppliance(args[0])
-	} else {
-		StopAppliance(id_or_name)
-
-	}
+	StopAppliance(id_or_name)
 }
 
 func StopAppliance(a string) {
 	err := client.Client().StopAppliance(a)
 	if err != nil {
 		printError(err)
+		os.Exit(1)
 	}
 }

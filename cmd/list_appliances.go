@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"os"
+
 	"github.com/atricore/josso-cli-go/formatter"
 	"github.com/spf13/cobra"
 )
@@ -27,6 +29,7 @@ func listAppliances() {
 	lsa, err := client.Client().GetApplianceContainers()
 	if err != nil {
 		client.Error(err)
+		os.Exit(1)
 	}
 
 	source := func() string {
@@ -45,6 +48,7 @@ func listAppliances() {
 	err = formatter.ApplianceWrite(ctx, lsa)
 	if err != nil {
 		client.Error(err)
+		os.Exit(1)
 	}
 
 }
