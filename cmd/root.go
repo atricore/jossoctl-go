@@ -90,7 +90,12 @@ func preRunE(cmd *cobra.Command, args []string) error {
 
 	client, err = cli.CreateClient(&cfg)
 
-	return err
+	if err != nil {
+		printError(err)
+		os.Exit(1)
+	}
+
+	return nil
 }
 
 func printError(err error) {
