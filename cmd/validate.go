@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -16,20 +17,24 @@ var validateCmd = &cobra.Command{
 	Short: "validate identity appliance",
 	Long:  `Validate identity appliance.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO!")
+		validateApplianceCobra(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(validateCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func validateApplianceCobra(cmd *cobra.Command, args []string) {
+	ValidateAppliance(id_or_name)
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// stopCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func ValidateAppliance(a string) {
+	err := client.Client().ValidateAppliance(a)
+	if err != nil {
+		fmt.Printf("appliance %s is NOT valid\n", id_or_name)
+		printError(err)
+		os.Exit(1)
+	}
+	fmt.Printf("appliance %s is valid\n", id_or_name)
 }

@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -25,17 +27,18 @@ to quickly create a Cobra application.`,
 	},
 }
 
-func BuildAppliance(id_or_name string, deploy bool) {
+func BuildAppliance(id_or_name string, start bool) {
+	// build appliance using cli
+	err := client.Client().BuildAppliance(id_or_name)
+	// if no error , deploy if requested
+	if err != nil {
+		printError(err)
+		os.Exit(1)
+	}
 
-	/*
-		// build appliance using cli
-		err := client.Client().BuildAppliance(a)
-
-		// if no error , deploy if requested
-		if err != nil && deploy {
-			BuildAppliance(id_or_name)
-		}
-	*/
+	if start {
+		StartAppliance(id_or_name)
+	}
 
 }
 
@@ -51,5 +54,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	buildCmd.Flags().BoolP("deploy", "", false, "Deploy and start the Identity Appliance")
+	buildCmd.Flags().BoolP("start", "", false, "deploy and start the Identity Appliance")
 }

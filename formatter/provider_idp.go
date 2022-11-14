@@ -18,7 +18,7 @@ type idPWrapper struct {
 	p     *api.IdentityProviderDTO
 }
 
-type fcWrapper struct {
+type idpFcWrapper struct {
 	fc *api.FederatedConnectionDTO
 }
 
@@ -596,29 +596,29 @@ func (c *idPWrapper) NotAfter() string {
 	return cert.NotAfter.String()
 }
 
-func (c *idPWrapper) FederatedConnections() []fcWrapper {
-	var fcWrappers []fcWrapper
+func (c *idPWrapper) FederatedConnections() []idpFcWrapper {
+	var fcWrappers []idpFcWrapper
 	for _, fc := range c.p.FederatedConnectionsA {
-		fcWrappers = append(fcWrappers, fcWrapper{fc: &fc})
+		fcWrappers = append(fcWrappers, idpFcWrapper{fc: &fc})
 	}
 	return fcWrappers
 }
 
-func (c *fcWrapper) ChannelName() string {
+func (c *idpFcWrapper) ChannelName() string {
 
 	return c.fc.ChannelA.GetName()
 }
 
-func (c *fcWrapper) ConnectionName() string {
+func (c *idpFcWrapper) ConnectionName() string {
 	return c.fc.GetName()
 }
 
-func (c *fcWrapper) OverrideProvider() bool {
+func (c *idpFcWrapper) OverrideProvider() bool {
 
 	return c.fc.ChannelA.GetOverrideProviderSetup()
 }
 
-func (c *fcWrapper) SignatureHash() string {
+func (c *idpFcWrapper) SignatureHash() string {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return err.Error()
@@ -627,7 +627,7 @@ func (c *fcWrapper) SignatureHash() string {
 	return idpchannel.GetSignatureHash()
 }
 
-func (c *fcWrapper) MessageTTL() int32 {
+func (c *idpFcWrapper) MessageTTL() int32 {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return 1
@@ -635,7 +635,7 @@ func (c *fcWrapper) MessageTTL() int32 {
 	return idpchannel.GetMessageTtl()
 }
 
-func (c *fcWrapper) MessageTTLTolerance() int32 {
+func (c *idpFcWrapper) MessageTTLTolerance() int32 {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return 1
@@ -643,7 +643,7 @@ func (c *fcWrapper) MessageTTLTolerance() int32 {
 	return idpchannel.GetMessageTtlTolerance()
 }
 
-func (c *fcWrapper) AccountLinkagePolicy() string {
+func (c *idpFcWrapper) AccountLinkagePolicy() string {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return err.Error()
@@ -651,7 +651,7 @@ func (c *fcWrapper) AccountLinkagePolicy() string {
 	return idpchannel.AccountLinkagePolicy.GetLinkEmitterType()
 }
 
-func (c *fcWrapper) EnableProxyExtension() bool {
+func (c *idpFcWrapper) EnableProxyExtension() bool {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return false
@@ -659,7 +659,7 @@ func (c *fcWrapper) EnableProxyExtension() bool {
 	return idpchannel.GetEnableProxyExtension()
 }
 
-func (c *fcWrapper) IdentityMappingPolicy() string {
+func (c *idpFcWrapper) IdentityMappingPolicy() string {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return err.Error()
@@ -667,7 +667,7 @@ func (c *fcWrapper) IdentityMappingPolicy() string {
 	return idpchannel.IdentityMappingPolicy.GetMappingType()
 }
 
-func (c *fcWrapper) SignAuthenticationRequests() bool {
+func (c *idpFcWrapper) SignAuthenticationRequests() bool {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return false
@@ -675,7 +675,7 @@ func (c *fcWrapper) SignAuthenticationRequests() bool {
 	return idpchannel.GetSignAuthenticationRequests()
 }
 
-func (c *fcWrapper) WantAssertionSigned() bool {
+func (c *idpFcWrapper) WantAssertionSigned() bool {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return false

@@ -15,7 +15,7 @@ type IntSaml2SpWrapper struct {
 	p     *api.InternalSaml2ServiceProviderDTO
 }
 
-type FcWrapper struct {
+type spFcWrapper struct {
 	fc *api.FederatedConnectionDTO
 }
 
@@ -103,13 +103,13 @@ location: {{.Location}}
 
 func IntSaml2SpWrite(ctx ProviderContext, providers []api.InternalSaml2ServiceProviderDTO) error {
 	render := func(format func(subContext SubContext) error) error {
-		return IntSaml2SpFormat(ctx, providers, format)
+		return intSaml2SpFormat(ctx, providers, format)
 	}
 	return ctx.Write(newIntSaml2SpWrapper(), render)
 
 }
 
-func IntSaml2SpFormat(ctx ProviderContext, providers []api.InternalSaml2ServiceProviderDTO, format func(subContext SubContext) error) error {
+func intSaml2SpFormat(ctx ProviderContext, providers []api.InternalSaml2ServiceProviderDTO, format func(subContext SubContext) error) error {
 	for _, provider := range providers {
 		var formatted []SubContext
 		formatted = []SubContext{}
@@ -187,15 +187,15 @@ func (c *IntSaml2SpWrapper) Profiles() int {
 	return len(c.p.GetActiveProfiles())
 }
 
-func (c *IntSaml2SpWrapper) FederatedConnections() []fcWrapper {
-	var fcWrappers []fcWrapper
+func (c *IntSaml2SpWrapper) FederatedConnections() []idpFcWrapper {
+	var fcWrappers []idpFcWrapper
 	for _, fc := range c.p.FederatedConnectionsA {
-		fcWrappers = append(fcWrappers, fcWrapper{fc: &fc})
+		fcWrappers = append(fcWrappers, idpFcWrapper{fc: &fc})
 	}
 	return fcWrappers
 }
 
-func (c *FcWrapper) SingAuthnReq() bool {
+func (c *spFcWrapper) SingAuthnReq() bool {
 
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
@@ -205,7 +205,7 @@ func (c *FcWrapper) SingAuthnReq() bool {
 	return idpchannel.GetSignAuthenticationRequests()
 }
 
-func (c *FcWrapper) SignatureHash() string {
+func (c *spFcWrapper) SignatureHash() string {
 
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
@@ -215,7 +215,7 @@ func (c *FcWrapper) SignatureHash() string {
 	return idpchannel.GetSignatureHash()
 }
 
-func (c *FcWrapper) MessageTTL() int32 {
+func (c *spFcWrapper) MessageTTL() int32 {
 
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
@@ -225,7 +225,7 @@ func (c *FcWrapper) MessageTTL() int32 {
 	return idpchannel.GetMessageTtl()
 }
 
-func (c *FcWrapper) MessageTTLToleranceL() int32 {
+func (c *spFcWrapper) MessageTTLToleranceL() int32 {
 
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
@@ -300,16 +300,16 @@ func (c *IntSaml2SpWrapper) Type() string {
 }
 
 // Federated Connection
-func (c *FcWrapper) ChannelName() string {
+func (c *spFcWrapper) ChannelName() string {
 
 	return c.fc.ChannelA.GetName()
 }
 
-func (c *FcWrapper) ConnectionName() string {
+func (c *spFcWrapper) ConnectionName() string {
 	return c.fc.GetName()
 }
 
-func (c *FcWrapper) Prefered() bool {
+func (c *spFcWrapper) Prefered() bool {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return false
