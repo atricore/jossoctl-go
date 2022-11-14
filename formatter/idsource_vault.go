@@ -50,7 +50,6 @@ func NewIdVaultFormat(source string, quiet bool) Format {
 		default:
 			return `name: {{.Name}}
 type: {{.Type}}
-location: {{.Location}}
 `
 		}
 	}
@@ -88,9 +87,8 @@ func VaultFormat(ctx ProviderContext, providers []api.EmbeddedIdentityVaultDTO, 
 func newVaultWrapper() *vaultWrapper {
 	vaultWrapper := vaultWrapper{}
 	vaultWrapper.Header = SubHeaderContext{
-		"Name":     nameHeader,
-		"Type":     typeHeader,
-		"Location": locationHeader,
+		"Name": nameHeader,
+		"Type": typeHeader,
 	}
 	return &vaultWrapper
 }
