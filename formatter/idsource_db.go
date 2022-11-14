@@ -15,14 +15,18 @@ General:
     Name:	{{.Name}}
     ID:		{{.Id}}
     Documentation:	{{.Description}}
-	
-	Connector 
+
+	`
+)
+
+/*
+	Connector
 
 		JDBC Driver:	{{.JdbcDriver}}
 		ConnectionUrl:	{{.ConnectionUrl}}
-		Username:	
+		Username:
 		Password:	{{.Password}}
-		Connection pooling:	
+		Connection pooling:
 		Acquire increment:	{{.AcquireIncrement}}
 		Initial pool size:	{{.InitialPool}}
 		Min size:	{{.MinSize}}
@@ -41,9 +45,7 @@ General:
 		Relay credentials query:	{{.RelayCredentialQuery}}
 
 	Extension:
-		Definition:	{{.}}
-	`
-)
+*/
 
 type DbIdSourceWrapper struct {
 	HeaderContext
@@ -75,7 +77,6 @@ func NewDbIdSouceFormat(source string, quiet bool) Format {
 		default:
 			return `name: {{.Name}}
 type: {{.Type}}
-location: {{.Location}}
 `
 		}
 	}
@@ -84,25 +85,25 @@ location: {{.Location}}
 	return format
 }
 
-func IdSourceWrite(ctx ProviderContext, providers []api.DbIdentitySourceDTO) error {
+func IdSourceDBWrite(ctx IdSourceContext, idsourcedb []api.DbIdentitySourceDTO) error {
 	render := func(format func(subContext SubContext) error) error {
-		return IdSourceFormat(ctx, providers, format)
+		return IdSourceFormat(ctx, idsourcedb, format)
 	}
-	return ctx.Write(newIdSourceWrapper(), render)
+	return ctx.Write(newIdSourceDBWrapper(), render)
 
 }
 
-func IdSourceFormat(ctx ProviderContext, providers []api.DbIdentitySourceDTO, format func(subContext SubContext) error) error {
-	for _, provider := range providers {
+func IdSourceFormat(ctx IdSourceContext, idsources []api.DbIdentitySourceDTO, format func(subContext SubContext) error) error {
+	for _, idsource := range idsources {
 		var formatted []SubContext
 		formatted = []SubContext{}
 		c := DbIdSourceWrapper{
-			p: &provider,
+			p: &idsource,
 		}
 		formatted = append(formatted, &c)
 
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
+		for _, idsourceCtx := range formatted {
+			if err := format(idsourceCtx); err != nil {
 				return err
 			}
 		}
@@ -110,12 +111,11 @@ func IdSourceFormat(ctx ProviderContext, providers []api.DbIdentitySourceDTO, fo
 	return nil
 }
 
-func newIdSourceWrapper() *DbIdSourceWrapper {
+func newIdSourceDBWrapper() *DbIdSourceWrapper {
 	DbIdSourceWrapper := DbIdSourceWrapper{}
 	DbIdSourceWrapper.Header = SubHeaderContext{
-		"Name":     nameHeader,
-		"Type":     typeHeader,
-		"Location": locationHeader,
+		"Name": nameHeader,
+		"Type": typeHeader,
 	}
 	return &DbIdSourceWrapper
 }
