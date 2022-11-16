@@ -16,12 +16,12 @@ import (
 
 var IdSourcesFormatters = []formatter.IdSourceFormatter{
 	{
-		IdSourceType:   "DbIdentitySourceDTO",
+		IdSourceType:   "DbIdentitySource",
 		IdSourceFormat: formatter.NewDbIdSouceFormat,
 		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
 			var idsource []api.DbIdentitySourceDTO
 			for _, c := range containers {
-				if c.GetType() == "DbIdentitySourceDTO" {
+				if c.GetType() == "DbIdentitySource" {
 					db, err := client.Client().GetDbIdentitySourceDTO(id_or_name, c.GetName())
 					if err != nil {
 						return err
@@ -31,6 +31,24 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 			}
 
 			formatter.IdSourceDBWrite(ctx, idsource)
+			return nil
+		},
+	},
+	{
+		IdSourceType:   "LdapIdentitySource",
+		IdSourceFormat: formatter.NewDbIdSouceFormat,
+		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
+			var Ldapidsource []api.LdapIdentitySourceDTO
+			for _, c := range containers {
+				if c.GetType() == "LdapIdentitySource" {
+					ldap, err := client.Client().GetIdSourceLdap(id_or_name, c.GetName())
+					if err != nil {
+						return err
+					}
+					Ldapidsource = append(Ldapidsource, ldap)
+				}
+			}
+			formatter.LdapWrite(ctx, Ldapidsource)
 			return nil
 		},
 	},
@@ -79,7 +97,7 @@ func viewIdSources(cmd *cobra.Command, args []string) {
 		return "pretty"
 	}
 
-	f := getISourcesFormatter(p.GetType())
+	f := getIdSourcesFormatter(p.GetType())
 
 	ctx := formatter.IdSourceContext{
 		Context: formatter.Context{
@@ -110,7 +128,7 @@ func init() {
 	// appliancesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func getISourcesFormatter(pType string) formatter.IdSourceFormatter {
+func getIdSourcesFormatter(pType string) formatter.IdSourceFormatter {
 
 	for _, f := range IdSourcesFormatters {
 		if f.IdSourceType == pType {

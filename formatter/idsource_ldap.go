@@ -12,38 +12,35 @@ const (
     	
 General:
 
-        Name:	{{.Name}}
-        ID:		{{.Id}}
+        Name:	{{.Name}} 
+		ID:		{{.Id}}
         Documentation:	{{.Description}}
 
-		Connection:
 
-			Initial context factory:	{{.InitialCtxFactory}}
-			Provider URL:	{{.ProviderUrl}}
-			Principal:	{{.Principal}}
-			Password:	{{.Password}}
-			Authentication:	{{.Authentication}}
-			Enable password update:	{{.EnablePasswordUpdate}}
 
-		Lookup:
 
-			User properties query:	{{.UserProperty}}
-			Include operational attributes:	{{.IncludeOperationalAttributes}}
-			Updatable credential:	{{.UpdatableCredential}}
-			Credentials query:	{{.CredentialsQuery}}
-			Role identifier:	
-			Referrls:	{{.Referrals}}
-			Search scope:	{{.SearchScope}}
-			Role DN:	{{.RoleDn}}
-			Role user identifier attribute:	
-			Role matching mode:	{{.RoleMatchingMode}}
-			User identifier:	
-			User DN:	{{.UserDn}}
-		
-		Extension:
-
-			Definition:
 `
+
+/*
+	Lookup:
+
+		User properties query:	{{.UserProperty}}
+		Include operational attributes:	{{.IncludeOperationalAttributes}}
+		Updatable credential:	{{.UpdatableCredential}}
+		Credentials query:	{{.CredentialsQuery}}
+		Role identifier:
+		Referrls:	{{.Referrals}}
+		Search scope:	{{.SearchScope}}
+		Role DN:	{{.RoleDn}}
+		Role user identifier attribute:
+		Role matching mode:	{{.RoleMatchingMode}}
+		User identifier:
+		User DN:	{{.UserDn}}
+
+	Extension:
+
+		Definition:
+*/
 )
 
 type LdapWrapper struct {
@@ -60,7 +57,7 @@ func NewLdapFormat(source string, quiet bool) Format {
 		case quiet:
 			return DefaultQuietFormat
 		default:
-			return defaultProviderTableFormat
+			return defaultIdSourceTableFormat
 		}
 	case PrettyFormatKey:
 		switch {
@@ -85,25 +82,25 @@ location: {{.Location}}
 	return format
 }
 
-func LdapWrite(ctx ProviderContext, providers []api.LdapIdentitySourceDTO) error {
+func LdapWrite(ctx IdSourceContext, idsourcedb []api.LdapIdentitySourceDTO) error {
 	render := func(format func(subContext SubContext) error) error {
-		return LdapFormat(ctx, providers, format)
+		return LdapFormat(ctx, idsourcedb, format)
 	}
 	return ctx.Write(newLdapWrapper(), render)
 
 }
 
-func LdapFormat(ctx ProviderContext, providers []api.LdapIdentitySourceDTO, format func(subContext SubContext) error) error {
-	for _, provider := range providers {
+func LdapFormat(ctx IdSourceContext, idsourceLdap []api.LdapIdentitySourceDTO, format func(subContext SubContext) error) error {
+	for _, idsourceLdap := range idsourceLdap {
 		var formatted []SubContext
 		formatted = []SubContext{}
 		c := LdapWrapper{
-			p: &provider,
+			p: &idsourceLdap,
 		}
 		formatted = append(formatted, &c)
 
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
+		for _, idsourceLdapCtx := range formatted {
+			if err := format(idsourceLdapCtx); err != nil {
 				return err
 			}
 		}
@@ -114,9 +111,8 @@ func LdapFormat(ctx ProviderContext, providers []api.LdapIdentitySourceDTO, form
 func newLdapWrapper() *LdapWrapper {
 	LdapWrapper := LdapWrapper{}
 	LdapWrapper.Header = SubHeaderContext{
-		"Name":     nameHeader,
-		"Type":     typeHeader,
-		"Location": locationHeader,
+		"Name": nameHeader,
+		"Type": typeHeader,
 	}
 	return &LdapWrapper
 }

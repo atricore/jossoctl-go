@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"fmt"
 	"strconv"
 
 	api "github.com/atricore/josso-api-go"
@@ -12,10 +13,8 @@ const (
 DB Identity Source (built-in)
 	
 General:
-    Name:	{{.Name}}
-    ID:		{{.Id}}
-    Documentation:	{{.Description}}
 
+		Name:	{{.Name}}
 	`
 )
 
@@ -61,7 +60,7 @@ func NewDbIdSouceFormat(source string, quiet bool) Format {
 		case quiet:
 			return DefaultQuietFormat
 		default:
-			return defaultProviderTableFormat
+			return defaultIdSourceTableFormat
 		}
 	case PrettyFormatKey:
 		switch {
@@ -86,6 +85,7 @@ type: {{.Type}}
 }
 
 func IdSourceDBWrite(ctx IdSourceContext, idsourcedb []api.DbIdentitySourceDTO) error {
+	fmt.Println("db write")
 	render := func(format func(subContext SubContext) error) error {
 		return IdSourceFormat(ctx, idsourcedb, format)
 	}
