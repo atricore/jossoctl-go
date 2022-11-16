@@ -1,5 +1,5 @@
 NAMES=iamtf josso
-#OUT_DIR=./.tmp
+VERSION=$(shell git describe --tags --always --dirty)
 
 PLATFORMS=darwin linux windows openbsd
 ARCHITECTURES=amd64 386 arm64 arm
@@ -20,7 +20,6 @@ build: fmtcheck
 
 fmtcheck: dep
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
-
 
 dist:
 	$(foreach NAME,$(NAMES),\
