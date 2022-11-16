@@ -83,7 +83,6 @@ func NewIdSourceContainerFormat(source string, quiet bool) Format {
 		default:
 			return `name: {{.Name}}
 type: {{.Type}}
-location: {{.Location}}
 `
 		}
 	}

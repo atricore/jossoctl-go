@@ -87,7 +87,7 @@ func viewProvider(cmd *cobra.Command, args []string) {
 	}
 
 	if p.Name == nil {
-		client.Error(fmt.Errorf("provider %s not found in appliance %s", args[0], id_or_name))
+		client.Error(fmt.Errorf("provider! %s not found in appliance %s", args[0], id_or_name))
 		os.Exit(1)
 	}
 
