@@ -83,7 +83,7 @@ func NewIntSaml2SpFormat(source string, quiet bool) Format {
 		case quiet:
 			return DefaultQuietFormat
 		default:
-			return idpPrettyFormat
+			return IntSaml2SpPrettyFormat
 		}
 	case RawFormatKey:
 		switch {
