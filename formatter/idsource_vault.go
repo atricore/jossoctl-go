@@ -34,7 +34,7 @@ func NewIdVaultFormat(source string, quiet bool) Format {
 		case quiet:
 			return DefaultQuietFormat
 		default:
-			return defaultProviderTableFormat
+			return defaultIdSourceTableFormat
 		}
 	case PrettyFormatKey:
 		switch {
@@ -58,25 +58,25 @@ type: {{.Type}}
 	return format
 }
 
-func VaultWrite(ctx ProviderContext, providers []api.EmbeddedIdentityVaultDTO) error {
+func VaultWrite(ctx IdSourceContext, dbvault []api.EmbeddedIdentityVaultDTO) error {
 	render := func(format func(subContext SubContext) error) error {
-		return VaultFormat(ctx, providers, format)
+		return VaultFormat(ctx, dbvault, format)
 	}
 	return ctx.Write(newVaultWrapper(), render)
 
 }
 
-func VaultFormat(ctx ProviderContext, providers []api.EmbeddedIdentityVaultDTO, format func(subContext SubContext) error) error {
-	for _, provider := range providers {
+func VaultFormat(ctx IdSourceContext, dbvault []api.EmbeddedIdentityVaultDTO, format func(subContext SubContext) error) error {
+	for _, dbvault := range dbvault {
 		var formatted []SubContext
 		formatted = []SubContext{}
 		c := vaultWrapper{
-			p: &provider,
+			p: &dbvault,
 		}
 		formatted = append(formatted, &c)
 
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
+		for _, dbvaultCtx := range formatted {
+			if err := format(dbvaultCtx); err != nil {
 				return err
 			}
 		}
@@ -123,5 +123,5 @@ func (c *vaultWrapper) Description() string {
 // connector
 
 func (c *vaultWrapper) ConnectorName() string {
-	return *c.p.IdentityConnectorName
+	return c.p.GetIdentityConnectorName()
 }

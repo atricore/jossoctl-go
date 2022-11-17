@@ -16,31 +16,36 @@ General:
 		ID:		{{.Id}}
         Documentation:	{{.Description}}
 
+		Connection:
 
+			Initial context factory:	{{.InitialCtxFactory}}
+			Provider URL:	{{.ProviderUrl}}
+			Principal:	{{.Principal}}
+			Password:	{{.Password}}
+			Authentication:	{{.Authentication}}
+			Enable password update:	{{.EnablePasswordUpdate}}
+
+		Lookup:
+
+			User properties query:	{{.UserProperty}}
+			Include operational attributes:	{{.IncludeOperationalAttributes}}
+			Updatable credential:	{{.UpdatableCredential}}
+			Credentials query:	{{.CredentialsQuery}}
+			Role identifier:
+			Referrls:	{{.Referrals}}
+			Search scope:	{{.SearchScope}}
+			Role DN:	{{.RoleDn}}
+			Role user identifier attribute:
+			Role matching mode:	{{.RoleMatchingMode}}
+			User identifier:
+			User DN:	{{.UserDn}}
+	
+		Extension:
+	
+			Definition:
 
 
 `
-
-/*
-	Lookup:
-
-		User properties query:	{{.UserProperty}}
-		Include operational attributes:	{{.IncludeOperationalAttributes}}
-		Updatable credential:	{{.UpdatableCredential}}
-		Credentials query:	{{.CredentialsQuery}}
-		Role identifier:
-		Referrls:	{{.Referrals}}
-		Search scope:	{{.SearchScope}}
-		Role DN:	{{.RoleDn}}
-		Role user identifier attribute:
-		Role matching mode:	{{.RoleMatchingMode}}
-		User identifier:
-		User DN:	{{.UserDn}}
-
-	Extension:
-
-		Definition:
-*/
 )
 
 type LdapWrapper struct {
@@ -69,11 +74,10 @@ func NewLdapFormat(source string, quiet bool) Format {
 	case RawFormatKey:
 		switch {
 		case quiet:
-			return `name: {{.Name}}`
+			return `nameabc: {{.Name}}`
 		default:
-			return `name: {{.Name}}
+			return `nameavc: {{.Name}}
 type: {{.Type}}
-location: {{.Location}}
 `
 		}
 	}
@@ -203,7 +207,7 @@ func (c *LdapWrapper) RoleDn() string {
 }
 
 // func (c *LdapWrapper) RoleUserIdentifier() string {
-// 	return c.p.GetDescription()
+// 	return c.p.()
 // }
 
 func (c *LdapWrapper) RoleMatchingMode() string {
@@ -211,7 +215,7 @@ func (c *LdapWrapper) RoleMatchingMode() string {
 }
 
 // func (c *LdapWrapper) UserIdentifier() string {
-// 	return c.p.GetI()
+// 	return c.p.Get()
 // }
 
 func (c *LdapWrapper) UserDn() string {
@@ -220,5 +224,5 @@ func (c *LdapWrapper) UserDn() string {
 
 // extension
 // func (c *LdapWrapper) Definition() string {
-// 	return c.p.GetDefinition()
+// 	return c.p.()
 // }

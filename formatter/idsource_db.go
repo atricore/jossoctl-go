@@ -15,36 +15,37 @@ DB Identity Source (built-in)
 General:
 
 		Name:	{{.Name}}
+		ID:		{{.Id}}
+        Documentation:	{{.Description}}
+
+		Connectors
+
+			JDBC Driver:	{{.JdbcDriver}}
+			ConnectionUrl:	{{.ConnectionUrl}}
+			Username:		{{.Username}}
+			Password:	{{.Password}}
+			Connection pooling:
+			Acquire increment:	{{.AcquireIncrement}}
+			Initial pool size:	{{.InitialPool}}
+			Min size:	{{.MinSize}}
+			Max size:	{{.MaxSize}}
+			Idle test period:	{{.IdleConnectionTestPeriod}}
+			Mx Idle time :	{{.MaxIdleTime}}
+
+		Lookup
+|
+			Username query:	{{.UsernameQuery}}
+			Roles query:	{{.RolesQuery}}
+			Credentials query:	{{.CredentialsQuery}}
+			Use result columns as property:	{{.UseColumnNamesAsPropertyNames}}
+			Properties query:	{{.PropertiesQuery}}
+			Update credentials query:	{{.UpdateCredentials}}
+			Relay credentials query:	{{.RelayCredentialQuery}}
+
+		Extension:	
+
 	`
 )
-
-/*
-	Connector
-
-		JDBC Driver:	{{.JdbcDriver}}
-		ConnectionUrl:	{{.ConnectionUrl}}
-		Username:
-		Password:	{{.Password}}
-		Connection pooling:
-		Acquire increment:	{{.AcquireIncrement}}
-		Initial pool size:	{{.InitialPool}}
-		Min size:	{{.MinSize}}
-		Max size:	{{.MaxSize}}
-		Idle test period:	{{.IdleConnectionTestPeriod}}
-		Mx Idle time :	{{.GetMaxIdleTime}}
-
-	Lookup
-
-		Username query:	{{.UsernameQuery}}
-		Roles query:	{{.RolesQuery}}
-		Credentials query:	{{.CredentialsQuery}}
-		Use result columns as property:	{{.UseColumnNamesAsPropertyNames}}
-		Properties query:	{{.PropertiesQuery}}
-		Update credentials query:	{{.UpdateCredentials}}
-		Relay credentials query:	{{.RelayCredentialQuery}}
-
-	Extension:
-*/
 
 type DbIdSourceWrapper struct {
 	HeaderContext
@@ -149,24 +150,24 @@ func (c *DbIdSourceWrapper) Description() string {
 // connector
 
 func (c *DbIdSourceWrapper) JdbcDriver() string {
-	return c.p.Driver.GetName()
+	return c.p.GetDriverName()
 }
 
 func (c *DbIdSourceWrapper) ConnectionUrl() string {
 	return c.p.GetConnectionUrl()
 }
 
-//func (c *DbIdSourceWrapper) Username() string {
-//	return c.p.Get()
-//}
+func (c *DbIdSourceWrapper) Username() string {
+	return c.p.GetAdmin()
+}
 
 func (c *DbIdSourceWrapper) Password() string {
 	return c.p.GetPassword()
 }
 
-//func (c *DbIdSourceWrapper) ConnectionPooling() string {
-//	return c.p.
-//}
+func (c *DbIdSourceWrapper) ConnectionPooling() bool {
+	return c.p.GetPooledDatasource()
+}
 
 func (c *DbIdSourceWrapper) AcquireIncrement() int32 {
 	return c.p.GetAcquireIncrement()
@@ -224,6 +225,7 @@ func (c *DbIdSourceWrapper) RelayCredentialQuery() string {
 }
 
 // extension
+
 //func (c *DbIdSourceWrapper) Definition() string {
 //	return c.p.GetDefinition()
 //}

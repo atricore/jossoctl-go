@@ -35,8 +35,26 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 		},
 	},
 	{
+		IdSourceType:   "EmbeddedIdentityVault",
+		IdSourceFormat: formatter.NewIdVaultFormat,
+		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
+			var Embeddedidsource []api.EmbeddedIdentityVaultDTO
+			for _, c := range containers {
+				if c.GetType() == "EmbeddedIdentityVault" {
+					emd, err := client.Client().GetIdVault(id_or_name, c.GetName())
+					if err != nil {
+						return err
+					}
+					Embeddedidsource = append(Embeddedidsource, emd)
+				}
+			}
+			formatter.VaultWrite(ctx, Embeddedidsource)
+			return nil
+		},
+	},
+	{
 		IdSourceType:   "LdapIdentitySource",
-		IdSourceFormat: formatter.NewDbIdSouceFormat,
+		IdSourceFormat: formatter.NewLdapFormat,
 		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
 			var Ldapidsource []api.LdapIdentitySourceDTO
 			for _, c := range containers {
