@@ -31,13 +31,12 @@ General:
 			Include operational attributes:	{{.IncludeOperationalAttributes}}
 			Updatable credential:	{{.UpdatableCredential}}
 			Credentials query:	{{.CredentialsQuery}}
-			Role identifier:
+			Role identifier:	{{.RoleIdentifies}}
 			Referrls:	{{.Referrals}}
 			Search scope:	{{.SearchScope}}
 			Role DN:	{{.RoleDn}}
-			Role user identifier attribute:
 			Role matching mode:	{{.RoleMatchingMode}}
-			User identifier:
+			User identifier:	{{.UserIdentifier}}
 			User DN:	{{.UserDn}}
 	
 		Extension:
@@ -190,9 +189,9 @@ func (c *LdapWrapper) CredentialsQuery() string {
 	return c.p.GetCredentialQueryString()
 }
 
-// func (c *LdapWrapper) RoleIdentifies() string {
-// 	return c.p.Get
-// }
+func (c *LdapWrapper) RoleIdentifies() string {
+	return c.p.GetUidAttributeID()
+}
 
 func (c *LdapWrapper) Referrals() string {
 	return c.p.GetReferrals()
@@ -206,17 +205,13 @@ func (c *LdapWrapper) RoleDn() string {
 	return c.p.GetRolesCtxDN()
 }
 
-// func (c *LdapWrapper) RoleUserIdentifier() string {
-// 	return c.p.()
-// }
-
 func (c *LdapWrapper) RoleMatchingMode() string {
 	return c.p.GetRoleMatchingMode()
 }
 
-// func (c *LdapWrapper) UserIdentifier() string {
-// 	return c.p.Get()
-// }
+func (c *LdapWrapper) UserIdentifier() string {
+	return c.p.GetPrincipalUidAttributeID()
+}
 
 func (c *LdapWrapper) UserDn() string {
 	return c.p.GetUsersCtxDN()
