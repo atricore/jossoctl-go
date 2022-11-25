@@ -2,10 +2,13 @@ package formatter
 
 import (
 	api "github.com/atricore/josso-api-go"
+	cli "github.com/atricore/josso-sdk-go"
 )
 
 const (
 	defaultProviderTableFormat = "table {{.Name}}\t{{.Type}}\t{{.Location}}"
+	defaultProviderFormat      = `Name:		{{.Name}}
+Location:	{{.Location}}`
 )
 
 type ProviderFormatter struct {
@@ -25,38 +28,50 @@ type providerContainerWrapper struct {
 	p     *api.ProviderContainerDTO
 }
 
+func (c *providerContainerWrapper) Name() string {
+	return c.p.GetName()
+}
+
+func (c *providerContainerWrapper) Type() string {
+	return c.p.GetType()
+}
+
+func (c *providerContainerWrapper) Location() string {
+	// convert *string to string
+	if c.p.Location == nil {
+		return ""
+	} else {
+		return *c.p.Location
+	}
+}
+
 type providerWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.FederatedProviderDTO
 }
 
-func ProviderWrite(ctx ProviderContext, providers []api.FederatedProviderDTO) error {
-	render := func(format func(subContext SubContext) error) error {
-		return providerFormat(ctx, providers, format)
-	}
-	return ctx.Write(newProviderContainerWrapper(), render)
-
+func (c *providerWrapper) Name() string {
+	return c.p.GetName()
+}
+func (c *providerWrapper) Location() string {
+	return cli.LocationToStr(c.p.Location)
 }
 
-func providerFormat(ctx ProviderContext, providers []api.FederatedProviderDTO, format func(subContext SubContext) error) error {
-	for _, provider := range providers {
-		formatted := []*providerWrapper{}
+func ProviderWrite(ctx ProviderContext, providers []api.FederatedProviderDTO) error {
 
-		c := providerWrapper{
-			p:     &provider,
-			trunc: false,
-		}
+	render := func(format func(subContext SubContext) error) error {
 
-		formatted = append(formatted, &c)
-
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
+		for _, provider := range providers {
+			c := providerWrapper{p: &provider}
+			if err := format(&c); err != nil {
 				return err
 			}
 		}
+		return nil
 	}
-	return nil
+	return ctx.Write(newProviderContainerWrapper(), render)
+
 }
 
 func ProviderContainerWrite(ctx ProviderContext, providers []api.ProviderContainerDTO) error {
@@ -64,7 +79,6 @@ func ProviderContainerWrite(ctx ProviderContext, providers []api.ProviderContain
 		return providerContainerFormat(ctx, providers, format)
 	}
 	return ctx.Write(newProviderContainerWrapper(), render)
-
 }
 
 func NewProviderContainerFormat(source string, quiet bool) Format {
@@ -75,6 +89,13 @@ func NewProviderContainerFormat(source string, quiet bool) Format {
 			return DefaultQuietFormat
 		default:
 			return defaultProviderTableFormat
+		}
+	case PrettyFormatKey:
+		switch {
+		case quiet:
+			return DefaultQuietFormat
+		default:
+			return defaultProviderFormat
 		}
 	case RawFormatKey:
 		switch {
@@ -94,20 +115,14 @@ location: {{.Location}}
 
 func providerContainerFormat(ctx ProviderContext, providers []api.ProviderContainerDTO, format func(subContext SubContext) error) error {
 	for _, provider := range providers {
-		formatted := []*providerContainerWrapper{}
-
 		c := providerContainerWrapper{
 			p:     &provider,
 			trunc: false,
 		}
-
-		formatted = append(formatted, &c)
-
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
-				return err
-			}
+		if err := format(&c); err != nil {
+			return err
 		}
+
 	}
 	return nil
 }
@@ -120,16 +135,4 @@ func newProviderContainerWrapper() *providerContainerWrapper {
 		"Location": locationHeader,
 	}
 	return &providerWrapper
-}
-
-func (c *providerContainerWrapper) Name() string {
-	return c.p.GetName()
-}
-
-func (c *providerContainerWrapper) Type() string {
-	return c.p.GetType()
-}
-
-func (c *providerContainerWrapper) Location() string {
-	return c.p.GetLocation()
 }

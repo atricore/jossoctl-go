@@ -47,7 +47,7 @@ General:
 `
 )
 
-type LdapWrapper struct {
+type idSourceLdapWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.LdapIdentitySourceDTO
@@ -93,26 +93,21 @@ func LdapWrite(ctx IdSourceContext, idsourcedb []api.LdapIdentitySourceDTO) erro
 
 }
 
-func LdapFormat(ctx IdSourceContext, idsourceLdap []api.LdapIdentitySourceDTO, format func(subContext SubContext) error) error {
-	for _, idsourceLdap := range idsourceLdap {
-		var formatted []SubContext
-		formatted = []SubContext{}
-		c := LdapWrapper{
-			p: &idsourceLdap,
+func LdapFormat(ctx IdSourceContext, idSourceLdaps []api.LdapIdentitySourceDTO, format func(subContext SubContext) error) error {
+	for _, idSourceLdap := range idSourceLdaps {
+		c := idSourceLdapWrapper{
+			p:     &idSourceLdap,
+			trunc: false,
 		}
-		formatted = append(formatted, &c)
-
-		for _, idsourceLdapCtx := range formatted {
-			if err := format(idsourceLdapCtx); err != nil {
-				return err
-			}
+		if err := format(&c); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func newLdapWrapper() *LdapWrapper {
-	LdapWrapper := LdapWrapper{}
+func newLdapWrapper() *idSourceLdapWrapper {
+	LdapWrapper := idSourceLdapWrapper{}
 	LdapWrapper.Header = SubHeaderContext{
 		"Name": nameHeader,
 		"Type": typeHeader,
@@ -120,11 +115,11 @@ func newLdapWrapper() *LdapWrapper {
 	return &LdapWrapper
 }
 
-func (c *LdapWrapper) MarshalJSON() ([]byte, error) {
+func (c *idSourceLdapWrapper) MarshalJSON() ([]byte, error) {
 	return MarshalJSON(c)
 }
 
-func (c *LdapWrapper) ID() string {
+func (c *idSourceLdapWrapper) ID() string {
 
 	id := strconv.FormatInt(c.p.GetId(), 10)
 	if c.trunc {
@@ -134,86 +129,86 @@ func (c *LdapWrapper) ID() string {
 }
 
 // General
-func (c *LdapWrapper) Name() string {
+func (c *idSourceLdapWrapper) Name() string {
 	return c.p.GetName()
 }
 
-func (c *LdapWrapper) Id() int64 {
+func (c *idSourceLdapWrapper) Id() int64 {
 	return c.p.GetId()
 }
 
-func (c *LdapWrapper) Description() string {
+func (c *idSourceLdapWrapper) Description() string {
 	return c.p.GetDescription()
 }
 
 // connector
 
-func (c *LdapWrapper) InitialCtxFactory() string {
+func (c *idSourceLdapWrapper) InitialCtxFactory() string {
 	return c.p.GetInitialContextFactory()
 }
 
-func (c *LdapWrapper) ProviderUrl() string {
+func (c *idSourceLdapWrapper) ProviderUrl() string {
 	return c.p.GetProviderUrl()
 }
 
-func (c *LdapWrapper) Principal() string {
+func (c *idSourceLdapWrapper) Principal() string {
 	return c.p.GetPrincipalUidAttributeID()
 }
 
-func (c *LdapWrapper) Password() string {
+func (c *idSourceLdapWrapper) Password() string {
 	return c.p.GetSecurityCredential()
 }
 
-func (c *LdapWrapper) Authentication() string {
+func (c *idSourceLdapWrapper) Authentication() string {
 	return c.p.GetSecurityAuthentication()
 }
 
-func (c *LdapWrapper) EnablePasswordUpdate() bool {
+func (c *idSourceLdapWrapper) EnablePasswordUpdate() bool {
 	return c.p.GetUpdatePasswordEnabled()
 }
 
 //lookup
-func (c *LdapWrapper) UserProperty() string {
+func (c *idSourceLdapWrapper) UserProperty() string {
 	return c.p.GetUserPropertiesQueryString()
 }
 
-func (c *LdapWrapper) IncludeOperationalAttributes() bool {
+func (c *idSourceLdapWrapper) IncludeOperationalAttributes() bool {
 	return c.p.GetIncludeOperationalAttributes()
 }
 
-func (c *LdapWrapper) UpdatableCredential() string {
+func (c *idSourceLdapWrapper) UpdatableCredential() string {
 	return c.p.GetUpdateableCredentialAttribute()
 }
 
-func (c *LdapWrapper) CredentialsQuery() string {
+func (c *idSourceLdapWrapper) CredentialsQuery() string {
 	return c.p.GetCredentialQueryString()
 }
 
-func (c *LdapWrapper) RoleIdentifies() string {
+func (c *idSourceLdapWrapper) RoleIdentifies() string {
 	return c.p.GetUidAttributeID()
 }
 
-func (c *LdapWrapper) Referrals() string {
+func (c *idSourceLdapWrapper) Referrals() string {
 	return c.p.GetReferrals()
 }
 
-func (c *LdapWrapper) SearchScope() string {
+func (c *idSourceLdapWrapper) SearchScope() string {
 	return c.p.GetLdapSearchScope()
 }
 
-func (c *LdapWrapper) RoleDn() string {
+func (c *idSourceLdapWrapper) RoleDn() string {
 	return c.p.GetRolesCtxDN()
 }
 
-func (c *LdapWrapper) RoleMatchingMode() string {
+func (c *idSourceLdapWrapper) RoleMatchingMode() string {
 	return c.p.GetRoleMatchingMode()
 }
 
-func (c *LdapWrapper) UserIdentifier() string {
+func (c *idSourceLdapWrapper) UserIdentifier() string {
 	return c.p.GetPrincipalUidAttributeID()
 }
 
-func (c *LdapWrapper) UserDn() string {
+func (c *idSourceLdapWrapper) UserDn() string {
 	return c.p.GetUsersCtxDN()
 }
 

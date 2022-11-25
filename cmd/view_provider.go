@@ -30,8 +30,7 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 				}
 			}
 
-			formatter.IdPWrite(ctx, providers)
-			return nil
+			return formatter.IdPWrite(ctx, providers)
 		},
 	},
 	{
@@ -48,24 +47,24 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 					providers = append(providers, p)
 				}
 			}
-			formatter.IntSaml2SpWrite(ctx, providers)
-			return nil
+			return formatter.IntSaml2SpWrite(ctx, providers)
 		},
 	},
 }
 
-var DefaultProviderFormatters = formatter.ProviderFormatter{
+var DefaultProviderFormatter = formatter.ProviderFormatter{
 	PType:   "__default__",
 	PFormat: formatter.NewProviderContainerFormat,
 	PWriter: func(ctx formatter.ProviderContext, containers []api.ProviderContainerDTO) error {
 		var providers []api.FederatedProviderDTO
-
 		for _, c := range containers {
-			providers = append(providers, *c.FederatedProvider)
+			if c.FederatedProvider != nil {
+				providers = append(providers, *c.FederatedProvider)
+			} else {
+				printError(fmt.Errorf("provider %s found, but view is not supported", *c.Name))
+			}
 		}
-		formatter.ProviderWrite(ctx, providers)
-
-		return nil
+		return formatter.ProviderWrite(ctx, providers)
 	},
 }
 
@@ -137,5 +136,5 @@ func getFormatter(pType string) formatter.ProviderFormatter {
 		}
 	}
 
-	return DefaultProviderFormatters
+	return DefaultProviderFormatter
 }

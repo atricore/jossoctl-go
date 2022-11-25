@@ -111,17 +111,9 @@ func IntSaml2SpWrite(ctx ProviderContext, providers []api.InternalSaml2ServicePr
 
 func intSaml2SpFormat(ctx ProviderContext, providers []api.InternalSaml2ServiceProviderDTO, format func(subContext SubContext) error) error {
 	for _, provider := range providers {
-		var formatted []SubContext
-		formatted = []SubContext{}
-		c := IntSaml2SpWrapper{
-			p: &provider,
-		}
-		formatted = append(formatted, &c)
-
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
-				return err
-			}
+		c := IntSaml2SpWrapper{p: &provider}
+		if err := format(&c); err != nil {
+			return err
 		}
 	}
 	return nil

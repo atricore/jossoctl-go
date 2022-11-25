@@ -208,29 +208,22 @@ location: {{.Location}}
 }
 
 func IdPWrite(ctx ProviderContext, providers []api.IdentityProviderDTO) error {
+
+	// Render is a function that receives a format function and writes its output to the proper output
 	render := func(format func(subContext SubContext) error) error {
-		return idpFormat(ctx, providers, format)
-	}
-	return ctx.Write(newIdPWrapper(), render)
 
-}
-
-func idpFormat(ctx ProviderContext, providers []api.IdentityProviderDTO, format func(subContext SubContext) error) error {
-	for _, provider := range providers {
-		var formatted []SubContext
-		formatted = []SubContext{}
-		c := idPWrapper{
-			p: &provider,
-		}
-		formatted = append(formatted, &c)
-
-		for _, providerCtx := range formatted {
-			if err := format(providerCtx); err != nil {
+		for _, provider := range providers {
+			c := idPWrapper{p: &provider}
+			if err := format(&c); err != nil {
 				return err
 			}
 		}
+		return nil
+
 	}
-	return nil
+
+	return ctx.Write(newIdPWrapper(), render)
+
 }
 
 func newIdPWrapper() *idPWrapper {

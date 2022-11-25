@@ -20,7 +20,7 @@ General:
 `
 )
 
-type vaultWrapper struct {
+type idVaultWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.EmbeddedIdentityVaultDTO
@@ -66,26 +66,21 @@ func VaultWrite(ctx IdSourceContext, dbvault []api.EmbeddedIdentityVaultDTO) err
 
 }
 
-func VaultFormat(ctx IdSourceContext, dbvault []api.EmbeddedIdentityVaultDTO, format func(subContext SubContext) error) error {
-	for _, dbvault := range dbvault {
-		var formatted []SubContext
-		formatted = []SubContext{}
-		c := vaultWrapper{
-			p: &dbvault,
+func VaultFormat(ctx IdSourceContext, idVaults []api.EmbeddedIdentityVaultDTO, format func(subContext SubContext) error) error {
+	for _, idVault := range idVaults {
+		c := idVaultWrapper{
+			p:     &idVault,
+			trunc: false,
 		}
-		formatted = append(formatted, &c)
-
-		for _, dbvaultCtx := range formatted {
-			if err := format(dbvaultCtx); err != nil {
-				return err
-			}
+		if err := format(&c); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func newVaultWrapper() *vaultWrapper {
-	vaultWrapper := vaultWrapper{}
+func newVaultWrapper() *idVaultWrapper {
+	vaultWrapper := idVaultWrapper{}
 	vaultWrapper.Header = SubHeaderContext{
 		"Name": nameHeader,
 		"Type": typeHeader,
@@ -93,11 +88,11 @@ func newVaultWrapper() *vaultWrapper {
 	return &vaultWrapper
 }
 
-func (c *vaultWrapper) MarshalJSON() ([]byte, error) {
+func (c *idVaultWrapper) MarshalJSON() ([]byte, error) {
 	return MarshalJSON(c)
 }
 
-func (c *vaultWrapper) ID() string {
+func (c *idVaultWrapper) ID() string {
 
 	id := strconv.FormatInt(c.p.GetId(), 10)
 	if c.trunc {
@@ -107,21 +102,21 @@ func (c *vaultWrapper) ID() string {
 }
 
 // General
-func (c *vaultWrapper) Name() string {
+func (c *idVaultWrapper) Name() string {
 	return c.p.GetName()
 }
 
-func (c *vaultWrapper) Id() int64 {
+func (c *idVaultWrapper) Id() int64 {
 	return c.p.GetId()
 }
 
-func (c *vaultWrapper) Description() string {
+func (c *idVaultWrapper) Description() string {
 
 	return c.p.GetDescription()
 }
 
 // connector
 
-func (c *vaultWrapper) ConnectorName() string {
+func (c *idVaultWrapper) ConnectorName() string {
 	return c.p.GetIdentityConnectorName()
 }

@@ -30,8 +30,7 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 				}
 			}
 
-			formatter.IdSourceDBWrite(ctx, idsource)
-			return nil
+			return formatter.IdSourceDBWrite(ctx, idsource)
 		},
 	},
 	{
@@ -48,8 +47,7 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 					Embeddedidsource = append(Embeddedidsource, emd)
 				}
 			}
-			formatter.VaultWrite(ctx, Embeddedidsource)
-			return nil
+			return formatter.VaultWrite(ctx, Embeddedidsource)
 		},
 	},
 	{
@@ -66,8 +64,7 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 					Ldapidsource = append(Ldapidsource, ldap)
 				}
 			}
-			formatter.LdapWrite(ctx, Ldapidsource)
-			return nil
+			return formatter.LdapWrite(ctx, Ldapidsource)
 		},
 	},
 }
@@ -81,9 +78,7 @@ var DefaultIdSourcesFormatters = formatter.IdSourceFormatter{
 		for _, c := range containers {
 			idsources = append(idsources, *c.IdSource)
 		}
-		formatter.IdSourceWrite(ctx, idsources)
-
-		return nil
+		return formatter.IdSourceWrite(ctx, idsources)
 	},
 }
 

@@ -19,13 +19,13 @@ type IdSourceContext struct {
 	Context
 }
 
-type idsourceContainerWrapper struct {
+type idSourceContainerWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.IdSourceContainerDTO
 }
 
-type idsourceWrapper struct {
+type idSourceWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.IdentitySourceDTO
@@ -39,29 +39,22 @@ func IdSourceWrite(ctx IdSourceContext, idsources []api.IdentitySourceDTO) error
 
 }
 
-func idsourceFormat(ctx IdSourceContext, idsources []api.IdentitySourceDTO, format func(subContext SubContext) error) error {
-	for _, idsource := range idsources {
-		formatted := []*idsourceWrapper{}
-
-		c := idsourceWrapper{
-			p:     &idsource,
+func idsourceFormat(ctx IdSourceContext, idSources []api.IdentitySourceDTO, format func(subContext SubContext) error) error {
+	for _, idSource := range idSources {
+		c := idSourceWrapper{
+			p:     &idSource,
 			trunc: false,
 		}
-
-		formatted = append(formatted, &c)
-
-		for _, idsourceCtx := range formatted {
-			if err := format(idsourceCtx); err != nil {
-				return err
-			}
+		if err := format(&c); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func IdSourceContainerWrite(ctx IdSourceContext, idsources []api.IdSourceContainerDTO) error {
+func IdSourceContainerWrite(ctx IdSourceContext, idSources []api.IdSourceContainerDTO) error {
 	render := func(format func(subContext SubContext) error) error {
-		return idsourceContainerFormat(ctx, idsources, format)
+		return idSourceContainerFormat(ctx, idSources, format)
 	}
 	return ctx.Write(newIdSourceContainerWrapper(), render)
 
@@ -91,28 +84,22 @@ type: {{.Type}}
 	return format
 }
 
-func idsourceContainerFormat(ctx IdSourceContext, idsources []api.IdSourceContainerDTO, format func(subContext SubContext) error) error {
-	for _, idsource := range idsources {
-		formatted := []*idsourceContainerWrapper{}
+func idSourceContainerFormat(ctx IdSourceContext, idSources []api.IdSourceContainerDTO, format func(subContext SubContext) error) error {
+	for _, idSource := range idSources {
 
-		c := idsourceContainerWrapper{
-			p:     &idsource,
+		c := idSourceContainerWrapper{
+			p:     &idSource,
 			trunc: false,
 		}
-
-		formatted = append(formatted, &c)
-
-		for _, idsourceCtx := range formatted {
-			if err := format(idsourceCtx); err != nil {
-				return err
-			}
+		if err := format(&c); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func newIdSourceContainerWrapper() *idsourceContainerWrapper {
-	idsourceWrapper := idsourceContainerWrapper{}
+func newIdSourceContainerWrapper() *idSourceContainerWrapper {
+	idsourceWrapper := idSourceContainerWrapper{}
 	idsourceWrapper.Header = SubHeaderContext{
 		"Name": nameHeader,
 		"Type": typeHeader,
@@ -120,10 +107,10 @@ func newIdSourceContainerWrapper() *idsourceContainerWrapper {
 	return &idsourceWrapper
 }
 
-func (c *idsourceContainerWrapper) Name() string {
+func (c *idSourceContainerWrapper) Name() string {
 	return c.p.GetName()
 }
 
-func (c *idsourceContainerWrapper) Type() string {
+func (c *idSourceContainerWrapper) Type() string {
 	return c.p.GetType()
 }
