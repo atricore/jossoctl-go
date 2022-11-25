@@ -30,10 +30,16 @@ func validateApplianceCobra(cmd *cobra.Command, args []string) {
 }
 
 func ValidateAppliance(a string) {
-	err := client.Client().ValidateAppliance(a)
+	err, validations := client.Client().ValidateAppliance(a)
 	if err != nil {
 		fmt.Printf("appliance %s is NOT valid\n", id_or_name)
 		printError(err)
+		// iterate validations and print as errors using printError
+
+		printOut("\nvalidations:")
+		for _, v := range validations {
+			printError(fmt.Errorf(v))
+		}
 		os.Exit(1)
 	}
 	fmt.Printf("appliance %s is valid\n", id_or_name)

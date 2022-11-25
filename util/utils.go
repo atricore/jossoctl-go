@@ -1,6 +1,10 @@
 package util
 
 import (
+	"bytes"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"os"
 )
@@ -30,4 +34,19 @@ func WriteToFile(out string, cfg string, replace bool) error {
 	}
 
 	return nil
+}
+
+func CertificateToPEM(cert *x509.Certificate) (string, error) {
+	encodeCert := base64.StdEncoding.EncodeToString([]byte(cert.RawTBSCertificate))
+	block := &pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: []byte(encodeCert),
+	}
+
+	buf := new(bytes.Buffer)
+	if err := pem.Encode(buf, block); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprint(buf), nil
 }

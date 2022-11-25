@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/atricore/josso-cli-go/formatter"
@@ -26,7 +27,9 @@ func listProvidersCobra(cmd *cobra.Command, args []string) {
 }
 
 func listProviders() {
+	fmt.Printf("Providers: %v\n", id_or_name)
 	a, err := client.Client().GetProviders(id_or_name)
+	fmt.Printf("Providers: %v\n", a)
 	if err != nil {
 		client.Error(err)
 		os.Exit(1)

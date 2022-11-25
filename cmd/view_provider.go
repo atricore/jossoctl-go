@@ -50,6 +50,23 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 			return formatter.IntSaml2SpWrite(ctx, providers)
 		},
 	},
+	{
+		PType:   "ExternalOpenIDConnectRelayingParty",
+		PFormat: formatter.NewOidcRpFormat,
+		PWriter: func(ctx formatter.ProviderContext, containers []api.ProviderContainerDTO) error {
+			var providers []api.ExternalOpenIDConnectRelayingPartyDTO
+			for _, c := range containers {
+				if c.GetType() == "ExternalOpenIDConnectRelayingParty" {
+					p, err := client.Client().GetOidcRp(id_or_name, c.GetName())
+					if err != nil {
+						return err
+					}
+					providers = append(providers, p)
+				}
+			}
+			return formatter.OidcRpWrite(ctx, providers)
+		},
+	},
 }
 
 var DefaultProviderFormatter = formatter.ProviderFormatter{

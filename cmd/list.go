@@ -18,9 +18,9 @@ var listCmd = &cobra.Command{
 	Args:    cobra.MaximumNArgs(0),
 	Long: `List all resources of a given type, for example:
 	
-	You can list identity applances, providers, identity sources, etc.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+	You can list identity appliances, providers, idsources, etc.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return fmt.Errorf("select a resource type to view, for example: list providers")
 	},
 }
 

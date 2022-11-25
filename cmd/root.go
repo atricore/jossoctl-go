@@ -102,6 +102,10 @@ func printError(err error) {
 	fmt.Printf("ERROR: %v\n", err)
 }
 
+func printOut(str string) {
+	fmt.Printf("%s\n", str)
+}
+
 func init() {
 
 	cobra.OnInitialize(initConfig)

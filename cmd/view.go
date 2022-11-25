@@ -15,12 +15,12 @@ var viewCmd = &cobra.Command{
 	Use:     "view",
 	Aliases: []string{"v"},
 	Short:   "View resource details",
-	Args:    cobra.ExactArgs(1),
+	Args:    cobra.ExactArgs(0),
 	Long: `Displays detailed information about a resource. For example:
 
 You can use the view command to display details  about an identity appliance, an identity provider, an identity source, etc.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("view called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return fmt.Errorf("select a resource type to view, for example: view provider")
 	},
 }
 

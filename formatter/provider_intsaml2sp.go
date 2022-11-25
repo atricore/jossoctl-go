@@ -2,10 +2,11 @@ package formatter
 
 import (
 	"crypto/x509"
-	"encoding/base64"
+	"fmt"
 	"strconv"
 
 	api "github.com/atricore/josso-api-go"
+	util "github.com/atricore/josso-cli-go/util"
 	cli "github.com/atricore/josso-sdk-go"
 )
 
@@ -24,48 +25,44 @@ const (
 SAML Service Provider (built-in)    
 
 General 
-	Name:                           {{.Name}}
-	Id:                             {{.ID}}sa
-	Display Name:                   {{.DisplayName}}
-	Location:                       {{.Location}}
-	Account Linkage:                {{.AccountLinkage}}
-	Groups as multi-valued:
-	Properties as multi-valued:
-	Internal Attrs as multi-valued:
-	Dashboard URL:                  {{.DashboardURL}}
-	Error Binding:                  {{.ErrorBinding}}
+    Name:                               {{.Name}}
+    Description :                       {{.DisplayName}}
+    Location:                           {{.Location}}
+    Account linkage:                    {{.AccountLinkage}}	
+    Identity mapping:                   {{.IdentityMapping}}
+    Dashboard URL:                      {{.DashboardURL}}
+    Error Binding:                      {{.ErrorBinding}}    
 
-	SAML2
+    SAML2    
+        Metadata:                       {{.Metadata}}        
+        Sing auth request:              {{.SingAuthnReq}}
+        Want assertion signed:          {{.WantAssertionSigned}}
+        Want request signed:            {{.WantRequestSigned}}
+        Sign requests:                  {{.SignRequests}}
+        Signature hash:                 {{.SignatureHash}}
+        Message TTL:                    {{.MessageTTL}}
+        External Msg TTL Tolerance:     {{.MessageTTLTolerance}}        
+        
+    Federated connections {{ range $fc := .FederatedConnections}}
+    	IDP Channel:                    {{$fc.ChannelName}}
+    	Target Provider:                {{$fc.ConnectionName}}		
+    	Preferred:                      {{$fc.Preferred}}
+    	Override provider setup:        {{$fc.OverrideProvider}}
+    	{{- if $fc.OverrideProvider }}
+    	Account linkage:                {{$fc.AccountLinkage}}
+    	Identity mapping:               {{$fc.IdentityMapping}}
 
-		Metadata Svc:               {{.MetadataSVC}}
-		Profiles:					{{.Profiles}}
-		Binding:                    {{.Binding}}
-		{{ range $fc := .FederatedConnections}}
-		Sing AuthnReq:              {{$fc.SingAuthnReq}}
-		Signature Hash:             {{$fc.SignatureHash}}
-		Message TTL:                {{$fc.MessageTTL}}
-		External Msg TTL Tolerance: {{$fc.MessageTTLTolerance}}
-		{{ end }}
+        SAML 2
+            Metadata:                   {{$fc.Metadata}}        
+    	    Sing authn request:         {{$fc.SignAuthenticationRequests}}
+    	    Want assertion Signed:      {{$fc.WantAssertionSigned}}
+    	    Signature hash:             {{$fc.SignatureHash}}
+    	    Message TTL:                {{$fc.MessageTTL}}
+    	    External msg TTL tolerance: {{$fc.MessageTTLTolerance}}
+    	    Enable proxy Extension:     {{$fc.EnableProxyExtension}}
+    	{{ end }}{{ end }}
 
-		Keystore
-		Certificate Alias:	{{.CertificateAlias}}
-		Key alias:			{{.KeyAlias}}
-		Certificate:		{{.Certificate}}
-
-	Federated connections
-	-----------
-		IDP Channel
-			{{ range $fc := .FederatedConnections}}
-			Connection Name:	{{$fc.ConnectionName}}
-			Channel Name:		{{$fc.ChannelName}}
-			Preferred::			{{$fc.Prefered}}
-			{{ end }}
-
-		EXTRAS:
-		Type:       {{.Type}}
-		Description {{.Description}}
-		ElementId   {{.ElementId}}
-`
+` + keystoreFormat
 )
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -163,6 +160,10 @@ func (c *IntSaml2SpWrapper) AccountLinkage() string {
 	return c.p.AccountLinkagePolicy.GetName()
 }
 
+func (c *IntSaml2SpWrapper) IdentityMapping() string {
+	return c.p.IdentityMappingPolicy.GetName()
+}
+
 func (c *IntSaml2SpWrapper) DashboardURL() string {
 	return c.p.GetDashboardUrl()
 }
@@ -171,30 +172,227 @@ func (c *IntSaml2SpWrapper) ErrorBinding() string {
 }
 
 // SAML2
-func (c *IntSaml2SpWrapper) MetadataSVC() bool {
-	return c.p.GetEnableMetadataEndpoint()
+func (c *IntSaml2SpWrapper) Metadata() string {
+	return fmt.Sprintf("%s/SAML2/MD", c.Location())
+}
+
+func (c *IntSaml2SpWrapper) SingAuthnReq() bool {
+	return c.p.GetSignAuthenticationRequests()
+}
+
+func (c *IntSaml2SpWrapper) WantAssertionSigned() bool {
+	return c.p.GetWantAssertionSigned()
+}
+
+func (c *IntSaml2SpWrapper) WantRequestSigned() bool {
+	return c.p.GetWantSignedRequests()
+}
+
+func (c *IntSaml2SpWrapper) SignRequests() bool {
+	return c.p.GetSignRequests()
+}
+
+func (c *IntSaml2SpWrapper) MessageTTL() int32 {
+	return c.p.GetMessageTtl()
+}
+
+func (c *IntSaml2SpWrapper) MessageTTLTolerance() int32 {
+	return c.p.GetMessageTtlTolerance()
 }
 
 func (c *IntSaml2SpWrapper) Profiles() int {
 	return len(c.p.GetActiveProfiles())
 }
 
-func (c *IntSaml2SpWrapper) FederatedConnections() []idpFcWrapper {
-	var fcWrappers []idpFcWrapper
-	for _, fc := range c.p.FederatedConnectionsA {
-		fcWrappers = append(fcWrappers, idpFcWrapper{fc: &fc})
+func (c *IntSaml2SpWrapper) SignatureHash() string {
+	return c.p.GetSignatureHash()
+}
+
+func (c *IntSaml2SpWrapper) FederatedConnections() []spFcWrapper {
+	var fcWrappers []spFcWrapper
+	for i := range c.p.FederatedConnectionsB {
+		fcWrappers = append(fcWrappers, spFcWrapper{fc: &c.p.FederatedConnectionsB[i]})
 	}
 	return fcWrappers
 }
 
-func (c *spFcWrapper) SingAuthnReq() bool {
+// keystore
 
+func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, err error) {
+	cfg := c.p.GetConfig()
+
+	idpCfg, _ := cfg.ToSamlR2SPConfig()
+
+	singer := idpCfg.GetSigner()
+	pass := singer.GetPassword()
+	store := singer.GetStore()
+	vl := store.GetValue()
+
+	cert, _, err = DecodePkcs12(vl, pass)
+	if err != nil {
+		return nil, err
+	}
+
+	return cert, err
+}
+func (c *IntSaml2SpWrapper) CertificateAlias() string {
+	cfg := c.p.GetConfig()
+
+	idpCfg, err := cfg.ToSamlR2SPConfig()
+	if err != nil {
+		return err.Error()
+	}
+
+	singer := idpCfg.GetSigner()
+
+	return singer.GetCertificateAlias()
+
+}
+
+func (c *IntSaml2SpWrapper) KeyAlias() string {
+	cfg := c.p.GetConfig()
+
+	idpCfg, err := cfg.ToSamlR2SPConfig()
+	if err != nil {
+		return err.Error()
+	}
+
+	encypter := idpCfg.GetEncrypter()
+	aliaskey := encypter.GetPrivateKeyName()
+
+	return aliaskey
+}
+
+func (c *IntSaml2SpWrapper) Certificate() string {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return err.Error()
+	}
+
+	certStr, err := util.CertificateToPEM(cert)
+	return fmt.Sprint(certStr)
+}
+
+func (c *IntSaml2SpWrapper) Version() int {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return 0
+	}
+
+	return cert.Version
+}
+
+func (c *IntSaml2SpWrapper) SerialNumber() string {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return err.Error()
+	}
+
+	return cert.SerialNumber.String()
+}
+
+func (c *IntSaml2SpWrapper) Issuer() string {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return err.Error()
+	}
+
+	return cert.Issuer.String()
+}
+
+func (c *IntSaml2SpWrapper) Subjects() string {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return err.Error()
+	}
+
+	return cert.Subject.String()
+}
+
+func (c *IntSaml2SpWrapper) NotBefore() string {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return err.Error()
+	}
+	return cert.NotBefore.String()
+}
+
+func (c *IntSaml2SpWrapper) NotAfter() string {
+	cert, err := c.getCertificateForSinger()
+	if err != nil {
+		return err.Error()
+	}
+
+	return cert.NotAfter.String()
+}
+
+func (c *IntSaml2SpWrapper) ElementId() string {
+	return c.p.GetElementId()
+}
+func (c *IntSaml2SpWrapper) Type() string {
+	return api.AsString(c.p.AdditionalProperties["@c"], "N/A")
+}
+
+// Federated Connection
+func (c *spFcWrapper) ChannelName() string {
+	return c.fc.ChannelB.GetName()
+}
+
+func (c *spFcWrapper) AccountLinkage() string {
+	idpChannel, err := c.fc.GetIDPChannel()
+	if err != nil {
+		return err.Error()
+	}
+	return idpChannel.AccountLinkagePolicy.GetName()
+}
+
+func (c *spFcWrapper) IdentityMapping() string {
+	idpChannel, err := c.fc.GetIDPChannel()
+	if err != nil {
+		return err.Error()
+	}
+	return idpChannel.IdentityMappingPolicy.GetName()
+}
+
+func (c *spFcWrapper) OverrideProvider() bool {
+	return c.fc.ChannelB.GetOverrideProviderSetup()
+}
+
+func (c *spFcWrapper) ConnectionName() string {
+	return c.fc.GetName()
+}
+
+func (c *spFcWrapper) SignAuthenticationRequests() bool {
+	idpChannel, err := c.fc.GetIDPChannel()
+	if err != nil {
+		return false
+	}
+	return idpChannel.GetSignAuthenticationRequests()
+}
+
+func (c *spFcWrapper) WantAssertionSigned() bool {
+	idpChannel, err := c.fc.GetIDPChannel()
+	if err != nil {
+		return false
+	}
+	return idpChannel.GetWantAssertionSigned()
+}
+
+func (c *spFcWrapper) Location() string {
+	l := c.fc.ChannelB.GetLocation()
+	return cli.LocationToStr(&l)
+}
+
+func (c *spFcWrapper) Metadata() string {
+	return c.Location() + "/SAML2/MD"
+}
+
+func (c *spFcWrapper) Preferred() bool {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return false
 	}
-
-	return idpchannel.GetSignAuthenticationRequests()
+	return idpchannel.GetPreferred()
 }
 
 func (c *spFcWrapper) SignatureHash() string {
@@ -217,7 +415,7 @@ func (c *spFcWrapper) MessageTTL() int32 {
 	return idpchannel.GetMessageTtl()
 }
 
-func (c *spFcWrapper) MessageTTLToleranceL() int32 {
+func (c *spFcWrapper) MessageTTLTolerance() int32 {
 
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
@@ -227,84 +425,12 @@ func (c *spFcWrapper) MessageTTLToleranceL() int32 {
 	return idpchannel.GetMessageTtlTolerance()
 }
 
-// keystore
+func (c *spFcWrapper) EnableProxyExtension() bool {
 
-func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, err error) {
-	cfg := c.p.GetConfig()
-
-	idpCfg, _ := cfg.ToSamlR2IDPConfig()
-
-	singer := idpCfg.GetSigner()
-	pass := singer.GetPassword()
-	store := singer.GetStore()
-	vl := store.GetValue()
-
-	cert, _, err = DecodePkcs12(vl, pass)
-	if err != nil {
-		return nil, err
-	}
-
-	return cert, err
-}
-func (c *IntSaml2SpWrapper) CertificateAlias() string {
-	cfg := c.p.GetConfig()
-
-	idpCfg, err := cfg.ToSamlR2IDPConfig()
-	if err != nil {
-		return err.Error()
-	}
-
-	singer := idpCfg.GetSigner()
-
-	return singer.GetCertificateAlias()
-
-}
-
-func (c *IntSaml2SpWrapper) KeyAlias() string {
-	cfg := c.p.GetConfig()
-
-	idpCfg, err := cfg.ToSamlR2IDPConfig()
-	if err != nil {
-		return err.Error()
-	}
-
-	encypter := idpCfg.GetEncrypter()
-
-	aliaskey := encypter.GetPrivateKeyName()
-
-	return aliaskey
-}
-
-func (c *IntSaml2SpWrapper) Certificate() string {
-	cert, err := c.getCertificateForSinger()
-	if err != nil {
-		return err.Error()
-	}
-	encodeCert := base64.StdEncoding.EncodeToString([]byte(cert.RawTBSCertificate))
-	return encodeCert
-}
-
-func (c *IntSaml2SpWrapper) ElementId() string {
-	return c.p.GetElementId()
-}
-func (c *IntSaml2SpWrapper) Type() string {
-	return api.AsString(c.p.AdditionalProperties["@c"], "N/A")
-}
-
-// Federated Connection
-func (c *spFcWrapper) ChannelName() string {
-
-	return c.fc.ChannelA.GetName()
-}
-
-func (c *spFcWrapper) ConnectionName() string {
-	return c.fc.GetName()
-}
-
-func (c *spFcWrapper) Prefered() bool {
 	idpchannel, err := c.fc.GetIDPChannel()
 	if err != nil {
 		return false
 	}
-	return idpchannel.GetPreferred()
+
+	return idpchannel.GetEnableProxyExtension()
 }
