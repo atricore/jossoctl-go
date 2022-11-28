@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strconv"
+	"strings"
 
 	api "github.com/atricore/josso-api-go"
 	util "github.com/atricore/josso-cli-go/util"
@@ -107,6 +108,7 @@ General
  
     SAML 2 
         Metadata Svc:                {{.Metadata}}
+        Bindings:                    {{.Bindings}}
         Want AuthnReq Signed:        {{.WantAuthnSigned}}
         Sign Request:                {{.SignReq}}
         Encrypt Assertion:           {{.EncryptAssertion}}
@@ -142,6 +144,7 @@ General
 		
         SAML 2
             Metadata Svc:                {{$fc.Metadata}}
+            Bindings:                    {{$fc.Bindings}}
             Sing authn requests:         {{$fc.SignAuthenticationRequests}}
             Want assertion signed:       {{$fc.WantAssertionSigned}}
             Signature hash:              {{$fc.SignatureHash}}
@@ -314,8 +317,9 @@ func (c *idPWrapper) Profiles() int {
 	return len(c.p.GetActiveProfiles())
 }
 
-func (c *idPWrapper) Bindings() int {
-	return len(c.p.GetActiveBindings())
+func (c *idPWrapper) Bindings() string {
+	// concatenate c.p.GetActiveBindings() as a single string
+	return strings.Join(c.p.GetActiveBindings(), ", ")
 }
 
 func (c *idPWrapper) Metadata() string {
@@ -667,6 +671,11 @@ func (c *idpFcWrapper) WantAssertionSigned() bool {
 		return false
 	}
 	return idpchannel.GetWantAssertionSigned()
+}
+
+func (c *idpFcWrapper) Bindings() string {
+	// concatenate c.p.GetActiveBindings() as a single string
+	return strings.Join(c.fc.ChannelA.GetActiveBindings(), ", ")
 }
 
 func (c *idPWrapper) Authns() []asWrapper {

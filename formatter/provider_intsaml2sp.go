@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"strconv"
+	"strings"
 
 	api "github.com/atricore/josso-api-go"
 	util "github.com/atricore/josso-cli-go/util"
@@ -35,6 +36,7 @@ General
 
     SAML2    
         Metadata:                       {{.Metadata}}        
+        Bindings:                       {{.Bindings}}
         Sing auth request:              {{.SingAuthnReq}}
         Want assertion signed:          {{.WantAssertionSigned}}
         Want request signed:            {{.WantRequestSigned}}
@@ -54,6 +56,7 @@ General
 
         SAML 2
             Metadata:                   {{$fc.Metadata}}        
+            Bindings:                   {{$fc.Bindings}}
     	    Sing authn request:         {{$fc.SignAuthenticationRequests}}
     	    Want assertion Signed:      {{$fc.WantAssertionSigned}}
     	    Signature hash:             {{$fc.SignatureHash}}
@@ -174,6 +177,11 @@ func (c *IntSaml2SpWrapper) ErrorBinding() string {
 // SAML2
 func (c *IntSaml2SpWrapper) Metadata() string {
 	return fmt.Sprintf("%s/SAML2/MD", c.Location())
+}
+
+func (c *IntSaml2SpWrapper) Bindings() string {
+	// concatenate c.p.GetActiveBindings() as a single string
+	return strings.Join(c.p.GetActiveBindings(), ", ")
 }
 
 func (c *IntSaml2SpWrapper) SingAuthnReq() bool {
@@ -376,6 +384,11 @@ func (c *spFcWrapper) WantAssertionSigned() bool {
 		return false
 	}
 	return idpChannel.GetWantAssertionSigned()
+}
+
+func (c *spFcWrapper) Bindings() string {
+	// concatenate c.p.GetActiveBindings() as a single string
+	return strings.Join(c.fc.ChannelB.GetActiveBindings(), ", ")
 }
 
 func (c *spFcWrapper) Location() string {
