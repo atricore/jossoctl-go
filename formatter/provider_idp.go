@@ -57,11 +57,17 @@ General
     Authentication {{ range $as := .Authns }}
         Name:                        {{$as.Name}}
         Priority:                    {{$as.Priority}}
-        Class:                       {{$as.Class}} {{- if $as.IsDirectoryAuthn }}
+        Class:                       {{$as.Class}} {{- if $as.IsBasicAuthn }}
+            Password hash:           {{$as.PasswordHash}}   
+            Password encoding:       {{$as.PasswordEncoding}}   
+            Salt prefix:             {{$as.SaltPrefix}}   
+            Salt suffix:             {{$as.SaltSuffix}}   
+            SAML authn ctx:          {{$as.SAMLAuthnCtx}}   
+            CRYPT salt length:	     {{$as.SaltLength}}
+        {{ end }} {{- if $as.IsDirectoryAuthn }}
         Directory Authentication Service
-            Priority:                {{$as.Priority}}
-            InitialCtxFactory:       {{$as.InitialCtxFactory}}
-            provider url:            {{$as.ProviderUrl}}
+            Initial ctx factory:     {{$as.InitialCtxFactory}}
+            Provider url:            {{$as.ProviderUrl}}
             Username:                {{$as.Username}}
             Authentication:          {{$as.Authentication}}
             PasswordPolicy:          {{$as.PasswordPolicy}}
@@ -74,15 +80,12 @@ General
             OperationalAttrs:        {{$as.OperationalAttrs}}
         {{ end }} {{- if $as.IsClientCertAuthn }}
         Client Cert Authentication 
-            Priority:                {{$as.Priority}}
             CrlRefreshSeconds:       {{$as.CrlRefreshSeconds}}
             CrlUrl:                  {{$as.CrlUrl}}
             OcspServer:              {{$as.OcspServer}}
-            Ocspserver:              {{$as.Ocspserver}}
             Uid:                     {{$as.Uid}}
         {{ end }} {{- if $as.IsWindowsAuthn }}
         Windows    Integrated    Authentication
-            Priority:                {{$as.Priority}}
             Domain:                  {{$as.Domain}}
             DomainController:        {{$as.DomainController}}
             Host:                    {{$as.Host}}
@@ -93,7 +96,6 @@ General
             Keytab:                  {{$as.Keytab}}
         {{ end }} {{- if $as.IsOauth2PreAuthn }}
         OAuth2 Pre Authentication Service
-            Priority:                {{$as.Priority}}
             AuthnService:            {{$as.AuthnService}}
             ExternalAuth:            {{$as.ExternalAuth}}
             RememberMe:              {{$as.RememberMe}} 
@@ -104,7 +106,7 @@ General
         DashboardUrl:                {{.DashboardUrl}}
  
     SAML 2 
-        Metadata Svc:                {{.MetadataSvc}}
+        Metadata Svc:                {{.Metadata}}
         Want AuthnReq Signed:        {{.WantAuthnSigned}}
         Sign Request:                {{.SignReq}}
         Encrypt Assertion:           {{.EncryptAssertion}}
@@ -314,6 +316,10 @@ func (c *idPWrapper) Profiles() int {
 
 func (c *idPWrapper) Bindings() int {
 	return len(c.p.GetActiveBindings())
+}
+
+func (c *idPWrapper) Metadata() string {
+	return c.Location() + "/SAML2/MD"
 }
 
 func (c *idPWrapper) WantAuthnSigned() bool {
@@ -684,18 +690,66 @@ func (c *asWrapper) Class() string {
 
 }
 
-/*"authn_basic":
+func (c *asWrapper) IsBasicAuthn() bool {
+	if c.as.DelegatedAuthentication == nil {
+		_, err := c.as.ToBasicAuthn()
+		return err == nil
+	}
 
-"pwd_hash":
-"pwd_encoding":
-"crypt_salt_lenght":s
-"salt_prefix":
-"salt_suffix":
-"saml_authn_ctx"*/
+	return false
+}
+
+func (c *asWrapper) PasswordHash() string {
+	authn, err := c.as.ToBasicAuthn()
+	if err != nil {
+		return err.Error()
+	}
+	return authn.GetHashAlgorithm()
+}
+
+func (c *asWrapper) PasswordEncoding() string {
+	authn, err := c.as.ToBasicAuthn()
+	if err != nil {
+		return err.Error()
+	}
+	return authn.GetHashEncoding()
+}
+
+func (c *asWrapper) SaltSuffix() string {
+	authn, err := c.as.ToBasicAuthn()
+	if err != nil {
+		return err.Error()
+	}
+	return authn.GetSaltSuffix()
+}
+
+func (c *asWrapper) SaltPrefix() string {
+	authn, err := c.as.ToBasicAuthn()
+	if err != nil {
+		return err.Error()
+	}
+	return authn.GetSaltPrefix()
+}
+
+func (c *asWrapper) SaltLength() string {
+	authn, err := c.as.ToBasicAuthn()
+	if err != nil {
+		return err.Error()
+	}
+	return fmt.Sprintf("%d", authn.GetSaltLength())
+}
+
+func (c *asWrapper) SAMLAuthnCtx() string {
+	authn, err := c.as.ToBasicAuthn()
+	if err != nil {
+		return err.Error()
+	}
+	return authn.GetSimpleAuthnSaml2AuthnCtxClass()
+}
 
 func (c *asWrapper) IsDirectoryAuthn() bool {
 	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
-		// TODO : Improve errror handling
+		// TODO : Improve error handling
 		return false
 	}
 
@@ -812,7 +866,7 @@ func (c *asWrapper) OperationalAttrs() bool {
 
 func (c *asWrapper) IsClientCertAuthn() bool {
 	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
-		// TODO : Improve errror handling
+		// TODO : Improve error handling
 		return false
 	}
 
@@ -872,7 +926,7 @@ func (c *asWrapper) Uid() string {
 
 func (c *asWrapper) IsOauth2PreAuthn() bool {
 	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
-		// TODO : Improve errror handling
+		// TODO : Improve error handling
 		return false
 	}
 
@@ -909,7 +963,7 @@ func (c *asWrapper) RememberMe() bool {
 // windows Integrated Authentication
 func (c *asWrapper) IsWindowsAuthn() bool {
 	if c.as.DelegatedAuthentication == nil || c.as.DelegatedAuthentication.AuthnService == nil {
-		// TODO : Improve errror handling
+		// TODO : Improve error handling
 		return false
 	}
 
