@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/atricore/josso-cli-go/util"
 	"github.com/spf13/cobra"
 )
 
@@ -31,11 +32,21 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	deleteCmd.Flags().BoolP("force", "f", false, "Force delete")
 }
 
 func deleteApplianceCobra(cmd *cobra.Command, args []string) {
-	DeleteAppliance(id_or_name)
+
+	// get force flag
+	force, err := cmd.Flags().GetBool("force")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	printOut("Are you sure you want to delete the appliance? [y/N] ")
+	if force || util.AskUser() {
+		DeleteAppliance(id_or_name)
+	}
 }
 
 func DeleteAppliance(a string) {

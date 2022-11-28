@@ -1,12 +1,14 @@
 package util
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // writeToFile
@@ -49,4 +51,25 @@ func CertificateToPEM(cert *x509.Certificate) (string, error) {
 	}
 
 	return fmt.Sprint(buf), nil
+}
+
+func AskUser() bool {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		s, _ := reader.ReadString('\n')
+		s = strings.TrimSuffix(s, "\n")
+		s = strings.ToLower(s)
+		if len(s) > 1 {
+			fmt.Println("Please enter Y or N")
+			continue
+		}
+		if strings.Compare(s, "n") == 0 || strings.Compare(s, "") == 0 {
+			return false
+		} else if strings.Compare(s, "y") == 0 {
+			break
+		} else {
+			continue
+		}
+	}
+	return true
 }
