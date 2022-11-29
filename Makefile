@@ -15,7 +15,7 @@ install:
 	go install ./...
 
 build: fmtcheck
-	go install ./...
+	go install -ldflags "-X main.version=$(VERSION)" ./...
 	
 
 fmtcheck: dep
@@ -29,7 +29,7 @@ dist:
 					export BINARY=$(NAME)ctl;\
 					export GOARCH=$(GOARCH);\
 					OUT_DIR='./.tmp/$(NAME)/$(GOOS)/$(GOARCH)/$(VERSION)';\
-					go build -v -o $${OUT_DIR%.}/$(BINARY) ./$(NAME)ctl; \
+					go build -ldflags "-X main.version=$(VERSION)" -v -o $${OUT_DIR%.}/$(BINARY) ./$(NAME)ctl; \
 					if test -f $${OUT_DIR}/$${BINARY} ; then cd $${OUT_DIR} ; zip -q ../../../$${BINARY}-$(GOOS)-$(GOARCH)-$(VERSION).zip $${BINARY} ; fi; \
 					if test -f $${OUT_DIR}/$${BINARY}.exe ; then cd $${OUT_DIR} ; zip -q ../../../$${BINARY}-$(GOOS)-$(GOARCH)-$(VERSION).zip $${BINARY}.exe ; fi \
 					))))

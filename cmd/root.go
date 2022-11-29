@@ -17,7 +17,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const VERSION = "0.4.2"
+//const VERSION = "0.4.2"
 
 var (
 	cfgFile    string
@@ -26,6 +26,7 @@ var (
 	client     cli.Cli
 	print_raw  bool
 	quiet      bool
+	VERSION    string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -43,6 +44,9 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func ExecuteJosso() {
+
+	//	cfgFunc = func() { initConfig("josso") }
+
 	rootCmd.Use = "jossoctl"
 	rootCmd.Short = "JOSSO EE control"
 	rootCmd.Long = `JOSSO EE is an IAM platform. This is the command line interface application`
@@ -52,6 +56,7 @@ func ExecuteJosso() {
 		os.Exit(1)
 	}
 }
+
 func ExecuteIamtf() {
 	rootCmd.Use = "iamtfctl"
 	rootCmd.Short = "IAM.tf control"
@@ -68,6 +73,8 @@ func preRunE(cmd *cobra.Command, args []string) error {
 
 	var err error
 
+	failOnPreRun := !(cmd.Annotations["failOnPreRun"] == "false")
+
 	if verbose {
 		fmt.Println("configuration:")
 		for k, v := range viper.AllSettings() {
@@ -78,7 +85,7 @@ func preRunE(cmd *cobra.Command, args []string) error {
 	cfg := sdk.IdbusServer{
 		Config: &api.ServerConfiguration{
 			URL:         viper.Get("endpoint").(string),
-			Description: "JOSSO server",
+			Description: "IAM.tf/JOSSO server",
 		},
 		Credentials: &sdk.ServerCredentials{
 			ClientId: viper.Get("client_id").(string),
@@ -87,12 +94,10 @@ func preRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	id_or_name = viper.Get("appliance").(string)
-
 	quiet = viper.Get("quiet").(bool)
-
 	client, err = cli.CreateClient(&cfg)
 
-	if err != nil {
+	if err != nil && failOnPreRun {
 		printError(err)
 		os.Exit(1)
 	}
@@ -110,7 +115,7 @@ func printOut(str string) {
 
 func init() {
 
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(InitConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -171,7 +176,9 @@ func init() {
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func InitConfig() {
+
+	brand := "iamtf"
 
 	if cfgFile != "" {
 		// Use config file from the flag.
@@ -184,7 +191,7 @@ func initConfig() {
 		// Search config in home directory with name ".cobra" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".josso-cli")
+		viper.SetConfigName("." + brand + "ctl")
 
 	}
 

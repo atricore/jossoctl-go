@@ -8,6 +8,11 @@ import (
 	"github.com/atricore/josso-cli-go/cmd"
 )
 
+var (
+	version string
+)
+
 func main() {
+	cmd.VERSION = version
 	cmd.ExecuteJosso()
 }

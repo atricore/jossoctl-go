@@ -18,6 +18,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		versionCobra(cmd, args)
 	},
+	Annotations: map[string]string{"failOnPreRun": "false"},
 }
 
 func init() {
