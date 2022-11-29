@@ -17,6 +17,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const VERSION = "0.4.0"
+
 var (
 	cfgFile    string
 	verbose    bool
