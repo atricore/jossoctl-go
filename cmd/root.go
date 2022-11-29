@@ -44,9 +44,6 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func ExecuteJosso() {
-
-	//	cfgFunc = func() { initConfig("josso") }
-
 	rootCmd.Use = "jossoctl"
 	rootCmd.Short = "JOSSO EE control"
 	rootCmd.Long = `JOSSO EE is an IAM platform. This is the command line interface application`
@@ -115,7 +112,7 @@ func printOut(str string) {
 
 func init() {
 
-	cobra.OnInitialize(InitConfig)
+	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -176,7 +173,7 @@ func init() {
 }
 
 // initConfig reads in config file and ENV variables if set.
-func InitConfig() {
+func initConfig() {
 
 	brand := "iamtf"
 
