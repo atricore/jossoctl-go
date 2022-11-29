@@ -175,6 +175,7 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 
+	// Due to how golang init() works, this is called before the main() function
 	brand := "iamtf"
 
 	if cfgFile != "" {
@@ -186,9 +187,9 @@ func initConfig() {
 		cobra.CheckErr(err)
 
 		// Search config in home directory with name ".cobra" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(home + "/." + brand)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName("." + brand + "ctl")
+		viper.SetConfigName(brand)
 
 	}
 
