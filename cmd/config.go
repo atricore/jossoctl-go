@@ -12,7 +12,6 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "display configuration information",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("config file :       [%s]\n", viper.SetConfigName())
 		fmt.Printf("config file :       [%s]\n", viper.GetViper().ConfigFileUsed())
 		fmt.Printf("endpoint    :       [%s]\n", viper.Get("endpoint").(string))
 		fmt.Printf("client id   :       [%s]\n", viper.Get("client_id").(string))
