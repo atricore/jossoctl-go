@@ -148,13 +148,6 @@ func init() {
 	viper.BindEnv("secret")
 	viper.BindPFlag("secret", rootCmd.PersistentFlags().Lookup("client-secret"))
 
-	viper.BindEnv("username")
-	viper.BindPFlag("username", rootCmd.PersistentFlags().Lookup("client-user"))
-	viper.SetDefault("username", "admin")
-
-	viper.BindEnv("password")
-	viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("client-password"))
-
 	viper.BindEnv("debug")
 	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 	viper.SetDefault("debug", false)
