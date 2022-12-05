@@ -11,8 +11,26 @@ import (
 	"strings"
 )
 
+//readFromFile
+func ReadFromFile(in string) (string, error) {
+	f, err := os.Open(in)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	// read from f
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(f)
+	if err != nil {
+		return "", err
+	}
+	content := buf.String()
+	return content, nil
+}
+
 // writeToFile
-func WriteToFile(out string, cfg string, replace bool) error {
+func WriteToFile(out string, content string, replace bool) error {
 	if _, err := os.Stat(out); err == nil {
 		if replace {
 			err := os.Remove(out)
@@ -30,7 +48,33 @@ func WriteToFile(out string, cfg string, replace bool) error {
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(cfg)
+	_, err = f.WriteString(content)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func WriteBytesToFile(out string, content []byte, replace bool) error {
+	if _, err := os.Stat(out); err == nil {
+		if replace {
+			err := os.Remove(out)
+			if err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("file %s already exists", out)
+		}
+	}
+
+	f, err := os.Create(out)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = f.Write(content)
 	if err != nil {
 		return err
 	}

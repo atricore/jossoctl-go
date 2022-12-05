@@ -28,19 +28,9 @@ var exportExecEnvCfgCmd = &cobra.Command{
 func init() {
 	exportCmd.AddCommand(exportExecEnvCfgCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// stopCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	exportExecEnvCfgCmd.Flags().BoolP("replace", "r", false, "Replace out file")
-	exportExecEnvCfgCmd.Flags().StringP("output", "o", "", "Agent configuration destination file")
-	exportExecEnvCfgCmd.Flags().BoolP("console", "c", false, "Agent configuration exported to console (stdout)")
+	exportExecEnvCfgCmd.Flags().BoolP("replace", "r", false, "replace file if it exists")
+	exportExecEnvCfgCmd.Flags().StringP("output", "o", "", "agent configuration output file")
+	exportExecEnvCfgCmd.Flags().BoolP("console", "c", false, "agent configuration exported to console (stdout)")
 }
 
 func exportExecEnvCfgCobra(cmd *cobra.Command, args []string) {

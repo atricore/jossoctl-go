@@ -5,6 +5,9 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
+	"os"
+
 	api "github.com/atricore/josso-api-go"
 	"github.com/spf13/cobra"
 )
@@ -15,38 +18,55 @@ var importApplianceCmd = &cobra.Command{
 	Aliases: []string{"a"},
 	Short:   "import Appliance ",
 	Long:    `Import Identity Appliance definition.`,
-	Run:     importApplianceCobra,
+	RunE:    importApplianceCobra,
 	Args:    cobra.MaximumNArgs(1),
 }
 
-func importApplianceCobra(cmd *cobra.Command, args []string) {
-	if len(args) > 0 {
-		importAppliance(args[0])
-	} else {
-		importAppliance(id_or_name)
+func importApplianceCobra(cmd *cobra.Command, args []string) error {
+	var a api.IdentityApplianceDefinitionDTO
+	var err error
 
+	// format
+	format := "binary"
+	format = cmd.Flag("format").Value.String()
+
+	// file
+	file := cmd.Flag("input").Value.String()
+	if file == "" {
+		return errors.New("missing input file")
 	}
-}
 
-func importAppliance(a string) api.IdentityApplianceDefinitionDTO {
-	appliance, err := client.Client().ImportAppliance(a)
+	// import appliance
+	a, err = importAppliance(file, format)
 	if err != nil {
 		printError(err)
+		os.Exit(1)
 	}
-	return appliance
+
+	printOut("appliance imported: " + a.GetName())
+	return nil
+}
+
+func importAppliance(file string, format string) (api.IdentityApplianceDefinitionDTO, error) {
+
+	var a api.IdentityApplianceDefinitionDTO
+	var err error
+
+	if format != "json" && format != "binary" {
+		return a, errors.New("invalid format, must be json or binary")
+	}
+
+	// read file into content as string
+	content, err := os.ReadFile(file)
+	if err != nil {
+		return a, err
+	}
+	return client.Client().ImportAppliance(content, format)
+
 }
 
 func init() {
 	importCmd.AddCommand(importApplianceCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// importApplianceCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// importApplianceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	//importApplianceCmd.Flags().StringP("appliance", "n", false, "Help message for toggle")
+	importApplianceCmd.Flags().StringP("format", "f", "binary", "appliance format: json, binary")
+	importApplianceCmd.Flags().StringP("input", "i", "", "input resource")
 }
