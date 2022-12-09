@@ -189,7 +189,7 @@ func (c *OidcRpWrapper) Metadata() string {
 func (c *OidcRpWrapper) Issuer() string {
 	// http://localhost:8081/IDBUS/MYIAM-01/MY-APP-OP
 	// http://localhost:8081/IDBUS/MYIAM-01/MY-APP
-	return cli.LocationToStr(c.p.Location) + "-OP/OIDC/MD/.well-known/openid-configuration"
+	return cli.LocationToStr(c.p.Location) + "-OP/OIDC/MD"
 }
 
 // Print grants
