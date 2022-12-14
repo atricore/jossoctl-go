@@ -3,6 +3,7 @@ package formatter
 import (
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	api "github.com/atricore/josso-api-go"
@@ -12,25 +13,27 @@ import (
 const (
 	defaultApplianceTableFormat = "table {{.ID}}\t{{.Name}}\t{{.State}}\t{{.Location}}"
 
-	defaultAppliancePrettyFormat = `ID:		{{.ID}}
-Name:		{{.Name}}
+	defaultAppliancePrettyFormat = `ID:          {{.ID}}
+Name:        {{.Name}}
 {{- if .Description }}
-Description:	{{.Description}}
+Description: {{.Description}}
 {{- end }}
-Location:	{{.Location}}
-Namespace:	{{.Namespace}}
-Revision:	{{.Revision}}
-Id Sources: {{.IdSourcesCount}}
-{{range .IdSources}}	{{.}}
+Location:    {{.Location}}
+Namespace:   {{.Namespace}}
+Revision:    {{.Revision}}
+Bundles:     {{.Bundles}}
+             
+Id Sources:  {{.IdSourcesCount}}
+{{range .IdSources}}             {{.}}
 {{end -}}
-Providers: {{.ProvidersCount}}
-{{range .Providers}}	{{.}}
+             
+Providers:   {{.ProvidersCount}}
+{{range .Providers}}             {{.}}
 {{end -}}
-
 {{- if .IsDeployed }}
 Deployment:
-  Time:		{{.DeploymentType}}
-  Revision :	{{.DeployedRevision}}
+  Time:      {{.DeploymentType}}
+  Revision:  {{.DeployedRevision}}
 {{- end }}
 
 `
@@ -205,4 +208,8 @@ func (c *applianceWrapper) IdSources() []string {
 
 func (c *applianceWrapper) IdSourcesCount() int {
 	return len(c.c.GetIdSources())
+}
+
+func (c *applianceWrapper) Bundles() string {
+	return strings.Join(c.a.IdApplianceDefinition.GetRequiredBundles(), ", ")
 }
