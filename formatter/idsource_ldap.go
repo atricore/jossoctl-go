@@ -32,7 +32,7 @@ General:
 			Updatable credential:	{{.UpdatableCredential}}
 			Credentials query:	{{.CredentialsQuery}}
 			Role identifier:	{{.RoleIdentifies}}
-			Referrls:	{{.Referrals}}
+			Referrals:	{{.Referrals}}
 			Search scope:	{{.SearchScope}}
 			Role DN:	{{.RoleDn}}
 			Role matching mode:	{{.RoleMatchingMode}}
