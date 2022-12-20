@@ -9,6 +9,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
+	sdk "github.com/atricore/josso-sdk-go"
 )
 
 // listCmd represents the list command
@@ -23,7 +25,7 @@ var serverVersionCmd = &cobra.Command{
 			client.Error(err)
 			os.Exit(1)
 		}
-		printOut(v + "\n")
+		printOut(v)
 
 		return nil
 
@@ -31,8 +33,8 @@ var serverVersionCmd = &cobra.Command{
 }
 
 func serverVersion() (string, error) {
-
-	return client.Client().ServerVersion()
+	cfg := serverConfig()
+	return sdk.ServerVersion(&cfg)
 }
 
 func init() {

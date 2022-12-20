@@ -79,16 +79,7 @@ func preRunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	cfg := sdk.IdbusServer{
-		Config: &api.ServerConfiguration{
-			URL:         viper.Get("endpoint").(string),
-			Description: "IAM.tf/JOSSO server",
-		},
-		Credentials: &sdk.ServerCredentials{
-			ClientId: viper.Get("client_id").(string),
-			Secret:   viper.Get("secret").(string),
-		},
-	}
+	cfg := serverConfig()
 
 	id_or_name = viper.Get("appliance").(string)
 	quiet = viper.Get("quiet").(bool)
@@ -199,5 +190,18 @@ func initConfig() {
 		break
 	default:
 		//fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+}
+
+func serverConfig() sdk.IdbusServer {
+	return sdk.IdbusServer{
+		Config: &api.ServerConfiguration{
+			URL:         viper.Get("endpoint").(string),
+			Description: "IAM.tf/JOSSO server",
+		},
+		Credentials: &sdk.ServerCredentials{
+			ClientId: viper.Get("client_id").(string),
+			Secret:   viper.Get("secret").(string),
+		},
 	}
 }
