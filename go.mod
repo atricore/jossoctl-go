@@ -11,3 +11,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 
 )
+
+replace github.com/atricore/josso-api-go => ../josso-api-go
+
+replace github.com/atricore/josso-sdk-go => ../josso-sdk-go
