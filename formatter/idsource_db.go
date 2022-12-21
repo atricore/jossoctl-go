@@ -41,10 +41,7 @@ General:
 			Properties query:	{{.PropertiesQuery}}
 			Update credentials query:	{{.UpdateCredentials}}
 			Relay credentials query:	{{.RelayCredentialQuery}}
-
-		Extension:	
-
-	`
+	` + definitionFormat
 )
 
 type DbIdSourceWrapper struct {

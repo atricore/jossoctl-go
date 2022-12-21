@@ -38,19 +38,17 @@ General:
 			Role matching mode:	{{.RoleMatchingMode}}
 			User identifier:	{{.UserIdentifier}}
 			User DN:	{{.UserDn}}
-	
-		Extension:
-	
-			Definition:
-
-
-`
+` + definitionFormat
 )
 
 type idSourceLdapWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.LdapIdentitySourceDTO
+}
+
+type CustomClassProps struct {
+	props *api.CustomClassPropertyDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -213,6 +211,42 @@ func (c *idSourceLdapWrapper) UserDn() string {
 }
 
 // extension
-// func (c *LdapWrapper) Definition() string {
-// 	return c.p.()
-// }
+
+func (c *idSourceLdapWrapper) FCQN() string {
+	cc := c.p.CustomClass
+	return cc.GetFqcn()
+}
+
+func (c *idSourceLdapWrapper) Type() string {
+
+	cc := c.p.CustomClass
+	osgifilter := cc.GetOsgiService()
+	if !osgifilter {
+		return "INSTANCE"
+	} else {
+		return "SERVICE"
+	}
+}
+
+func (c *idSourceLdapWrapper) Osgi_filter() string {
+	cc := c.p.CustomClass
+	return cc.GetOsgiFilter()
+}
+
+func (c *idSourceLdapWrapper) CustomClassProperties() []CustomClassProps {
+	var ccpWrappers []CustomClassProps
+	cc := c.p.CustomClass
+	ccp := cc.Properties
+	for i := range ccp {
+		ccpWrappers = append(ccpWrappers, CustomClassProps{props: &cc.GetProperties()[i]})
+	}
+	return ccpWrappers
+}
+
+func (c *CustomClassProps) Name() string {
+	return c.props.GetName()
+}
+
+func (c *CustomClassProps) Value() string {
+	return c.props.GetValue()
+}

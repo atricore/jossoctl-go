@@ -6,6 +6,16 @@ import (
 
 const (
 	defaultIdSourceTableFormat = "table {{.Name}}\t{{.Type}}"
+	definitionFormat           = `    Definition
+    FCQN:        {{.FCQN}}
+    Osgi Filter: {{.Osgi_filter}}	
+    Type:        {{.Type}}
+	{{- if .Osgi_filter }}
+    Properties {{ range $props := .CustomClassProperties}}
+                Name:   {{$props.Name}}
+                Value:  {{$props.Value}}
+	{{ end }}{{ end }}
+`
 )
 
 type IdSourceFormatter struct {
