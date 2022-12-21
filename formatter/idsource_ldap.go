@@ -38,7 +38,7 @@ General:
    Role matching mode:             {{.RoleMatchingMode}}
    User identifier:                {{.UserIdentifier}}
    User DN:                        {{.UserDn}}
-` + definitionFormat
+` + extensionFormat
 )
 
 type idSourceLdapWrapper struct {
