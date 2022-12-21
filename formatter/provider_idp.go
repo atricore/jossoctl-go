@@ -64,7 +64,7 @@ General
             Salt prefix:             {{$as.SaltPrefix}}   
             Salt suffix:             {{$as.SaltSuffix}}   
             SAML authn ctx:          {{$as.SAMLAuthnCtx}}   
-            CRYPT salt length:	     {{$as.SaltLength}}
+            CRYPT salt length:       {{$as.SaltLength}}
         {{ end }} {{- if $as.IsDirectoryAuthn }}
         Directory Authentication Service
             Initial ctx factory:     {{$as.InitialCtxFactory}}
@@ -138,7 +138,7 @@ General
         
     Federated connections {{ range $fc := .FederatedConnections }}
         SP Channel:                  {{$fc.ChannelName}}
-        Target Provider:             {{$fc.ConnectionName}}		
+        Target Provider:             {{$fc.ConnectionName}}
         Override Provider:           {{$fc.OverrideProvider}} {{- if $fc.OverrideProvider }}
         Location:                    {{$fc.Location}}
 		

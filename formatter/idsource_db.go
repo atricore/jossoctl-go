@@ -11,43 +11,46 @@ import (
 const (
 	idSourcePrettyFormat = `
 DB Identity Source (built-in)
-	
+ 
 General:
 
-		Name:	{{.Name}}
-		ID:		{{.Id}}
-        Documentation:	{{.Description}}
+  Name: {{.Name}}
+  ID:  {{.Id}}
+        Documentation: {{.Description}}
 
-		Connectors
+  Connectors
 
-			JDBC Driver:	{{.JdbcDriver}}
-			ConnectionUrl:	{{.ConnectionUrl}}
-			Username:		{{.Username}}
-			Password:	{{.Password}}
-			Connection pooling:
-			Acquire increment:	{{.AcquireIncrement}}
-			Initial pool size:	{{.InitialPool}}
-			Min size:	{{.MinSize}}
-			Max size:	{{.MaxSize}}
-			Idle test period:	{{.IdleConnectionTestPeriod}}
-			Mx Idle time :	{{.MaxIdleTime}}
+   JDBC Driver:     {{.JdbcDriver}}
+   ConnectionUrl:   {{.ConnectionUrl}}
+   Username:        {{.Username}}
+   Password:        {{.Password}}
 
-		Lookup
-|
-			Username query:	{{.UsernameQuery}}
-			Roles query:	{{.RolesQuery}}
-			Credentials query:	{{.CredentialsQuery}}
-			Use result columns as property:	{{.UseColumnNamesAsPropertyNames}}
-			Properties query:	{{.PropertiesQuery}}
-			Update credentials query:	{{.UpdateCredentials}}
-			Relay credentials query:	{{.RelayCredentialQuery}}
-	` + definitionFormat
+   Connection pooling:
+   Acquire increment:  {{.AcquireIncrement}}
+   Initial pool size:  {{.InitialPool}}
+   Min size:           {{.MinSize}}
+   Max size:           {{.MaxSize}}
+   Idle test period:   {{.IdleConnectionTestPeriod}}
+   Mx Idle time :      {{.MaxIdleTime}}
+
+  Lookup
+   Username query:                 {{.UsernameQuery}}
+   Roles query:                    {{.RolesQuery}}
+   Credentials query:              {{.CredentialsQuery}}
+   Use result columns as property: {{.UseColumnNamesAsPropertyNames}}
+   Properties query:               {{.PropertiesQuery}}
+   Update credentials query:       {{.UpdateCredentials}}
+   Relay credentials query:        {{.RelayCredentialQuery}}
+ ` + definitionFormat
 )
 
 type DbIdSourceWrapper struct {
 	HeaderContext
 	trunc bool
 	p     *api.DbIdentitySourceDTO
+}
+type CustomClassProp struct {
+	props *api.CustomClassPropertyDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -223,6 +226,41 @@ func (c *DbIdSourceWrapper) RelayCredentialQuery() string {
 
 // extension
 
-//func (c *DbIdSourceWrapper) Definition() string {
-//	return c.p.GetDefinition()
-//}
+func (c *DbIdSourceWrapper) FCQN() string {
+	cc := c.p.CustomClass
+	return cc.GetFqcn()
+}
+
+func (c *DbIdSourceWrapper) Type() string {
+
+	cc := c.p.CustomClass
+	osgifilter := cc.GetOsgiService()
+	if !osgifilter {
+		return "INSTANCE"
+	} else {
+		return "SERVICE"
+	}
+}
+
+func (c *DbIdSourceWrapper) Osgi_filter() string {
+	cc := c.p.CustomClass
+	return cc.GetOsgiFilter()
+}
+
+func (c *DbIdSourceWrapper) CustomClassProperties() []CustomClassProp {
+	var ccpWrappers []CustomClassProp
+	cc := c.p.CustomClass
+	ccp := cc.Properties
+	for i := range ccp {
+		ccpWrappers = append(ccpWrappers, CustomClassProp{props: &cc.GetProperties()[i]})
+	}
+	return ccpWrappers
+}
+
+func (c *CustomClassProp) Name() string {
+	return c.props.GetName()
+}
+
+func (c *CustomClassProp) Value() string {
+	return c.props.GetValue()
+}

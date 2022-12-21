@@ -8,36 +8,36 @@ import (
 
 const (
 	LdapPrettyFormat = `
-	Directory Identity Source (built-in)
-    	
+ Directory Identity Source (built-in)
+     
 General:
 
-        Name:	{{.Name}} 
-		ID:		{{.Id}}
-        Documentation:	{{.Description}}
+    Name: {{.Name}} 
+     ID:  {{.Id}}
+    Documentation: {{.Description}}
 
-		Connection:
+  Connection:
 
-			Initial context factory:	{{.InitialCtxFactory}}
-			Provider URL:	{{.ProviderUrl}}
-			Principal:	{{.Principal}}
-			Password:	{{.Password}}
-			Authentication:	{{.Authentication}}
-			Enable password update:	{{.EnablePasswordUpdate}}
+   Initial context factory: {{.InitialCtxFactory}}
+   Provider URL:            {{.ProviderUrl}}
+   Principal:               {{.Principal}}
+   Password:                {{.Password}}
+   Authentication:          {{.Authentication}}
+   Enable password update:  {{.EnablePasswordUpdate}}
 
-		Lookup:
+  Lookup:
 
-			User properties query:	{{.UserProperty}}
-			Include operational attributes:	{{.IncludeOperationalAttributes}}
-			Updatable credential:	{{.UpdatableCredential}}
-			Credentials query:	{{.CredentialsQuery}}
-			Role identifier:	{{.RoleIdentifies}}
-			Referrals:	{{.Referrals}}
-			Search scope:	{{.SearchScope}}
-			Role DN:	{{.RoleDn}}
-			Role matching mode:	{{.RoleMatchingMode}}
-			User identifier:	{{.UserIdentifier}}
-			User DN:	{{.UserDn}}
+   User properties query:          {{.UserProperty}}
+   Include operational attributes: {{.IncludeOperationalAttributes}}
+   Updatable credential:           {{.UpdatableCredential}}
+   Credentials query:              {{.CredentialsQuery}}
+   Role identifier:                {{.RoleIdentifies}}
+   Referrals:                      {{.Referrals}}
+   Search scope:                   {{.SearchScope}}
+   Role DN:                        {{.RoleDn}}
+   Role matching mode:             {{.RoleMatchingMode}}
+   User identifier:                {{.UserIdentifier}}
+   User DN:                        {{.UserDn}}
 ` + definitionFormat
 )
 

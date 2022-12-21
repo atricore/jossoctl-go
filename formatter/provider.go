@@ -10,18 +10,18 @@ const (
 	defaultProviderFormat      = `Name:		{{.Name}}
 Location:	{{.Location}}`
 	keystoreFormat = `    Keystore
-	Certificate Alias:	{{.CertificateAlias}}
-	Key Alias:	{{.KeyAlias}}
+ Certificate Alias: {{.CertificateAlias}}
+ Key Alias: {{.KeyAlias}}
 
-	Version:	{{.Version}}
-	Serial Number:	{{.SerialNumber}}
-	Issuer:		{{.Issuer}}
-	Subjects:	{{.Subjects}}
-	Not Before:	{{.NotBefore}}
-	Not After:	{{.NotAfter}}
+ Version:       {{.Version}}
+ Serial Number: {{.SerialNumber}}
+ Issuer:        {{.Issuer}}
+ Subjects:      {{.Subjects}}
+ Not Before:    {{.NotBefore}}
+ Not After:     {{.NotAfter}}
 
-	Certificate:                
-{{.Certificate}}	`
+ Certificate:                
+{{.Certificate}} `
 )
 
 type ProviderFormatter struct {
