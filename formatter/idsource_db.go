@@ -224,43 +224,4 @@ func (c *DbIdSourceWrapper) RelayCredentialQuery() string {
 	return c.p.GetRelayCredentialQueryString()
 }
 
-// extension
-
-func (c *DbIdSourceWrapper) FCQN() string {
-	cc := c.p.CustomClass
-	return cc.GetFqcn()
-}
-
-func (c *DbIdSourceWrapper) Type() string {
-
-	cc := c.p.CustomClass
-	osgifilter := cc.GetOsgiService()
-	if !osgifilter {
-		return "INSTANCE"
-	} else {
-		return "SERVICE"
-	}
-}
-
-func (c *DbIdSourceWrapper) Osgi_filter() string {
-	cc := c.p.CustomClass
-	return cc.GetOsgiFilter()
-}
-
-func (c *DbIdSourceWrapper) CustomClassProperties() []CustomClassProp {
-	var ccpWrappers []CustomClassProp
-	cc := c.p.CustomClass
-	ccp := cc.Properties
-	for i := range ccp {
-		ccpWrappers = append(ccpWrappers, CustomClassProp{props: &cc.GetProperties()[i]})
-	}
-	return ccpWrappers
-}
-
-func (c *CustomClassProp) Name() string {
-	return c.props.GetName()
-}
-
-func (c *CustomClassProp) Value() string {
-	return c.props.GetValue()
-}
+// TODO : Add Extension to wrapper

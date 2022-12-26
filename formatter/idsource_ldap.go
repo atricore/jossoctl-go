@@ -47,10 +47,6 @@ type idSourceLdapWrapper struct {
 	p     *api.LdapIdentitySourceDTO
 }
 
-type CustomClassProps struct {
-	props *api.CustomClassPropertyDTO
-}
-
 // NewApplianceFormat returns a format for rendering an ApplianceContext
 func NewLdapFormat(source string, quiet bool) Format {
 	switch source {
@@ -210,43 +206,6 @@ func (c *idSourceLdapWrapper) UserDn() string {
 	return c.p.GetUsersCtxDN()
 }
 
-// extension
-
-func (c *idSourceLdapWrapper) FCQN() string {
-	cc := c.p.CustomClass
-	return cc.GetFqcn()
-}
-
-func (c *idSourceLdapWrapper) Type() string {
-
-	cc := c.p.CustomClass
-	osgifilter := cc.GetOsgiService()
-	if !osgifilter {
-		return "INSTANCE"
-	} else {
-		return "SERVICE"
-	}
-}
-
-func (c *idSourceLdapWrapper) Osgi_filter() string {
-	cc := c.p.CustomClass
-	return cc.GetOsgiFilter()
-}
-
-func (c *idSourceLdapWrapper) CustomClassProperties() []CustomClassProps {
-	var ccpWrappers []CustomClassProps
-	cc := c.p.CustomClass
-	ccp := cc.Properties
-	for i := range ccp {
-		ccpWrappers = append(ccpWrappers, CustomClassProps{props: &cc.GetProperties()[i]})
-	}
-	return ccpWrappers
-}
-
-func (c *CustomClassProps) Name() string {
-	return c.props.GetName()
-}
-
-func (c *CustomClassProps) Value() string {
-	return c.props.GetValue()
+func (c *idSourceLdapWrapper) Extension() *CustomClassWrapper {
+	return &CustomClassWrapper{cc: c.p.CustomClass}
 }

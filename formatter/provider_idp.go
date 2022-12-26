@@ -686,6 +686,22 @@ func (c *idPWrapper) Authns() []asWrapper {
 	return asWrappers
 }
 
+func (c *asWrapper) Extension() *CustomClassWrapper {
+	var w CustomClassWrapper
+
+	if c.IsDirectoryAuthn() {
+		directoryAuthn, err := c.as.DelegatedAuthentication.AuthnService.ToDirectoryAuthnSvc()
+		if err != nil {
+			// TODO : error handling
+			return &w
+		}
+
+		w.cc = directoryAuthn.CustomClass
+	} // TODO : add other authn types that have extension
+
+	return &w
+}
+
 func (c *asWrapper) Name() string {
 	return c.as.GetName()
 }
