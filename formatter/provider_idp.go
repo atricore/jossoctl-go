@@ -122,6 +122,7 @@ General
         Id token TTL (secs):         {{.IdTokenTTL}}
         Access token TTL (secs):     {{.AccessTokenTTL}}
         Authn code TTL (secs):       {{.AuthnCodeTTL}}
+        User claims in access token: {{.UserClaimsInAccessToken}}
     
 	OAuth2
         Enabled:    {{.EnabledOauth2}}
@@ -369,6 +370,10 @@ func (c *idPWrapper) AccessTokenTTL() int32 {
 
 func (c *idPWrapper) AuthnCodeTTL() int32 {
 	return c.p.GetOidcAuthzCodeTimeToLive()
+}
+
+func (c *idPWrapper) UserClaimsInAccessToken() bool {
+	return c.p.GetOidcIncludeUserClaimsInAccessToken()
 }
 
 // OAuth2

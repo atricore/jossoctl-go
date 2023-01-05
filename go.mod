@@ -12,6 +12,6 @@ require (
 
 )
 
-//replace github.com/atricore/josso-api-go => ../josso-api-go
+replace github.com/atricore/josso-api-go => ../josso-api-go
 
-//replace github.com/atricore/josso-sdk-go => ../josso-sdk-go
+replace github.com/atricore/josso-sdk-go => ../josso-sdk-go
