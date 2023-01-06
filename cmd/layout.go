@@ -19,22 +19,23 @@ var layoutCmd = &cobra.Command{
 SYNTAX
 	appliance:layout [options] appliance id/name`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO!")
+		layoutAppliance(id_or_name)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(layoutCmd)
 
-	// Here you will define your flags and configuration settings.
+	layoutCmd.Flags().StringP("out", "o", "", "Export layout as graph")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// stopCmd.PersistentFlags().String("foo", "", "A help for foo")
+}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	layoutCmd.Flags().StringP("out", "o", "", "Export layaout as graph")
+func layoutAppliance(id_or_name string) error {
+	content, err := client.Client().CalcLayout(id_or_name)
+	if err != nil {
+		return err
+	}
+	printOut(content)
+	return nil
 
 }
