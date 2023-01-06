@@ -5,8 +5,6 @@ Copyright © 2022 atricore <sgonzalez@atricore.com>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
