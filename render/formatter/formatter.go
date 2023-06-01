@@ -15,6 +15,7 @@ const (
 	TableFormatKey  = "table"
 	RawFormatKey    = "raw"
 	PrettyFormatKey = "pretty"
+	TFFormatKey     = "tf"
 	JSONFormatKey   = "json"
 
 	DefaultQuietFormat = "{{.Name}}"

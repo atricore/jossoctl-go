@@ -61,7 +61,7 @@ func importAppliance(file string, format string) (api.IdentityApplianceDefinitio
 	if err != nil {
 		return a, err
 	}
-	return client.Client().ImportAppliance(content, format)
+	return Client.Client().ImportAppliance(content, format)
 
 }
 

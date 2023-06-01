@@ -23,7 +23,7 @@ var (
 	cfgFile    string
 	verbose    bool
 	id_or_name string
-	client     cli.Cli
+	Client     cli.Cli
 	print_raw  bool
 	quiet      bool
 	VERSION    string
@@ -83,7 +83,7 @@ func preRunE(cmd *cobra.Command, args []string) error {
 
 	id_or_name = viper.Get("appliance").(string)
 	quiet = viper.Get("quiet").(bool)
-	client, err = cli.CreateClient(&cfg)
+	Client, err = cli.CreateClient(&cfg)
 
 	if err != nil && failOnPreRun {
 		printError(err)

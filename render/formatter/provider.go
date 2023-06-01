@@ -2,6 +2,7 @@ package formatter
 
 import (
 	api "github.com/atricore/josso-api-go"
+	clicmd "github.com/atricore/josso-cli-go/cli"
 	cli "github.com/atricore/josso-sdk-go"
 )
 
@@ -27,11 +28,12 @@ Location:	{{.Location}}`
 type ProviderFormatter struct {
 	PType     string
 	PFormat   func(source string, quiet bool) Format
-	PWriter   func(ctx ProviderContext, providers []api.ProviderContainerDTO) error
+	PWriter   func(ctx ProviderContext, id_or_name string, providers []api.ProviderContainerDTO) error
 	PResolver func(n string) (interface{}, error)
 }
 
 type ProviderContext struct {
+	Client clicmd.Cli
 	Context
 }
 

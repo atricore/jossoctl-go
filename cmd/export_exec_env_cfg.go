@@ -46,9 +46,9 @@ func exportExecEnvCfgCobra(cmd *cobra.Command, args []string) {
 }
 
 func ExportExecEnvCfg(id_or_name string, ee string, out string, console bool, replace bool) {
-	cfg, fileName, err := client.Client().ExportExecEnvCfg(id_or_name, ee)
+	cfg, fileName, err := Client.Client().ExportExecEnvCfg(id_or_name, ee)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 
@@ -63,7 +63,7 @@ func ExportExecEnvCfg(id_or_name string, ee string, out string, console bool, re
 	} else {
 		err = util.WriteToFile(out, cfg, replace)
 		if err != nil {
-			client.Error(err)
+			Client.Error(err)
 			os.Exit(1)
 		}
 		fmt.Printf("Exec env configuration file exported to %s\n", fileName)

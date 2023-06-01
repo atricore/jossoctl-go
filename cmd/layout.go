@@ -29,7 +29,7 @@ func init() {
 }
 
 func layoutAppliance(id_or_name string) error {
-	content, err := client.Client().CalcLayout(id_or_name)
+	content, err := Client.Client().CalcLayout(id_or_name)
 	if err != nil {
 		return err
 	}

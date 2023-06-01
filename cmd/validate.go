@@ -30,7 +30,7 @@ func validateApplianceCobra(cmd *cobra.Command, args []string) {
 }
 
 func ValidateAppliance(a string) {
-	err, validations := client.Client().ValidateAppliance(a)
+	err, validations := Client.Client().ValidateAppliance(a)
 	if err != nil {
 		fmt.Printf("appliance %s is NOT valid\n", id_or_name)
 		printError(err)

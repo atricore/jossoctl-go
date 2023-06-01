@@ -5,82 +5,9 @@ Copyright © 2022 atricore <sgonzalez@atricore.com>
 package cmd
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/atricore/josso-cli-go/formatter"
+	"github.com/atricore/josso-cli-go/render"
 	"github.com/spf13/cobra"
-
-	api "github.com/atricore/josso-api-go"
 )
-
-var IdSourcesFormatters = []formatter.IdSourceFormatter{
-	{
-		IdSourceType:   "DbIdentitySource",
-		IdSourceFormat: formatter.NewDbIdSouceFormat,
-		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
-			var idsource []api.DbIdentitySourceDTO
-			for _, c := range containers {
-				if c.GetType() == "DbIdentitySource" {
-					db, err := client.Client().GetDbIdentitySourceDTO(id_or_name, c.GetName())
-					if err != nil {
-						return err
-					}
-					idsource = append(idsource, db)
-				}
-			}
-
-			return formatter.IdSourceDBWrite(ctx, idsource)
-		},
-	},
-	{
-		IdSourceType:   "EmbeddedIdentityVault",
-		IdSourceFormat: formatter.NewIdVaultFormat,
-		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
-			var Embeddedidsource []api.EmbeddedIdentityVaultDTO
-			for _, c := range containers {
-				if c.GetType() == "EmbeddedIdentityVault" {
-					emd, err := client.Client().GetIdVault(id_or_name, c.GetName())
-					if err != nil {
-						return err
-					}
-					Embeddedidsource = append(Embeddedidsource, emd)
-				}
-			}
-			return formatter.VaultWrite(ctx, Embeddedidsource)
-		},
-	},
-	{
-		IdSourceType:   "LdapIdentitySource",
-		IdSourceFormat: formatter.NewLdapFormat,
-		IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
-			var Ldapidsource []api.LdapIdentitySourceDTO
-			for _, c := range containers {
-				if c.GetType() == "LdapIdentitySource" {
-					ldap, err := client.Client().GetIdSourceLdap(id_or_name, c.GetName())
-					if err != nil {
-						return err
-					}
-					Ldapidsource = append(Ldapidsource, ldap)
-				}
-			}
-			return formatter.LdapWrite(ctx, Ldapidsource)
-		},
-	},
-}
-
-var DefaultIdSourcesFormatters = formatter.IdSourceFormatter{
-	IdSourceType:   "__default__",
-	IdSourceFormat: formatter.NewIdSourceContainerFormat,
-	IdSourceWriter: func(ctx formatter.IdSourceContext, containers []api.IdSourceContainerDTO) error {
-		var idsources []api.IdentitySourceDTO
-
-		for _, c := range containers {
-			idsources = append(idsources, *c.IdSource)
-		}
-		return formatter.IdSourceWrite(ctx, idsources)
-	},
-}
 
 // appliancesCmd represents the appliances command
 var viewIdSourcesCmd = &cobra.Command{
@@ -92,62 +19,9 @@ var viewIdSourcesCmd = &cobra.Command{
 }
 
 func viewIdSources(cmd *cobra.Command, args []string) {
-	p, err := client.Client().GetIdSource(id_or_name, args[0])
-	if err != nil {
-		client.Error(err)
-		os.Exit(1)
-	}
-
-	if p.Name == nil {
-		client.Error(fmt.Errorf("idsource %s not found in appliance %s", args[0], id_or_name))
-		os.Exit(1)
-	}
-
-	source := func() string {
-		if print_raw {
-			return "raw"
-		}
-		return "pretty"
-	}
-
-	f := getIdSourcesFormatter(p.GetType())
-
-	ctx := formatter.IdSourceContext{
-		Context: formatter.Context{
-			Output: client.Out(),
-			Format: f.IdSourceFormat(source(), quiet),
-		},
-	}
-
-	lsa := []api.IdSourceContainerDTO{p}
-	err = f.IdSourceWriter(ctx, lsa)
-	if err != nil {
-		client.Error(err)
-		os.Exit(1)
-	}
+	render.RenderIDSourceToWriter(Client, id_or_name, args[0], source(), quiet, Client.Out())
 }
 
 func init() {
 	viewCmd.AddCommand(viewIdSourcesCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// appliancesCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// appliancesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func getIdSourcesFormatter(pType string) formatter.IdSourceFormatter {
-
-	for _, f := range IdSourcesFormatters {
-		if f.IdSourceType == pType {
-			return f
-		}
-	}
-
-	return DefaultIdSourcesFormatters
 }

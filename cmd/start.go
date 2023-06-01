@@ -26,7 +26,7 @@ func startApplianceCobra(cmd *cobra.Command, args []string) {
 }
 
 func StartAppliance(a string) {
-	err := client.Client().StartAppliance(a)
+	err := Client.Client().StartAppliance(a)
 	if err != nil {
 		printError(err)
 		os.Exit(1)

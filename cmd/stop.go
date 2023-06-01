@@ -38,7 +38,7 @@ func stopApplianceCobra(cmd *cobra.Command, args []string) {
 }
 
 func StopAppliance(a string) {
-	err := client.Client().StopAppliance(a)
+	err := Client.Client().StopAppliance(a)
 	if err != nil {
 		printError(err)
 		os.Exit(1)

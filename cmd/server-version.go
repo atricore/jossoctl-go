@@ -22,7 +22,7 @@ var serverVersionCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		v, err := serverVersion()
 		if err != nil {
-			client.Error(err)
+			Client.Error(err)
 			os.Exit(1)
 		}
 		printOut(v)

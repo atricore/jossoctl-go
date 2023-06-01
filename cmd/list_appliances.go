@@ -7,7 +7,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/atricore/josso-cli-go/formatter"
+	"github.com/atricore/josso-cli-go/render/formatter"
 	"github.com/spf13/cobra"
 )
 
@@ -26,9 +26,9 @@ func listAppliancesCobra(cmd *cobra.Command, args []string) {
 }
 
 func listAppliances() {
-	lsa, err := client.Client().GetApplianceContainers()
+	lsa, err := Client.Client().GetApplianceContainers()
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 
@@ -41,13 +41,13 @@ func listAppliances() {
 
 	ctx := formatter.ApplianceContext{
 		Context: formatter.Context{
-			Output: client.Out(),
+			Output: Client.Out(),
 			Format: formatter.NewApplianceFormat(source(), quiet),
 		},
 	}
 	err = formatter.ApplianceWrite(ctx, lsa)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 

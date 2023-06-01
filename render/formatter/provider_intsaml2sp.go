@@ -22,6 +22,9 @@ type spFcWrapper struct {
 }
 
 const (
+	intSaml2SpTFFormat = `resource "iamtf_app_saml2" "{{.Name}}" {
+	name = "{{.Name}}"
+}`
 	IntSaml2SpPrettyFormat = `
 SAML Service Provider (built-in)    
 
@@ -78,6 +81,8 @@ func NewIntSaml2SpFormat(source string, quiet bool) Format {
 		default:
 			return defaultProviderTableFormat
 		}
+	case TFFormatKey:
+		return intSaml2SpTFFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:

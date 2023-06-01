@@ -7,6 +7,9 @@ import (
 )
 
 const (
+	vaultTFFormat = `resource "iamtf_idvault" "{{.Name}}" {
+		name = "{{.Name}}"
+  }`
 	vaultPrettyFormat = `
 Idvault (built-in)
     	
@@ -36,6 +39,8 @@ func NewIdVaultFormat(source string, quiet bool) Format {
 		default:
 			return defaultIdSourceTableFormat
 		}
+	case TFFormatKey:
+		return vaultTFFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:

@@ -50,7 +50,7 @@ func deleteApplianceCobra(cmd *cobra.Command, args []string) {
 }
 
 func DeleteAppliance(a string) {
-	del, err := client.Client().DeleteAppliance(a)
+	del, err := Client.Client().DeleteAppliance(a)
 	if err != nil {
 		printError(err)
 		os.Exit(1)

@@ -2,6 +2,7 @@ package formatter
 
 import (
 	api "github.com/atricore/josso-api-go"
+	clicmd "github.com/atricore/josso-cli-go/cli"
 )
 
 const (
@@ -11,11 +12,12 @@ const (
 type IdSourceFormatter struct {
 	IdSourceType     string
 	IdSourceFormat   func(source string, quiet bool) Format
-	IdSourceWriter   func(ctx IdSourceContext, idsources []api.IdSourceContainerDTO) error
+	IdSourceWriter   func(ctx IdSourceContext, id_or_name string, idsources []api.IdSourceContainerDTO) error
 	IdSourceResolver func(n string) (interface{}, error)
 }
 
 type IdSourceContext struct {
+	Client clicmd.Cli
 	Context
 }
 

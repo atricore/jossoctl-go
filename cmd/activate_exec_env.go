@@ -59,14 +59,14 @@ func activateAgent(
 ) {
 
 	//fmt.Printf("ee [%s], target [%s], force %t, replace-config %t, activate-samples %t\n", ee, target, force, replaceConfig, activateSamples)
-	err := client.Client().ActivateExecEnv(id_or_name, ee, target, force, replaceConfig, activateSamples)
+	err := Client.Client().ActivateExecEnv(id_or_name, ee, target, force, replaceConfig, activateSamples)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		return
 	}
 
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 	}
 }
 

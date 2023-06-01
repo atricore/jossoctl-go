@@ -7,11 +7,16 @@ import (
 	"time"
 
 	api "github.com/atricore/josso-api-go"
+	cmdcli "github.com/atricore/josso-cli-go/cli"
 	cli "github.com/atricore/josso-sdk-go"
 )
 
 const (
 	defaultApplianceTableFormat = "table {{.ID}}\t{{.Name}}\t{{.State}}\t{{.Location}}"
+
+	defaultApplianceTFFormat = `resource "iamtf_identity_appliance" "{{.Name}}" {
+	name = "{{.Name}}"
+}`
 
 	defaultAppliancePrettyFormat = `ID:          {{.ID}}
 Name:        {{.Name}}
@@ -48,6 +53,7 @@ Deployment:
 
 // ApplianceContext contains appliance specific information required by the formatter, encapsulate a Context struct.
 type ApplianceContext struct {
+	Client cmdcli.Cli
 	Context
 }
 
@@ -68,6 +74,9 @@ func NewApplianceFormat(source string, quiet bool) Format {
 		default:
 			return defaultApplianceTableFormat
 		}
+	case TFFormatKey:
+		return defaultApplianceTFFormat
+
 	case PrettyFormatKey:
 		switch {
 		case quiet:

@@ -9,7 +9,10 @@ import (
 )
 
 const (
-	idSourcePrettyFormat = `
+	idSourceDBTFFormat = `resource "iamtf_idsource_db" "{{.Name}}" {
+		name = "{{.Name}}"
+  }`
+	idSourceDBPrettyFormat = `
 DB Identity Source (built-in)
  
 General:
@@ -63,12 +66,14 @@ func NewDbIdSouceFormat(source string, quiet bool) Format {
 		default:
 			return defaultIdSourceTableFormat
 		}
+	case TFFormatKey:
+		return idSourceDBTFFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:
 			return DefaultQuietFormat
 		default:
-			return idSourcePrettyFormat
+			return idSourceDBPrettyFormat
 		}
 	case RawFormatKey:
 		switch {

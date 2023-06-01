@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/atricore/josso-cli-go/formatter"
+	"github.com/atricore/josso-cli-go/render/formatter"
 	"github.com/spf13/cobra"
 )
 
@@ -28,10 +28,10 @@ func listProvidersCobra(cmd *cobra.Command, args []string) {
 
 func listProviders() {
 	fmt.Printf("Providers: %v\n", id_or_name)
-	a, err := client.Client().GetProviders(id_or_name)
+	a, err := Client.Client().GetProviders(id_or_name)
 	fmt.Printf("Providers: %v\n", a)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 
@@ -44,13 +44,13 @@ func listProviders() {
 
 	ctx := formatter.ProviderContext{
 		Context: formatter.Context{
-			Output: client.Out(),
+			Output: Client.Out(),
 			Format: formatter.NewProviderContainerFormat(source(), quiet),
 		},
 	}
 	err = formatter.ProviderContainerWrite(ctx, a)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 }

@@ -29,7 +29,7 @@ to quickly create a Cobra application.`,
 
 func BuildAppliance(id_or_name string, start bool) {
 	// build appliance using cli
-	err := client.Client().BuildAppliance(id_or_name)
+	err := Client.Client().BuildAppliance(id_or_name)
 	// if no error , deploy if requested
 	if err != nil {
 		printError(err)

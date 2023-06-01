@@ -7,6 +7,9 @@ import (
 )
 
 const (
+	ldapTFFormat = `resource "iamtf_idsource_ldap" "{{.Name}}" {
+		name = "{{.Name}}"
+  }`
 	LdapPrettyFormat = `
  Directory Identity Source (built-in)
      
@@ -57,6 +60,8 @@ func NewLdapFormat(source string, quiet bool) Format {
 		default:
 			return defaultIdSourceTableFormat
 		}
+	case TFFormatKey:
+		return ldapTFFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:

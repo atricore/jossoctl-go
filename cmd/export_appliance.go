@@ -60,7 +60,7 @@ func exportAppliance(id_or_name string, format string, out string, replace bool)
 		return fmt.Errorf("output file is required")
 	}
 
-	content, err := client.Client().ExportAppliance(id_or_name, format)
+	content, err := Client.Client().ExportAppliance(id_or_name, format)
 	if err != nil {
 		return err
 	}

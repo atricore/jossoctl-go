@@ -7,7 +7,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/atricore/josso-cli-go/formatter"
+	"github.com/atricore/josso-cli-go/render/formatter"
 	"github.com/spf13/cobra"
 )
 
@@ -26,9 +26,9 @@ func listIdSourcesCobra(cmd *cobra.Command, args []string) {
 }
 
 func listIdSources() {
-	a, err := client.Client().GetIdSources(id_or_name)
+	a, err := Client.Client().GetIdSources(id_or_name)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 
@@ -41,13 +41,13 @@ func listIdSources() {
 
 	ctx := formatter.IdSourceContext{
 		Context: formatter.Context{
-			Output: client.Out(),
+			Output: Client.Out(),
 			Format: formatter.NewIdSourceContainerFormat(source(), quiet),
 		},
 	}
 	err = formatter.IdSourceContainerWrite(ctx, a)
 	if err != nil {
-		client.Error(err)
+		Client.Error(err)
 		os.Exit(1)
 	}
 }

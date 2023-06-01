@@ -154,6 +154,10 @@ General
             {{ end }}
 
 ` + keystoreFormat
+
+	idpTFFormat = `resource "iamtf_idp" "{{.Name}}" {
+	  name = "{{.Name}}"
+}`
 )
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -166,6 +170,8 @@ func NewIdPFormat(source string, quiet bool) Format {
 		default:
 			return defaultProviderTableFormat
 		}
+	case TFFormatKey:
+		return idpTFFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:

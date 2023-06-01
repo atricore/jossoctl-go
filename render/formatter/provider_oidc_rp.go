@@ -17,6 +17,9 @@ type OidcRpWrapper struct {
 }
 
 const (
+	oidcRpTFFormat = `resource "iamtf_app_oidc" "{{.Name}}" {
+		name = "{{.Name}}"
+  }`
 	OidcRpPrettyFormat = `
 OIDC Relaying Party    
 
@@ -65,6 +68,8 @@ func NewOidcRpFormat(source string, quiet bool) Format {
 		default:
 			return defaultProviderTableFormat
 		}
+	case TFFormatKey:
+		return oidcRpTFFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:
