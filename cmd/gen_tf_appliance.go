@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/atricore/josso-cli-go/render"
 
@@ -9,7 +10,7 @@ import (
 )
 
 // appliancesCmd represents the appliances command
-var genTfApplianceCmd = &cobra.Command{
+var genTFApplianceCmd = &cobra.Command{
 	Use:     "appliance",
 	Aliases: []string{"a"},
 	Short:   "view appliance",
@@ -19,27 +20,29 @@ var genTfApplianceCmd = &cobra.Command{
 }
 
 func genTFApplianceRun(cmd *cobra.Command, args []string) {
+	err := genTFAppliance(id_or_name, outputType, fName, replace)
+	if err != nil {
+		Client.Error(err)
+		os.Exit(1)
+	}
+}
+
+func genTFAppliance(id_or_name string, oType string, oFile string, replace bool) error {
 
 	// Check output type var
-	if outputType == "file" {
-
-		outputFilename := fName
-		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+id_or_name+.tf"
-		if outputFilename == "" {
-			outputFilename = "iamtf-appliance-" + id_or_name + ".tf"
+	if oType == "file" {
+		if oFile == "" {
+			oFile = "iamtf-appliance-" + id_or_name + ".tf"
 		}
-		err := render.RenderApplianceToFile(Client, id_or_name, "tf", quiet, outputFilename, replace)
-		if err != nil {
-			Client.Error(err)
-			return
-		}
-	} else if outputType == "stdout" {
-		render.RenderApplianceToWriter(Client, id_or_name, "tf", quiet, Client.Out())
+		return render.RenderApplianceToFile(Client, id_or_name, "tf", quiet, oFile, replace)
+	} else if oType == "stdout" {
+		return render.RenderApplianceToWriter(Client, id_or_name, "tf", quiet, Client.Out())
 	} else {
-		Client.Error(fmt.Errorf("invalid output type: %s", outputType))
+		return fmt.Errorf("invalid output type: %s", oType)
 	}
 }
 
 func init() {
-	genTFCmd.AddCommand(genTfApplianceCmd)
+	genTFCmd.AddCommand(genTFApplianceCmd)
+	genTFApplianceCmd.PersistentFlags().StringVarP(&fName, "file", "f", "", "Store the output in the given file name")
 }

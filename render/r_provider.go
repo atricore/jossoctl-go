@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"io"
-	"os"
 
 	api "github.com/atricore/josso-api-go"
 	"github.com/atricore/josso-cli-go/cli"
@@ -33,14 +32,21 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 		PType:   "InternalSaml2ServiceProvider",
 		PFormat: formatter.NewIntSaml2SpFormat,
 		PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
-			var providers []api.InternalSaml2ServiceProviderDTO
-			for _, c := range containers {
-				if c.GetType() == "InternalSaml2ServiceProvider" {
-					p, err := ctx.Client.Client().GetIntSaml2Sp(id_or_name, c.GetName())
+			var providers []formatter.IntSaml2SpWrapper
+			for _, container := range containers {
+				if container.GetType() == "InternalSaml2ServiceProvider" {
+					provider, err := ctx.Client.Client().GetIntSaml2Sp(id_or_name, container.GetName())
 					if err != nil {
 						return err
 					}
-					providers = append(providers, p)
+
+					// create instace of IntSaml2SpWrapper
+					providers = append(providers, formatter.IntSaml2SpWrapper{
+						Container: &container,
+						Provider:  &provider,
+					})
+
+					providers = append(providers)
 				}
 			}
 			return formatter.IntSaml2SpWrite(ctx, providers)
@@ -89,21 +95,20 @@ func RenderProviderToFile(c cli.Cli, id_or_name string, pName string, source str
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderProviderToWriter(c cli.Cli, id_or_name string, pName string, source string, quiet bool, out io.Writer) {
+func RenderProviderToWriter(c cli.Cli, id_or_name string, pName string, source string, quiet bool, out io.Writer) error {
 
 	p, err := c.Client().GetProvider(id_or_name, pName)
 	if err != nil {
-		c.Error(err)
-		os.Exit(1)
+		return err
 	}
 
 	if p.Name == nil {
-		c.Error(fmt.Errorf("provider! %s not found in appliance %s", pName, id_or_name))
-		os.Exit(1)
+		return fmt.Errorf("provider! %s not found in appliance %s", pName, id_or_name)
 	}
 
 	f := GetProviderFormatter(p.GetType())
 	ctx := formatter.ProviderContext{
+		Client: c,
 		Context: formatter.Context{
 			Output: out,
 			Format: f.PFormat(source, quiet),
@@ -111,11 +116,7 @@ func RenderProviderToWriter(c cli.Cli, id_or_name string, pName string, source s
 	}
 
 	lsa := []api.ProviderContainerDTO{p}
-	err = f.PWriter(ctx, id_or_name, lsa)
-	if err != nil {
-		ctx.Client.Error(err)
-		os.Exit(1)
-	}
+	return f.PWriter(ctx, id_or_name, lsa)
 }
 
 func GetProviderFormatter(pType string) formatter.ProviderFormatter {

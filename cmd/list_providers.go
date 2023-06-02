@@ -5,7 +5,6 @@ Copyright © 2022 atricore <sgonzalez@atricore.com>
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/atricore/josso-cli-go/render/formatter"
@@ -27,9 +26,7 @@ func listProvidersCobra(cmd *cobra.Command, args []string) {
 }
 
 func listProviders() {
-	fmt.Printf("Providers: %v\n", id_or_name)
 	a, err := Client.Client().GetProviders(id_or_name)
-	fmt.Printf("Providers: %v\n", a)
 	if err != nil {
 		Client.Error(err)
 		os.Exit(1)

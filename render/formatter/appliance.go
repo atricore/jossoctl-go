@@ -27,14 +27,13 @@ Location:    {{.Location}}
 Namespace:   {{.Namespace}}
 Revision:    {{.Revision}}
 Bundles:     {{.Bundles}}
-             
-Id Sources:  {{.IdSourcesCount}}
-{{range .IdSources}}             {{.}}
-{{end -}}
-             
-Providers:   {{.ProvidersCount}}
-{{range .Providers}}             {{.}}
-{{end -}}
+
+Id Sources:  {{.IdSourcesCount}} {{range .IdSources}}{{.}},{{- end}}
+
+Providers:   {{.ProvidersCount}} {{range .Providers}}{{.}},{{- end}}
+
+Exec. Envs.: {{.ExecEnvsCount}} {{range .ExecEnvs}}{{.}},{{- end}}
+
 {{- if .IsDeployed }}
 Deployment:
   Time:      {{.DeploymentType}}
@@ -217,6 +216,16 @@ func (c *applianceWrapper) IdSources() []string {
 
 func (c *applianceWrapper) IdSourcesCount() int {
 	return len(c.c.GetIdSources())
+}
+
+func (c *applianceWrapper) ExecEnvsCount() int {
+	return len(c.c.GetExecEnvs())
+}
+
+func (c *applianceWrapper) ExecEnvs() []string {
+	p := c.c.GetExecEnvs()
+	sort.Strings(p)
+	return p
 }
 
 func (c *applianceWrapper) Bundles() string {

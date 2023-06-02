@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"io"
-	"os"
 
 	api "github.com/atricore/josso-api-go"
 	"github.com/atricore/josso-cli-go/cli"
@@ -86,21 +85,20 @@ func RenderIDSourceToFile(c cli.Cli, id_or_name string, pName string, source str
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderIDSourceToWriter(c cli.Cli, id_or_name string, idSrcName string, source string, quiet bool, out io.Writer) {
+func RenderIDSourceToWriter(c cli.Cli, id_or_name string, idSrcName string, source string, quiet bool, out io.Writer) error {
 	p, err := c.Client().GetIdSource(id_or_name, idSrcName)
 	if err != nil {
-		c.Error(err)
-		os.Exit(1)
+		return err
 	}
 
 	if p.Name == nil {
-		c.Error(fmt.Errorf("idsource %s not found in appliance %s", idSrcName, id_or_name))
-		os.Exit(1)
+		return fmt.Errorf("idsource %s not found in appliance %s", idSrcName, id_or_name)
 	}
 
 	f := getIdSourcesFormatter(p.GetType())
 
 	ctx := formatter.IdSourceContext{
+		Client: c,
 		Context: formatter.Context{
 			Output: out,
 			Format: f.IdSourceFormat(source, quiet),
@@ -108,11 +106,7 @@ func RenderIDSourceToWriter(c cli.Cli, id_or_name string, idSrcName string, sour
 	}
 
 	lsa := []api.IdSourceContainerDTO{p}
-	err = f.IdSourceWriter(ctx, id_or_name, lsa)
-	if err != nil {
-		c.Error(err)
-		os.Exit(1)
-	}
+	return f.IdSourceWriter(ctx, id_or_name, lsa)
 }
 
 func getIdSourcesFormatter(pType string) formatter.IdSourceFormatter {

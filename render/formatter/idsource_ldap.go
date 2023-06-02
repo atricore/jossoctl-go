@@ -8,8 +8,8 @@ import (
 
 const (
 	ldapTFFormat = `resource "iamtf_idsource_ldap" "{{.Name}}" {
-		name = "{{.Name}}"
-  }`
+	name = "{{.Name}}"
+}`
 	LdapPrettyFormat = `
  Directory Identity Source (built-in)
      

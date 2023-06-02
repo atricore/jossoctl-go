@@ -17,17 +17,15 @@ func RenderApplianceToFile(c cli.Cli, id_or_name string, source string, quiet bo
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderApplianceToWriter(c cli.Cli, id_or_name string, source string, quiet bool, out io.Writer) {
+func RenderApplianceToWriter(c cli.Cli, id_or_name string, source string, quiet bool, out io.Writer) error {
 
 	a, err := c.Client().GetApplianceContainer(id_or_name)
 	if err != nil {
-		c.Error(err)
-		return
+		return err
 	}
 
 	if a.Appliance == nil {
-		c.Error(fmt.Errorf("appliance not found: %s", id_or_name))
-		return
+		return fmt.Errorf("appliance %s not found", id_or_name)
 	}
 
 	ctx := formatter.ApplianceContext{
@@ -39,8 +37,5 @@ func RenderApplianceToWriter(c cli.Cli, id_or_name string, source string, quiet 
 	}
 
 	lsa := []api.IdentityApplianceContainerDTO{a}
-	err = formatter.ApplianceWrite(ctx, lsa)
-	if err != nil {
-		ctx.Client.Error(err)
-	}
+	return formatter.ApplianceWrite(ctx, lsa)
 }

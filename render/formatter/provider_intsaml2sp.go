@@ -13,8 +13,9 @@ import (
 
 type IntSaml2SpWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.InternalSaml2ServiceProviderDTO
+	trunc     bool
+	Provider  *api.InternalSaml2ServiceProviderDTO
+	Container *api.ProviderContainerDTO
 }
 
 type spFcWrapper struct {
@@ -22,8 +23,8 @@ type spFcWrapper struct {
 }
 
 const (
-	intSaml2SpTFFormat = `resource "iamtf_app_saml2" "{{.Name}}" {
-	name = "{{.Name}}"
+	intSaml2SpTFFormat = `resource "iamtf_app_agent" "{{.AppName}}" {
+	name = "{{.AppName}}"
 }`
 	IntSaml2SpPrettyFormat = `
 SAML Service Provider (built-in)    
@@ -106,7 +107,7 @@ location: {{.Location}}
 	return format
 }
 
-func IntSaml2SpWrite(ctx ProviderContext, providers []api.InternalSaml2ServiceProviderDTO) error {
+func IntSaml2SpWrite(ctx ProviderContext, providers []IntSaml2SpWrapper) error {
 	render := func(format func(subContext SubContext) error) error {
 		return intSaml2SpFormat(ctx, providers, format)
 	}
@@ -114,10 +115,9 @@ func IntSaml2SpWrite(ctx ProviderContext, providers []api.InternalSaml2ServicePr
 
 }
 
-func intSaml2SpFormat(ctx ProviderContext, providers []api.InternalSaml2ServiceProviderDTO, format func(subContext SubContext) error) error {
+func intSaml2SpFormat(ctx ProviderContext, providers []IntSaml2SpWrapper, format func(subContext SubContext) error) error {
 	for _, provider := range providers {
-		c := IntSaml2SpWrapper{p: &provider}
-		if err := format(&c); err != nil {
+		if err := format(&provider); err != nil {
 			return err
 		}
 	}
@@ -140,12 +140,33 @@ func (c *IntSaml2SpWrapper) MarshalJSON() ([]byte, error) {
 
 // General
 func (c *IntSaml2SpWrapper) Name() string {
-	return c.p.GetName()
+	return c.Provider.GetName()
+}
+
+func (c *IntSaml2SpWrapper) AppName() string {
+
+	// This is a LONG path to get the name of the resource
+	//fmt.Printf("sp properties : %+v\n", c.Container.FederatedProvider.AdditionalProperties)
+	//fmt.Printf("sc properties : %+v\n", c.Container.FederatedProvider.AdditionalProperties["serviceConnection"])
+
+	scMap, ok := c.Container.FederatedProvider.AdditionalProperties["serviceConnection"].(map[string]interface{})
+	if !ok {
+		return "ERROR (service connection not found)"
+	}
+	//fmt.Printf("rs properties: %+v\n", scMap["resource"])
+
+	rMap, ok := scMap["resource"].(map[string]interface{})
+	//fmt.Printf("rs name: %s\n", rMap["name"])
+	if !ok {
+		return "ERROR (resource not found)"
+	}
+
+	return rMap["name"].(string)
 }
 
 func (c *IntSaml2SpWrapper) ID() string {
 
-	id := strconv.FormatInt(c.p.GetId(), 10)
+	id := strconv.FormatInt(c.Provider.GetId(), 10)
 	if c.trunc {
 		return TruncateID(id, 6)
 	}
@@ -153,30 +174,30 @@ func (c *IntSaml2SpWrapper) ID() string {
 }
 
 func (c *IntSaml2SpWrapper) DisplayName() string {
-	return c.p.GetDisplayName()
+	return c.Provider.GetDisplayName()
 }
 
 func (c *IntSaml2SpWrapper) Location() string {
-	return cli.LocationToStr(c.p.Location)
+	return cli.LocationToStr(c.Provider.Location)
 }
 
 func (c *IntSaml2SpWrapper) Description() string {
-	return c.p.GetDescription()
+	return c.Provider.GetDescription()
 }
 
 func (c *IntSaml2SpWrapper) AccountLinkage() string {
-	return c.p.AccountLinkagePolicy.GetName()
+	return c.Provider.AccountLinkagePolicy.GetName()
 }
 
 func (c *IntSaml2SpWrapper) IdentityMapping() string {
-	return c.p.IdentityMappingPolicy.GetName()
+	return c.Provider.IdentityMappingPolicy.GetName()
 }
 
 func (c *IntSaml2SpWrapper) DashboardURL() string {
-	return c.p.GetDashboardUrl()
+	return c.Provider.GetDashboardUrl()
 }
 func (c *IntSaml2SpWrapper) ErrorBinding() string {
-	return c.p.GetErrorBinding()
+	return c.Provider.GetErrorBinding()
 }
 
 // SAML2
@@ -186,45 +207,45 @@ func (c *IntSaml2SpWrapper) Metadata() string {
 
 func (c *IntSaml2SpWrapper) Bindings() string {
 	// concatenate c.p.GetActiveBindings() as a single string
-	return strings.Join(c.p.GetActiveBindings(), ", ")
+	return strings.Join(c.Provider.GetActiveBindings(), ", ")
 }
 
 func (c *IntSaml2SpWrapper) SingAuthnReq() bool {
-	return c.p.GetSignAuthenticationRequests()
+	return c.Provider.GetSignAuthenticationRequests()
 }
 
 func (c *IntSaml2SpWrapper) WantAssertionSigned() bool {
-	return c.p.GetWantAssertionSigned()
+	return c.Provider.GetWantAssertionSigned()
 }
 
 func (c *IntSaml2SpWrapper) WantRequestSigned() bool {
-	return c.p.GetWantSignedRequests()
+	return c.Provider.GetWantSignedRequests()
 }
 
 func (c *IntSaml2SpWrapper) SignRequests() bool {
-	return c.p.GetSignRequests()
+	return c.Provider.GetSignRequests()
 }
 
 func (c *IntSaml2SpWrapper) MessageTTL() int32 {
-	return c.p.GetMessageTtl()
+	return c.Provider.GetMessageTtl()
 }
 
 func (c *IntSaml2SpWrapper) MessageTTLTolerance() int32 {
-	return c.p.GetMessageTtlTolerance()
+	return c.Provider.GetMessageTtlTolerance()
 }
 
 func (c *IntSaml2SpWrapper) Profiles() int {
-	return len(c.p.GetActiveProfiles())
+	return len(c.Provider.GetActiveProfiles())
 }
 
 func (c *IntSaml2SpWrapper) SignatureHash() string {
-	return c.p.GetSignatureHash()
+	return c.Provider.GetSignatureHash()
 }
 
 func (c *IntSaml2SpWrapper) FederatedConnections() []spFcWrapper {
 	var fcWrappers []spFcWrapper
-	for i := range c.p.FederatedConnectionsB {
-		fcWrappers = append(fcWrappers, spFcWrapper{fc: &c.p.FederatedConnectionsB[i]})
+	for i := range c.Provider.FederatedConnectionsB {
+		fcWrappers = append(fcWrappers, spFcWrapper{fc: &c.Provider.FederatedConnectionsB[i]})
 	}
 	return fcWrappers
 }
@@ -232,7 +253,7 @@ func (c *IntSaml2SpWrapper) FederatedConnections() []spFcWrapper {
 // keystore
 
 func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, err error) {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, _ := cfg.ToSamlR2SPConfig()
 
@@ -249,7 +270,7 @@ func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, e
 	return cert, err
 }
 func (c *IntSaml2SpWrapper) CertificateAlias() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2SPConfig()
 	if err != nil {
@@ -263,7 +284,7 @@ func (c *IntSaml2SpWrapper) CertificateAlias() string {
 }
 
 func (c *IntSaml2SpWrapper) KeyAlias() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2SPConfig()
 	if err != nil {
@@ -340,10 +361,10 @@ func (c *IntSaml2SpWrapper) NotAfter() string {
 }
 
 func (c *IntSaml2SpWrapper) ElementId() string {
-	return c.p.GetElementId()
+	return c.Provider.GetElementId()
 }
 func (c *IntSaml2SpWrapper) Type() string {
-	return api.AsString(c.p.AdditionalProperties["@c"], "N/A")
+	return api.AsString(c.Provider.AdditionalProperties["@c"], "N/A")
 }
 
 // Federated Connection

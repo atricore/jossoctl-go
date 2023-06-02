@@ -5,6 +5,8 @@ Copyright © 2022 atricore <sgonzalez@atricore.com>
 package cmd
 
 import (
+	"os"
+
 	"github.com/atricore/josso-cli-go/render"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +22,11 @@ var viewProviderCmd = &cobra.Command{
 }
 
 func viewProvider(cmd *cobra.Command, args []string) {
-	render.RenderProviderToWriter(Client, id_or_name, args[0], source(), quiet, Client.Out())
+	err := render.RenderProviderToWriter(Client, id_or_name, args[0], source(), quiet, Client.Out())
+	if err != nil {
+		Client.Error(err)
+		os.Exit(1)
+	}
 }
 
 func init() {
