@@ -112,7 +112,7 @@ func RenderExecEnvToWriter(c cli.Cli, idaName string, idSrcName string, source s
 	}
 
 	if p.Name == nil {
-		return fmt.Errorf("idsource %s not found in appliance %s", idSrcName, idaName)
+		return fmt.Errorf("exec env %s not found in appliance %s", idSrcName, idaName)
 	}
 
 	f := getExecEnvsFormatter(p.GetType())

@@ -128,7 +128,7 @@ func RenderProviderToWriter(c cli.Cli, idaName string, pName string, source stri
 	}
 
 	if p.Name == nil {
-		return fmt.Errorf("provider! %s not found in appliance %s", pName, idaName)
+		return fmt.Errorf("provider %s not found in appliance %s", pName, idaName)
 	}
 
 	f := GetProviderFormatter(p.GetType())

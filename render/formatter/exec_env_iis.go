@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"fmt"
 	"strconv"
 
 	api "github.com/atricore/josso-api-go"
@@ -8,8 +9,11 @@ import (
 
 const (
 	iisTFFormat = `resource "iamtf_execenv_iis" "{{.Name}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.Name}}"
+	ida                    = "{{.ApplianceName}}"
+	name                   = "{{.Name}}"
+	description            = "{{.DisplayName}}"
+	architecture           = "{{.Architecture}}"
+	isapi_extension_path   = "{{.IsapiExtensionPath}}"
 }`
 	WindowsIISPrettyFormat = `
 Windows IIS Execution Environment
@@ -110,6 +114,10 @@ func (c *ExecEnvWindowsIISWrapper) ApplianceName() string {
 	return c.idaName
 }
 
+func (c *ExecEnvWindowsIISWrapper) IsapiExtensionPath() string {
+	return c.p.GetIsapiExtensionPath()
+}
+
 func (c *ExecEnvWindowsIISWrapper) Name() string {
 	return c.p.GetName()
 }
@@ -118,6 +126,24 @@ func (c *ExecEnvWindowsIISWrapper) DisplayName() string {
 	return c.p.GetDisplayName()
 }
 
+func (c *ExecEnvWindowsIISWrapper) Architecture() string {
+	a, err := platformIdToArchitecture(c.p.GetPlatformId())
+	if err != nil {
+		return err.Error()
+	}
+	return a
+}
+
 func (c *ExecEnvWindowsIISWrapper) Location() string {
 	return c.p.GetLocation()
+}
+
+func platformIdToArchitecture(ver string) (string, error) {
+	switch ver {
+	case "iis-32", "iis32":
+		return "32", nil
+	case "iis-64", "iis64":
+		return "64", nil
+	}
+	return "", fmt.Errorf("unknown architecture %s", ver)
 }
