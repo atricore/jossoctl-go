@@ -20,10 +20,27 @@ type ExtSaml2SpWrapper struct {
 	Container *api.ProviderContainerDTO
 }
 
+type FederatedConnectionToIdP struct {
+	Preferred bool
+	IdP       string
+}
+
 const (
 	extSaml2SpTFFormat = `resource "iamtf_app_saml2" "{{.AppName}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.AppName}}"
+	ida         = "{{.ApplianceName}}"
+	name        = "{{.AppName}}"
+	description = "{{.DisplayName}}"
+
+	{{ range $idp := .IdPs }}
+	idp {
+		name    = "{{ $idp.IdP }}"
+		is_preferred = {{ $idp.Preferred }}
+	}
+	{{- end}}
+
+	
+	medatada	= "{{.ExtMetadataB64}}"
+
 }`
 	ExtSaml2SpPrettyFormat = `
 SAML Service Provider (external)    
@@ -31,7 +48,10 @@ SAML Service Provider (external)
 General 
     Name:                               {{.Name}}
     Description :                       {{.DisplayName}}
-
+	Identity Providers:
+	{{ range $idp := .IdPs }}           
+	                                    {{ $idp.IdP }}, preferred: {{ $idp.Preferred }}
+	{{- end}}
     SAML2    
         Entity ID:                      {{.EntityID}}
 
@@ -375,4 +395,19 @@ func (c *ExtSaml2SpWrapper) ExtMetadataB64() string {
 		}
 	}
 	return "N/A"
+}
+
+func (c *ExtSaml2SpWrapper) IdPs() []FederatedConnectionToIdP {
+
+	var idps []FederatedConnectionToIdP
+
+	for _, fc := range c.Provider.GetFederatedConnectionsB() {
+		idps = append(idps, FederatedConnectionToIdP{
+			Preferred: false,
+			IdP:       fc.GetName(),
+		})
+	}
+
+	return idps
+
 }
