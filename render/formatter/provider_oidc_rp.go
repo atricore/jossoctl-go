@@ -21,6 +21,40 @@ const (
 	oidcRpTFFormat = `resource "iamtf_app_oidc" "{{.Name}}" {
 	ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
+	description = "{{.DisplayName}}"
+
+	client_id = "{{.ClientId}}"
+	client_secret = "{{.ClientSecret}}"
+	client_authn = "{{.Authentication}}"
+
+	grant_types = [{{.Grants}}]
+	response_types = [{{.ResponseTypes}}]	
+
+	redirect_uris = [{{.URIs}}]
+	post_logout_redirect_uris = [{{.PostLogoutURIs}}]
+
+	signature_alg = "{{.SignatureAlgorithm}}"
+
+	{{- if .HasEncryption}}
+	encryption_alg = "{{.EncryptionAlgorithm}}"	
+	encryption_method = "{{.EncryptionMethod}}"
+	{{- end }}
+
+	{{- if .HasTokenSignature}}
+	idtoken_signature_alg = "{{.IDTokenSignatureAlgorithm}}"
+	{{- end}}
+
+	{{- if .HasTokenEncryption}}
+	idtoken_encryption_alg = "{{.IDTokenEncryptionAlgorithm}}"
+	idtoken_encryption_method = "{{.IDTokenEncryptionMethod}}"
+	{{- end }}
+
+	{{ range $idp := .IdPs }}
+	idp {
+		name         = "{{ $idp.IdP }}"
+		is_preferred = {{ $idp.Preferred }}
+	}
+	{{- end}}
 }`
 	OidcRpPrettyFormat = `
 OIDC Relaying Party    
@@ -173,6 +207,10 @@ func (c *OidcRpWrapper) ClientId() string {
 	return c.p.GetClientId()
 }
 
+func (c *OidcRpWrapper) ClientSecret() string {
+	return c.p.GetClientSecret()
+}
+
 func (c *OidcRpWrapper) PublicKey() string {
 	return c.p.GetClientCert()
 }
@@ -205,7 +243,13 @@ func (c *OidcRpWrapper) Issuer() string {
 
 // Print grants
 func (c *OidcRpWrapper) Grants() string {
-	return strings.Join(c.p.GetGrants(), ", ")
+
+	if g, ok := c.p.GetGrantsOk(); ok {
+		if len(g) > 0 {
+			return strings.Join(g, ", ")
+		}
+	}
+	return "AUTHORIZATION_CODE"
 }
 
 // Print response types
@@ -213,14 +257,14 @@ func (c *OidcRpWrapper) ResponseTypes() string {
 	return strings.Join(c.p.GetResponseTypes(), ", ")
 }
 
-// Print response modes
-func (c *OidcRpWrapper) ResponseModes() string {
-	return "N/A"
-}
-
 // Print signature algorithm
 func (c *OidcRpWrapper) SignatureAlgorithm() string {
 	return c.p.GetSigningAlg()
+
+}
+
+func (c *OidcRpWrapper) HasEncryption() bool {
+	return c.p.GetEncryptionAlg() != "" && c.p.GetEncryptionMethod() != "" && c.p.GetEncryptionAlg() != "NULL" && c.p.GetEncryptionMethod() != "NONE"
 }
 
 // Print encryption algorithm
@@ -231,6 +275,14 @@ func (c *OidcRpWrapper) EncryptionAlgorithm() string {
 // Print encryption method
 func (c *OidcRpWrapper) EncryptionMethod() string {
 	return c.p.GetEncryptionMethod()
+}
+
+func (c *OidcRpWrapper) HasTokenEncryption() bool {
+	return c.p.GetIdTokenEncryptionAlg() != "" && c.p.GetIdTokenEncryptionMethod() != "" && c.p.GetIdTokenEncryptionAlg() != "NULL" && c.p.GetIdTokenEncryptionMethod() != "NONE"
+}
+
+func (c *OidcRpWrapper) HasTokenSignature() bool {
+	return c.p.GetIdTokenSigningAlg() != "" && c.p.GetIdTokenSigningAlg() != "NULL"
 }
 
 // Print ID token signature algorithm
@@ -329,4 +381,19 @@ func (c *OidcRpWrapper) ElementId() string {
 }
 func (c *OidcRpWrapper) Type() string {
 	return api.AsString(c.p.AdditionalProperties["@c"], "N/A")
+}
+
+func (c *OidcRpWrapper) IdPs() []FederatedConnectionToIdP {
+
+	var idps []FederatedConnectionToIdP
+
+	for _, fc := range c.p.GetFederatedConnectionsB() {
+		idps = append(idps, FederatedConnectionToIdP{
+			Preferred: false,
+			IdP:       fc.GetName(),
+		})
+	}
+
+	return idps
+
 }

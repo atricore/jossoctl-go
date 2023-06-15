@@ -39,6 +39,11 @@ type ProviderContext struct {
 	Context
 }
 
+type FederatedConnectionToIdP struct {
+	Preferred bool
+	IdP       string
+}
+
 type providerContainerWrapper struct {
 	HeaderContext
 	trunc   bool

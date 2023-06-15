@@ -20,11 +20,6 @@ type ExtSaml2SpWrapper struct {
 	Container *api.ProviderContainerDTO
 }
 
-type FederatedConnectionToIdP struct {
-	Preferred bool
-	IdP       string
-}
-
 const (
 	extSaml2SpTFFormat = `resource "iamtf_app_saml2" "{{.AppName}}" {
 	ida         = "{{.ApplianceName}}"
@@ -33,7 +28,7 @@ const (
 
 	{{ range $idp := .IdPs }}
 	idp {
-		name    = "{{ $idp.IdP }}"
+		name         = "{{ $idp.IdP }}"
 		is_preferred = {{ $idp.Preferred }}
 	}
 	{{- end}}
