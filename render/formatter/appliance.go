@@ -28,11 +28,14 @@ Namespace:   {{.Namespace}}
 Revision:    {{.Revision}}
 Bundles:     {{.Bundles}}
 
-Id Sources:  {{.IdSourcesCount}} {{range .IdSources}}{{.}},{{- end}}
+Id Sources:  {{.IdSourcesCount}} {{range .IdSources}}
+             {{.}},{{- end}}
 
-Providers:   {{.ProvidersCount}} {{range .Providers}}{{.}},{{- end}}
+Providers:   {{.ProvidersCount}} {{range .Providers}}
+             {{.}},{{- end}}
 
-Exec. Envs.: {{.ExecEnvsCount}} {{range .ExecEnvs}}{{.}},{{- end}}
+Exec. Envs.: {{.ExecEnvsCount}} {{range .ExecEnvs}}
+             {{.}},{{- end}}
 
 {{- if .IsDeployed }}
 Deployment:
