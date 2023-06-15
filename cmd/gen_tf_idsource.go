@@ -31,7 +31,7 @@ func genTFIDSource(id_or_name string, iName string, oType string, oFile string, 
 	if oType == "file" {
 		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+id_or_name+.tf"
 		if oFile == "" {
-			oFile = "iamtf-idsource-" + id_or_name + "-" + iName + ".tf"
+			oFile = id_or_name + "-idsource-" + id_or_name + "-" + iName + ".tf"
 		}
 		return render.RenderIDSourceToFile(Client, id_or_name, iName, "tf", quiet, oFile, replace)
 	} else if outputType == "stdout" {

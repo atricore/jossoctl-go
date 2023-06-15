@@ -32,7 +32,7 @@ func genTFAppliance(id_or_name string, oType string, oFile string, replace bool)
 	// Check output type var
 	if oType == "file" {
 		if oFile == "" {
-			oFile = "iamtf-appliance-" + id_or_name + ".tf"
+			oFile = id_or_name + "-appliance-" + id_or_name + ".tf"
 		}
 		return render.RenderApplianceToFile(Client, id_or_name, "tf", quiet, oFile, replace)
 	} else if oType == "stdout" {

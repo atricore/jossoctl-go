@@ -153,15 +153,18 @@ func (c *IntSaml2SpWrapper) AppName() string {
 	if !ok {
 		return "ERROR (service connection not found)"
 	}
-	//fmt.Printf("rs properties: %+v\n", scMap["resource"])
+	return scMap["name"].(string)
+	/*
+		//fmt.Printf("rs properties: %+v\n", scMap["resource"])
 
-	rMap, ok := scMap["resource"].(map[string]interface{})
-	//fmt.Printf("rs name: %s\n", rMap["name"])
-	if !ok {
-		return "ERROR (resource not found)"
-	}
+		rMap, ok := scMap["resource"].(map[string]interface{})
+		//fmt.Printf("rs name: %s\n", rMap["name"])
+		if !ok {
+			return "ERROR (resource not found)"
+		}
 
-	return rMap["name"].(string)
+		return rMap["name"].(string)
+	*/
 }
 
 func (c *IntSaml2SpWrapper) ID() string {

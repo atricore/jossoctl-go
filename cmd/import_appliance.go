@@ -39,8 +39,7 @@ func importApplianceCobra(cmd *cobra.Command, args []string) error {
 	// import appliance
 	a, err = importAppliance(file, format)
 	if err != nil {
-		printError(err)
-		os.Exit(1)
+		return err
 	}
 
 	printOut("appliance imported: " + a.GetName())

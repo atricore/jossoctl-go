@@ -18,8 +18,8 @@ type OidcRpWrapper struct {
 
 const (
 	oidcRpTFFormat = `resource "iamtf_app_oidc" "{{.Name}}" {
-		name = "{{.Name}}"
-  }`
+    name = "{{.Name}}"
+}`
 	OidcRpPrettyFormat = `
 OIDC Relaying Party    
 

@@ -30,7 +30,7 @@ func genTFProvider(id_or_name string, pName string, oType string, oFile string, 
 	if oType == "file" {
 		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+id_or_name+.tf"
 		if oFile == "" {
-			oFile = "iamtf-provider-" + pName + ".tf"
+			oFile = id_or_name + "-provider-" + pName + ".tf"
 		}
 		return render.RenderProviderToFile(Client, id_or_name, pName, "tf", quiet, oFile, replace)
 	} else if outputType == "stdout" {

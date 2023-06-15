@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	defaultTFProviderFormat    = `Name:		{{.Name}} NOT SUPPORTED!`
 	defaultProviderTableFormat = "table {{.Name}}\t{{.Type}}\t{{.Location}}"
 	defaultProviderFormat      = `Name:		{{.Name}}
 Location:	{{.Location}}`
@@ -105,6 +106,8 @@ func NewProviderContainerFormat(source string, quiet bool) Format {
 		default:
 			return defaultProviderTableFormat
 		}
+	case TFFormatKey:
+		return defaultTFProviderFormat
 	case PrettyFormatKey:
 		switch {
 		case quiet:

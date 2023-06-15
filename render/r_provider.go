@@ -40,13 +40,13 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 						return err
 					}
 
-					// create instace of IntSaml2SpWrapper
-					providers = append(providers, formatter.IntSaml2SpWrapper{
+					// create instance of IntSaml2SpWrapper
+					w := formatter.IntSaml2SpWrapper{
 						Container: &container,
 						Provider:  &provider,
-					})
+					}
 
-					providers = append(providers)
+					providers = append(providers, w)
 				}
 			}
 			return formatter.IntSaml2SpWrite(ctx, providers)
@@ -67,6 +67,29 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 				}
 			}
 			return formatter.OidcRpWrite(ctx, providers)
+		},
+	},
+	{
+		PType:   "ExternalSaml2ServiceProvider",
+		PFormat: formatter.NewExtSaml2SpFormat,
+		PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
+			var providers []formatter.ExtSaml2SpWrapper
+			for _, c := range containers {
+				if c.GetType() == "ExternalSaml2ServiceProvider" {
+					p, err := ctx.Client.Client().GetExtSaml2Sp(id_or_name, c.GetName())
+					if err != nil {
+						return err
+					}
+					// create instance of IntSaml2SpWrapper
+					w := formatter.ExtSaml2SpWrapper{
+						Container: &c,
+						Provider:  &p,
+					}
+
+					providers = append(providers, w)
+				}
+			}
+			return formatter.ExtSaml2SpWrite(ctx, providers)
 		},
 	},
 }

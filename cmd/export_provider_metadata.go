@@ -12,8 +12,8 @@ import (
 
 // ExportProviderCmd represents the ExportProvider command
 var exportProviderCmd = &cobra.Command{
-	Use:        "provider-md name",
-	ArgAliases: []string{"provider-name"},
+	Use:        "metadata",
+	ArgAliases: []string{"md"},
 	Short:      "Export provider metadata to a file",
 	Long: `Export metadat for the give provider's name to a file.
 
@@ -21,7 +21,7 @@ SYNTAX
 	appliance:export-provider-metadata [options] appliance id/name name`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(fmt.Sprintf("TODO! %s", args[0]))
+		fmt.Println(fmt.Sprintf("not implemented (use provider endpoints to get MD) %s", args[0]))
 	},
 }
 
