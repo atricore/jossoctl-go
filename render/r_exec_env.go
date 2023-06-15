@@ -118,7 +118,8 @@ func RenderExecEnvToWriter(c cli.Cli, idaName string, idSrcName string, source s
 	f := getExecEnvsFormatter(p.GetType())
 
 	ctx := formatter.ExecEnvContext{
-		Client: c,
+		Client:  c,
+		IdaName: idaName,
 		Context: formatter.Context{
 			Output: out,
 			Format: f.ExecEnvFormat(source, quiet),

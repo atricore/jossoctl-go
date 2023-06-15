@@ -8,6 +8,7 @@ import (
 
 const (
 	weblogicTFFormat = `resource "iamtf_execenv_weblogic" "{{.Name}}" {
+    ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	WeblogicPrettyFormat = `
@@ -23,6 +24,7 @@ General
 type ExecEnvWeblogicWrapper struct {
 	HeaderContext
 	trunc bool
+	idaName string
 	p     *api.WeblogicExecutionEnvironmentDTO
 }
 
@@ -71,8 +73,9 @@ func WeblogicExecEnvWrite(ctx ExecEnvContext, weblogic []api.WeblogicExecutionEn
 func WeblogicFormat(ctx ExecEnvContext, execEnvWeblogics []api.WeblogicExecutionEnvironmentDTO, format func(subContext SubContext) error) error {
 	for _, execEnvWeblogic := range execEnvWeblogics {
 		c := ExecEnvWeblogicWrapper{
-			p:     &execEnvWeblogic,
-			trunc: false,
+			idaName: ctx.IdaName,
+			p:       &execEnvWeblogic,
+			trunc:   false,
 		}
 		if err := format(&c); err != nil {
 			return err
@@ -101,6 +104,10 @@ func (c *ExecEnvWeblogicWrapper) ID() string {
 		return TruncateID(id, 6)
 	}
 	return id
+}
+
+func (c *ExecEnvWeblogicWrapper) ApplianceName() string {
+	return c.idaName
 }
 
 func (c *ExecEnvWeblogicWrapper) Name() string {

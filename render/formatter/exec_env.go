@@ -17,7 +17,8 @@ type ExecEnvFormatter struct {
 }
 
 type ExecEnvContext struct {
-	Client clicmd.Cli
+	IdaName string
+	Client  clicmd.Cli
 	Context
 }
 

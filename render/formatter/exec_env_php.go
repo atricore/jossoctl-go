@@ -8,6 +8,7 @@ import (
 
 const (
 	phpTFFormat = `resource "iamtf_execenv_php" "{{.Name}}" {
+    ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	PHPPrettyFormat = `
@@ -22,8 +23,9 @@ General
 
 type ExecEnvPHPWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.PHPExecutionEnvironmentDTO
+	trunc   bool
+	idaName string
+	p       *api.PHPExecutionEnvironmentDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -71,8 +73,9 @@ func PHPExecEnvWrite(ctx ExecEnvContext, php []api.PHPExecutionEnvironmentDTO) e
 func PHPFormat(ctx ExecEnvContext, execEnvPHPs []api.PHPExecutionEnvironmentDTO, format func(subContext SubContext) error) error {
 	for _, execEnvPHP := range execEnvPHPs {
 		c := ExecEnvPHPWrapper{
-			p:     &execEnvPHP,
-			trunc: false,
+			idaName: ctx.IdaName,
+			p:       &execEnvPHP,
+			trunc:   false,
 		}
 		if err := format(&c); err != nil {
 			return err
@@ -101,6 +104,10 @@ func (c *ExecEnvPHPWrapper) ID() string {
 		return TruncateID(id, 6)
 	}
 	return id
+}
+
+func (c *ExecEnvPHPWrapper) ApplianceName() string {
+	return c.idaName
 }
 
 func (c *ExecEnvPHPWrapper) Name() string {

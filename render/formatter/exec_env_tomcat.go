@@ -8,6 +8,7 @@ import (
 
 const (
 	tomcatTFFormat = `resource "iamtf_execenv_tomcat" "{{.Name}}" {
+    ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	TomcatPrettyFormat = `
@@ -23,6 +24,7 @@ General
 type ExecEnvTomcatWrapper struct {
 	HeaderContext
 	trunc bool
+	idaName string
 	p     *api.TomcatExecutionEnvironmentDTO
 }
 
@@ -71,6 +73,7 @@ func TomcatExecEnvWrite(ctx ExecEnvContext, tomcat []api.TomcatExecutionEnvironm
 func TomcatFormat(ctx ExecEnvContext, execEnvTomcats []api.TomcatExecutionEnvironmentDTO, format func(subContext SubContext) error) error {
 	for _, execEnvTomcat := range execEnvTomcats {
 		c := ExecEnvTomcatWrapper{
+			idaName: ctx.IdaName,
 			p:     &execEnvTomcat,
 			trunc: false,
 		}
@@ -102,6 +105,11 @@ func (c *ExecEnvTomcatWrapper) ID() string {
 	}
 	return id
 }
+
+func (c *ExecEnvTomcatWrapper) ApplianceName() string {
+	return c.idaName
+}
+
 
 func (c *ExecEnvTomcatWrapper) Name() string {
 	return c.p.GetName()

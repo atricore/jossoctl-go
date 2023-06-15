@@ -8,6 +8,7 @@ import (
 
 const (
 	iisTFFormat = `resource "iamtf_execenv_iis" "{{.Name}}" {
+    ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	WindowsIISPrettyFormat = `
@@ -22,8 +23,9 @@ General
 
 type ExecEnvWindowsIISWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.WindowsIISExecutionEnvironmentDTO
+	trunc   bool
+	idaName string
+	p       *api.WindowsIISExecutionEnvironmentDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -71,8 +73,9 @@ func WindowsIISExecEnvWrite(ctx ExecEnvContext, iis []api.WindowsIISExecutionEnv
 func WindowsIISFormat(ctx ExecEnvContext, execEnvWindowsIISs []api.WindowsIISExecutionEnvironmentDTO, format func(subContext SubContext) error) error {
 	for _, execEnvWindowsIIS := range execEnvWindowsIISs {
 		c := ExecEnvWindowsIISWrapper{
-			p:     &execEnvWindowsIIS,
-			trunc: false,
+			idaName: ctx.IdaName,
+			p:       &execEnvWindowsIIS,
+			trunc:   false,
 		}
 		if err := format(&c); err != nil {
 			return err
@@ -101,6 +104,10 @@ func (c *ExecEnvWindowsIISWrapper) ID() string {
 		return TruncateID(id, 6)
 	}
 	return id
+}
+
+func (c *ExecEnvWindowsIISWrapper) ApplianceName() string {
+	return c.idaName
 }
 
 func (c *ExecEnvWindowsIISWrapper) Name() string {
