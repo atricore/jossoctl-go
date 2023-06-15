@@ -34,14 +34,16 @@ type ProviderFormatter struct {
 }
 
 type ProviderContext struct {
-	Client clicmd.Cli
+	Client  clicmd.Cli
+	IdaName string
 	Context
 }
 
 type providerContainerWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.ProviderContainerDTO
+	trunc   bool
+	idaName string
+	p       *api.ProviderContainerDTO
 }
 
 func (c *providerContainerWrapper) Name() string {

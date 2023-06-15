@@ -8,8 +8,8 @@ import (
 
 const (
 	vaultTFFormat = `resource "iamtf_idvault" "{{.Name}}" {
-    ida = "{{.ApplianceName}}"
-    name = "{{.Name}}"
+	ida = "{{.ApplianceName}}"
+	name = "{{.Name}}"
 }`
 	vaultPrettyFormat = `
 Idvault (built-in)

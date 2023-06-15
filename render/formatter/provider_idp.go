@@ -16,8 +16,9 @@ import (
 
 type idPWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.IdentityProviderDTO
+	trunc   bool
+	IdaName string
+	p       *api.IdentityProviderDTO
 }
 
 type idpFcWrapper struct {
@@ -33,6 +34,11 @@ type amWrapper struct {
 }
 
 const (
+	idpTFFormat = `resource "iamtf_idp" "{{.Name}}" {
+	ida = "{{.ApplianceName}}"
+	name = "{{.Name}}"
+}`
+
 	idpPrettyFormat = `
 Identity Provider (built-in)
  
@@ -154,10 +160,6 @@ General
             {{ end }}
 
 ` + keystoreFormat
-
-	idpTFFormat = `resource "iamtf_idp" "{{.Name}}" {
-	  name = "{{.Name}}"
-}`
 )
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -201,7 +203,7 @@ func IdPWrite(ctx ProviderContext, providers []api.IdentityProviderDTO) error {
 	render := func(format func(subContext SubContext) error) error {
 
 		for _, provider := range providers {
-			c := idPWrapper{p: &provider}
+			c := idPWrapper{IdaName: ctx.IdaName, p: &provider}
 			if err := format(&c); err != nil {
 				return err
 			}
@@ -238,6 +240,10 @@ func (c *idPWrapper) ID() string {
 }
 
 // General
+func (c *idPWrapper) ApplianceName() string {
+	return c.IdaName
+}
+
 func (c *idPWrapper) Name() string {
 	return c.p.GetName()
 }

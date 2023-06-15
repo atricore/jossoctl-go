@@ -15,12 +15,14 @@ import (
 type ExtSaml2SpWrapper struct {
 	HeaderContext
 	trunc     bool
+	IdaName   string
 	Provider  *api.ExternalSaml2ServiceProviderDTO
 	Container *api.ProviderContainerDTO
 }
 
 const (
 	extSaml2SpTFFormat = `resource "iamtf_app_saml2" "{{.AppName}}" {
+	ida = "{{.ApplianceName}}"
 	name = "{{.AppName}}"
 }`
 	ExtSaml2SpPrettyFormat = `
@@ -121,6 +123,10 @@ func (c *ExtSaml2SpWrapper) MarshalJSON() ([]byte, error) {
 }
 
 // General
+func (c *ExtSaml2SpWrapper) ApplianceName() string {
+	return c.IdaName
+}
+
 func (c *ExtSaml2SpWrapper) Name() string {
 	return c.Provider.GetName()
 }

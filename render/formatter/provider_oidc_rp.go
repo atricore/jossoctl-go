@@ -12,13 +12,15 @@ import (
 
 type OidcRpWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.ExternalOpenIDConnectRelayingPartyDTO
+	trunc   bool
+	IdaName string
+	p       *api.ExternalOpenIDConnectRelayingPartyDTO
 }
 
 const (
 	oidcRpTFFormat = `resource "iamtf_app_oidc" "{{.Name}}" {
-    name = "{{.Name}}"
+	ida = "{{.ApplianceName}}"
+	name = "{{.Name}}"
 }`
 	OidcRpPrettyFormat = `
 OIDC Relaying Party    
@@ -103,7 +105,7 @@ func OidcRpWrite(ctx ProviderContext, providers []api.ExternalOpenIDConnectRelay
 
 func OidcRpFormat(ctx ProviderContext, providers []api.ExternalOpenIDConnectRelayingPartyDTO, format func(subContext SubContext) error) error {
 	for _, provider := range providers {
-		c := OidcRpWrapper{p: &provider}
+		c := OidcRpWrapper{IdaName: ctx.IdaName, p: &provider}
 		if err := format(&c); err != nil {
 			return err
 		}
@@ -126,6 +128,10 @@ func (c *OidcRpWrapper) MarshalJSON() ([]byte, error) {
 }
 
 // General
+func (c *OidcRpWrapper) ApplianceName() string {
+	return c.IdaName
+}
+
 func (c *OidcRpWrapper) Name() string {
 	return c.p.GetName()
 }

@@ -42,6 +42,7 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 
 					// create instance of IntSaml2SpWrapper
 					w := formatter.IntSaml2SpWrapper{
+						IdaName:   ctx.IdaName,
 						Container: &container,
 						Provider:  &provider,
 					}
@@ -82,6 +83,7 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 					}
 					// create instance of IntSaml2SpWrapper
 					w := formatter.ExtSaml2SpWrapper{
+						IdaName:   ctx.IdaName,
 						Container: &c,
 						Provider:  &p,
 					}
@@ -131,7 +133,8 @@ func RenderProviderToWriter(c cli.Cli, idaName string, pName string, source stri
 
 	f := GetProviderFormatter(p.GetType())
 	ctx := formatter.ProviderContext{
-		Client: c,
+		Client:  c,
+		IdaName: idaName,
 		Context: formatter.Context{
 			Output: out,
 			Format: f.PFormat(source, quiet),

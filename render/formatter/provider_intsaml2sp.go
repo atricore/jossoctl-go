@@ -14,6 +14,7 @@ import (
 type IntSaml2SpWrapper struct {
 	HeaderContext
 	trunc     bool
+	IdaName   string
 	Provider  *api.InternalSaml2ServiceProviderDTO
 	Container *api.ProviderContainerDTO
 }
@@ -24,6 +25,7 @@ type spFcWrapper struct {
 
 const (
 	intSaml2SpTFFormat = `resource "iamtf_app_agent" "{{.AppName}}" {
+	ida = "{{.ApplianceName}}"
 	name = "{{.AppName}}"
 }`
 	IntSaml2SpPrettyFormat = `
@@ -141,6 +143,10 @@ func (c *IntSaml2SpWrapper) MarshalJSON() ([]byte, error) {
 // General
 func (c *IntSaml2SpWrapper) Name() string {
 	return c.Provider.GetName()
+}
+
+func (c *IntSaml2SpWrapper) ApplianceName() string {
+	return c.IdaName
 }
 
 func (c *IntSaml2SpWrapper) AppName() string {

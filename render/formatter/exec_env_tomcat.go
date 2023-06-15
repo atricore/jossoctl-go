@@ -8,7 +8,7 @@ import (
 
 const (
 	tomcatTFFormat = `resource "iamtf_execenv_tomcat" "{{.Name}}" {
-    ida = "{{.ApplianceName}}"
+	ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	TomcatPrettyFormat = `
@@ -23,9 +23,9 @@ General
 
 type ExecEnvTomcatWrapper struct {
 	HeaderContext
-	trunc bool
+	trunc   bool
 	idaName string
-	p     *api.TomcatExecutionEnvironmentDTO
+	p       *api.TomcatExecutionEnvironmentDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -74,8 +74,8 @@ func TomcatFormat(ctx ExecEnvContext, execEnvTomcats []api.TomcatExecutionEnviro
 	for _, execEnvTomcat := range execEnvTomcats {
 		c := ExecEnvTomcatWrapper{
 			idaName: ctx.IdaName,
-			p:     &execEnvTomcat,
-			trunc: false,
+			p:       &execEnvTomcat,
+			trunc:   false,
 		}
 		if err := format(&c); err != nil {
 			return err
@@ -109,7 +109,6 @@ func (c *ExecEnvTomcatWrapper) ID() string {
 func (c *ExecEnvTomcatWrapper) ApplianceName() string {
 	return c.idaName
 }
-
 
 func (c *ExecEnvTomcatWrapper) Name() string {
 	return c.p.GetName()

@@ -8,7 +8,7 @@ import (
 
 const (
 	phpTFFormat = `resource "iamtf_execenv_php" "{{.Name}}" {
-    ida = "{{.ApplianceName}}"
+	ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	PHPPrettyFormat = `

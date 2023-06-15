@@ -8,7 +8,7 @@ import (
 
 const (
 	iisTFFormat = `resource "iamtf_execenv_iis" "{{.Name}}" {
-    ida = "{{.ApplianceName}}"
+	ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	WindowsIISPrettyFormat = `

@@ -8,7 +8,7 @@ import (
 
 const (
 	weblogicTFFormat = `resource "iamtf_execenv_weblogic" "{{.Name}}" {
-    ida = "{{.ApplianceName}}"
+	ida = "{{.ApplianceName}}"
 	name = "{{.Name}}"
 }`
 	WeblogicPrettyFormat = `
@@ -23,9 +23,9 @@ General
 
 type ExecEnvWeblogicWrapper struct {
 	HeaderContext
-	trunc bool
+	trunc   bool
 	idaName string
-	p     *api.WeblogicExecutionEnvironmentDTO
+	p       *api.WeblogicExecutionEnvironmentDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext

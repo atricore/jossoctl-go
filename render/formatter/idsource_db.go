@@ -10,8 +10,8 @@ import (
 
 const (
 	idSourceDBTFFormat = `resource "iamtf_idsource_db" "{{.Name}}" {
-    ida = "{{.ApplianceName}}"
-    name = "{{.Name}}"
+	ida = "{{.ApplianceName}}"
+	name = "{{.Name}}"
 }`
 	idSourceDBPrettyFormat = `
 DB Identity Source (built-in)
