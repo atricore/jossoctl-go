@@ -8,6 +8,20 @@ import api "github.com/atricore/josso-api-go"
 
 // Insert this snippet into your main template
 const (
+	extensionTFFormat = `{{- if .Extension.HasExtension }}
+    extension {
+		fqcn = "{{.Extension.FCQN}}"
+		osgi_filter = "{{.Extension.OsgiFilter}}"
+		type = "{{.Extension.Type}}"
+		{{ range $props := .Extension.CustomClassProperties}}
+		property {
+			name = "{{$props.Name}}"
+			value = "{{$props.Value}}"
+		}
+		{{- end }}
+
+	}
+{{- end }}`
 	extensionFormat = `
 	{{- if .Extension.HasExtension }}
 	Extension

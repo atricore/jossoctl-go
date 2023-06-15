@@ -13,6 +13,7 @@ const (
 	ida                              = "{{.ApplianceName}}"
 	name                             = "{{.Name}}"
 	description                      = "{{.Description}}"
+
 	jdbc_driver                      = "{{.JdbcDriver}}"
 	connectionurl                    = "{{.ConnectionUrl}}"
 	username                         = "{{.Username}}"
@@ -34,10 +35,10 @@ const (
 	max_idle_time                   = {{.MaxIdleTime}}
 	max_pool_size                   = {{.MaxSize}}
 	min_pool_size                   = {{.MinSize}}
-	{{- end}}
-	
+	{{- end}}	
 
-}`
+}` + extensionTFFormat
+
 	idSourceDBPrettyFormat = `
 DB Identity Source (built-in)
  
@@ -261,4 +262,6 @@ func (c *DbIdSourceWrapper) RelayCredentialQuery() string {
 	return c.p.GetRelayCredentialQueryString()
 }
 
-// TODO : Add Extension to wrapper
+func (c *DbIdSourceWrapper) Extension() *CustomClassWrapper {
+	return &CustomClassWrapper{cc: c.p.CustomClass}
+}

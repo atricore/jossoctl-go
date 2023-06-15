@@ -2,14 +2,39 @@ package formatter
 
 import (
 	"strconv"
+	"strings"
 
 	api "github.com/atricore/josso-api-go"
 )
 
 const (
 	ldapTFFormat = `resource "iamtf_idsource_ldap" "{{.Name}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.Name}}"
+	ida                 = "{{.ApplianceName}}"
+	name                = "{{.Name}}"
+	description         = "{{.Description}}"
+	
+	initial_ctx_factory = "{{.InitialCtxFactory}}"
+	provider_url        = "{{.ProviderUrl}}"
+	username            = "{{.Principal}}"
+	password            = "{{.Password}}"
+	authentication      = "{{.Authentication}}"
+
+	search_scope        = "{{.SearchScope}}"
+	users_ctx_dn        = "{{.UserDn}}"
+	userid_attr         = "{{.UserIdentifier}}"
+	groups_ctx_dn       = "{{.RoleDn}}"
+	groupid_attr        = "{{.RoleMemberAttr}}"
+	groupmember_attr    = "{{.RoleMemberAttr}}"
+	group_match_mode    = "{{.RoleMatchingMode}}"
+	referrals           = "{{.Referrals}}"
+	operational_attrs   = "{{.IncludeOperationalAttributes}}"
+	{{- range $m := .UserAttrs}}
+
+	user_attributes {
+		attribute       = "{{$m.Property}}"
+		claim           = "{{$m.Attribute}}"
+	}
+	{{- end}}
 }`
 	LdapPrettyFormat = `
  Directory Identity Source (built-in)
@@ -35,14 +60,14 @@ General:
    Include operational attributes: {{.IncludeOperationalAttributes}}
    Updatable credential:           {{.UpdatableCredential}}
    Credentials query:              {{.CredentialsQuery}}
-   Role identifier:                {{.RoleIdentifies}}
+   Role identifier:                {{.RoleMemberAttr}}
    Referrals:                      {{.Referrals}}
    Search scope:                   {{.SearchScope}}
    Role DN:                        {{.RoleDn}}
    Role matching mode:             {{.RoleMatchingMode}}
    User identifier:                {{.UserIdentifier}}
    User DN:                        {{.UserDn}}
-` + extensionFormat
+` + extensionTFFormat
 )
 
 type idSourceLdapWrapper struct {
@@ -50,6 +75,11 @@ type idSourceLdapWrapper struct {
 	trunc   bool
 	idaName string
 	p       *api.LdapIdentitySourceDTO
+}
+
+type userAttributeMapping struct {
+	Attribute string
+	Property  string
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -190,7 +220,7 @@ func (c *idSourceLdapWrapper) CredentialsQuery() string {
 	return c.p.GetCredentialQueryString()
 }
 
-func (c *idSourceLdapWrapper) RoleIdentifies() string {
+func (c *idSourceLdapWrapper) RoleMemberAttr() string {
 	return c.p.GetUidAttributeID()
 }
 
@@ -216,6 +246,17 @@ func (c *idSourceLdapWrapper) UserIdentifier() string {
 
 func (c *idSourceLdapWrapper) UserDn() string {
 	return c.p.GetUsersCtxDN()
+}
+
+func (c *idSourceLdapWrapper) UserAttrs() []userAttributeMapping {
+	var userAttrs []userAttributeMapping
+	attrs := c.p.GetCredentialQueryString()
+	mappings := strings.Split(attrs, ",")
+	for _, mapping := range mappings {
+		pair := strings.SplitN(mapping, "=", 2)
+		userAttrs = append(userAttrs, userAttributeMapping{Attribute: pair[1], Property: pair[0]})
+	}
+	return userAttrs
 }
 
 func (c *idSourceLdapWrapper) Extension() *CustomClassWrapper {
