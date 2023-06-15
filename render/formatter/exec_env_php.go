@@ -8,8 +8,10 @@ import (
 
 const (
 	phpTFFormat = `resource "iamtf_execenv_php" "{{.Name}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.Name}}"
+	ida         = "{{.ApplianceName}}"
+	name        = "{{.Name}}"
+	description = "{{.DisplayName}}"
+	environment = "{{.Environment}}"
 }`
 	PHPPrettyFormat = `
 PHP Execution Environment
@@ -116,6 +118,10 @@ func (c *ExecEnvPHPWrapper) Name() string {
 
 func (c *ExecEnvPHPWrapper) DisplayName() string {
 	return c.p.GetDisplayName()
+}
+
+func (c *ExecEnvPHPWrapper) Environment() string {
+	return c.p.GetPhpEnvironmentType()
 }
 
 func (c *ExecEnvPHPWrapper) Location() string {

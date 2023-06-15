@@ -10,8 +10,33 @@ import (
 
 const (
 	idSourceDBTFFormat = `resource "iamtf_idsource_db" "{{.Name}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.Name}}"
+	ida                              = "{{.ApplianceName}}"
+	name                             = "{{.Name}}"
+	description                      = "{{.Description}}"
+	jdbc_driver                      = "{{.JdbcDriver}}"
+	connectionurl                    = "{{.ConnectionUrl}}"
+	username                         = "{{.Username}}"
+	password                         = "{{.Password}}"
+
+	sql_username                     = "{{.UsernameQuery}}"
+	sql_groups                       = "{{.RolesQuery}}"
+	sql_credentials                  = "{{.CredentialsQuery}}"
+	sql_relay_credential             = "{{.RelayCredentialQuery}}"
+	sql_user_attrs                   = "{{.PropertiesQuery}}"
+	use_column_name_as_property_name = {{.UseColumnNamesAsPropertyNames}}
+	dml_reset_credential             = "{{.UpdateCredentials}}"
+
+	connection_pool                  = {{.ConnectionPooling}}
+	{{- if .ConnectionPooling}}
+	idle_connection_test_period     = "{{.IdleConnectionTestPeriod}}"
+	acquire_increment               = {{.AcquireIncrement}}
+	initial_pool_size               = {{.InitialPool}}
+	max_idle_time                   = {{.MaxIdleTime}}
+	max_pool_size                   = {{.MaxSize}}
+	min_pool_size                   = {{.MinSize}}
+	{{- end}}
+	
+
 }`
 	idSourceDBPrettyFormat = `
 DB Identity Source (built-in)

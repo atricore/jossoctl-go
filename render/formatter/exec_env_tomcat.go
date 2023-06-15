@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"fmt"
 	"strconv"
 
 	api "github.com/atricore/josso-api-go"
@@ -8,8 +9,10 @@ import (
 
 const (
 	tomcatTFFormat = `resource "iamtf_execenv_tomcat" "{{.Name}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.Name}}"
+	ida             = "{{.ApplianceName}}"
+	name            = "{{.Name}}"
+	description     = "{{.DisplayName}}"
+	version         = "{{.Version}}"
 }`
 	TomcatPrettyFormat = `
 Tomcat Execution Environment
@@ -118,6 +121,36 @@ func (c *ExecEnvTomcatWrapper) DisplayName() string {
 	return c.p.GetDisplayName()
 }
 
+func (c *ExecEnvTomcatWrapper) Version() string {
+	v, err := platformIdToVersion(c.p.GetPlatformId())
+	if err != nil {
+		return err.Error()
+	}
+	return v
+}
+
 func (c *ExecEnvTomcatWrapper) Location() string {
 	return c.p.GetLocation()
+}
+
+func platformIdToVersion(pid string) (string, error) {
+	switch pid {
+	case "tc50":
+		return "5", nil
+	case "tc55":
+		return "5.5", nil
+	case "tc60":
+		return "6", nil
+	case "tc70":
+		return "7", nil
+	case "tc80":
+		return "8", nil
+	case "tc85":
+		return "8.5", nil
+	case "tc90":
+		return "9", nil
+	}
+
+	return "", fmt.Errorf("unknown platform-id %s", pid)
+
 }

@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"fmt"
 	"strconv"
 
 	api "github.com/atricore/josso-api-go"
@@ -8,8 +9,12 @@ import (
 
 const (
 	weblogicTFFormat = `resource "iamtf_execenv_weblogic" "{{.Name}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.Name}}"
+	ida         = "{{.ApplianceName}}"
+	name        = "{{.Name}}"
+	description = "{{.DisplayName}}"
+	version     = "{{.Version}}"
+	domain      = "{{.Domain}}"
+	target_jdk  = "{{.TargetJDK}}"	
 }`
 	WeblogicPrettyFormat = `
 Weblogic Execution Environment
@@ -118,6 +123,37 @@ func (c *ExecEnvWeblogicWrapper) DisplayName() string {
 	return c.p.GetDisplayName()
 }
 
+func (c *ExecEnvWeblogicWrapper) Version() string {
+	v, err := platformIdVersion(c.p.GetPlatformId())
+	if err != nil {
+		return c.p.GetPlatformId()
+	}
+	return v
+}
+
+func (c *ExecEnvWeblogicWrapper) Domain() string {
+	return c.p.GetDomain()
+}
+
+func (c *ExecEnvWeblogicWrapper) TargetJDK() string {
+	return c.p.GetTargetJDK()
+}
+
 func (c *ExecEnvWeblogicWrapper) Location() string {
 	return c.p.GetLocation()
+}
+
+func platformIdVersion(ver string) (string, error) {
+	switch ver {
+	case "wl92":
+		return "9.2", nil
+	case "wl11":
+		return "10", nil
+	case "wl12":
+		return "12", nil
+	case "wl14":
+		return "14", nil
+
+	}
+	return "", fmt.Errorf("unknown version %s", ver)
 }
