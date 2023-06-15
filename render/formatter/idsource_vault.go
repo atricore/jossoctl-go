@@ -8,8 +8,9 @@ import (
 
 const (
 	vaultTFFormat = `resource "iamtf_idvault" "{{.Name}}" {
-		name = "{{.Name}}"
-  }`
+    ida = "{{.ApplianceName}}"
+    name = "{{.Name}}"
+}`
 	vaultPrettyFormat = `
 Idvault (built-in)
     	
@@ -25,8 +26,9 @@ General:
 
 type idVaultWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.EmbeddedIdentityVaultDTO
+	trunc   bool
+	idaName string
+	p       *api.EmbeddedIdentityVaultDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -74,8 +76,9 @@ func VaultWrite(ctx IdSourceContext, dbvault []api.EmbeddedIdentityVaultDTO) err
 func VaultFormat(ctx IdSourceContext, idVaults []api.EmbeddedIdentityVaultDTO, format func(subContext SubContext) error) error {
 	for _, idVault := range idVaults {
 		c := idVaultWrapper{
-			p:     &idVault,
-			trunc: false,
+			p:       &idVault,
+			idaName: ctx.IdaName,
+			trunc:   false,
 		}
 		if err := format(&c); err != nil {
 			return err
@@ -107,6 +110,10 @@ func (c *idVaultWrapper) ID() string {
 }
 
 // General
+func (c *idVaultWrapper) ApplianceName() string {
+	return c.idaName
+}
+
 func (c *idVaultWrapper) Name() string {
 	return c.p.GetName()
 }

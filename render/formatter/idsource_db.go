@@ -10,8 +10,9 @@ import (
 
 const (
 	idSourceDBTFFormat = `resource "iamtf_idsource_db" "{{.Name}}" {
-		name = "{{.Name}}"
-  }`
+    ida = "{{.ApplianceName}}"
+    name = "{{.Name}}"
+}`
 	idSourceDBPrettyFormat = `
 DB Identity Source (built-in)
  
@@ -49,8 +50,9 @@ General:
 
 type DbIdSourceWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.DbIdentitySourceDTO
+	trunc   bool
+	idaName string
+	p       *api.DbIdentitySourceDTO
 }
 type CustomClassProp struct {
 	props *api.CustomClassPropertyDTO
@@ -104,7 +106,8 @@ func IdSourceFormat(ctx IdSourceContext, idsources []api.DbIdentitySourceDTO, fo
 		var formatted []SubContext
 		formatted = []SubContext{}
 		c := DbIdSourceWrapper{
-			p: &idsource,
+			idaName: ctx.IdaName,
+			p:       &idsource,
 		}
 		formatted = append(formatted, &c)
 
@@ -140,6 +143,10 @@ func (c *DbIdSourceWrapper) ID() string {
 }
 
 // General
+func (c *DbIdSourceWrapper) ApplianceName() string {
+	return c.idaName
+}
+
 func (c *DbIdSourceWrapper) Name() string {
 	return c.p.GetName()
 }

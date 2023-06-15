@@ -13,11 +13,11 @@ var ExecEnvFormatters = []formatter.ExecEnvFormatter{
 	{
 		ExecEnvType:   "TomcatExecutionEnvironment",
 		ExecEnvFormat: formatter.NewTomcatFormat,
-		ExecEnvWriter: func(ctx formatter.ExecEnvContext, id_or_name string, containers []api.ExecEnvContainerDTO) error {
+		ExecEnvWriter: func(ctx formatter.ExecEnvContext, idaName string, containers []api.ExecEnvContainerDTO) error {
 			var execEnv []api.TomcatExecutionEnvironmentDTO
 			for _, c := range containers {
 				if c.GetType() == "TomcatExecutionEnvironment" {
-					db, err := ctx.Client.Client().GetTomcatExeEnv(id_or_name, c.GetName())
+					db, err := ctx.Client.Client().GetTomcatExeEnv(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -31,11 +31,11 @@ var ExecEnvFormatters = []formatter.ExecEnvFormatter{
 	{
 		ExecEnvType:   "WindowsIISExecutionEnvironment",
 		ExecEnvFormat: formatter.NewWindowsIISFormat,
-		ExecEnvWriter: func(ctx formatter.ExecEnvContext, id_or_name string, containers []api.ExecEnvContainerDTO) error {
+		ExecEnvWriter: func(ctx formatter.ExecEnvContext, idaName string, containers []api.ExecEnvContainerDTO) error {
 			var execEnv []api.WindowsIISExecutionEnvironmentDTO
 			for _, c := range containers {
 				if c.GetType() == "WindowsIISExecutionEnvironment" {
-					db, err := ctx.Client.Client().GetIISExeEnv(id_or_name, c.GetName())
+					db, err := ctx.Client.Client().GetIISExeEnv(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -49,11 +49,11 @@ var ExecEnvFormatters = []formatter.ExecEnvFormatter{
 	{
 		ExecEnvType:   "PHPExecutionEnvironment",
 		ExecEnvFormat: formatter.NewPHPFormat,
-		ExecEnvWriter: func(ctx formatter.ExecEnvContext, id_or_name string, containers []api.ExecEnvContainerDTO) error {
+		ExecEnvWriter: func(ctx formatter.ExecEnvContext, idaName string, containers []api.ExecEnvContainerDTO) error {
 			var execEnv []api.PHPExecutionEnvironmentDTO
 			for _, c := range containers {
 				if c.GetType() == "PHPExecutionEnvironment" {
-					db, err := ctx.Client.Client().GetPhpExeEnv(id_or_name, c.GetName())
+					db, err := ctx.Client.Client().GetPhpExeEnv(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -67,11 +67,11 @@ var ExecEnvFormatters = []formatter.ExecEnvFormatter{
 	{
 		ExecEnvType:   "WeblogicExecutionEnvironment",
 		ExecEnvFormat: formatter.NewWeblogicFormat,
-		ExecEnvWriter: func(ctx formatter.ExecEnvContext, id_or_name string, containers []api.ExecEnvContainerDTO) error {
+		ExecEnvWriter: func(ctx formatter.ExecEnvContext, idaName string, containers []api.ExecEnvContainerDTO) error {
 			var execEnv []api.WeblogicExecutionEnvironmentDTO
 			for _, c := range containers {
 				if c.GetType() == "WeblogicExecutionEnvironment" {
-					db, err := ctx.Client.Client().GetWebLogic(id_or_name, c.GetName())
+					db, err := ctx.Client.Client().GetWebLogic(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -87,7 +87,7 @@ var ExecEnvFormatters = []formatter.ExecEnvFormatter{
 var DefaultExecEnvsFormatters = formatter.ExecEnvFormatter{
 	ExecEnvType:   "__default__",
 	ExecEnvFormat: formatter.NewExecEnvContainerFormat,
-	ExecEnvWriter: func(ctx formatter.ExecEnvContext, id_or_name string, containers []api.ExecEnvContainerDTO) error {
+	ExecEnvWriter: func(ctx formatter.ExecEnvContext, idaName string, containers []api.ExecEnvContainerDTO) error {
 		var execEnvs []api.ExecutionEnvironmentDTO
 
 		for _, c := range containers {
@@ -97,22 +97,22 @@ var DefaultExecEnvsFormatters = formatter.ExecEnvFormatter{
 	},
 }
 
-func RenderExecEnvToFile(c cli.Cli, id_or_name string, pName string, source string, quiet bool, fName string, replace bool) error {
+func RenderExecEnvToFile(c cli.Cli, idaName string, pName string, source string, quiet bool, fName string, replace bool) error {
 	var f = func(out io.Writer) {
-		RenderExecEnvToWriter(c, id_or_name, pName, source, quiet, out)
+		RenderExecEnvToWriter(c, idaName, pName, source, quiet, out)
 	}
 
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderExecEnvToWriter(c cli.Cli, id_or_name string, idSrcName string, source string, quiet bool, out io.Writer) error {
-	p, err := c.Client().GetExecEnv(id_or_name, idSrcName)
+func RenderExecEnvToWriter(c cli.Cli, idaName string, idSrcName string, source string, quiet bool, out io.Writer) error {
+	p, err := c.Client().GetExecEnv(idaName, idSrcName)
 	if err != nil {
 		return err
 	}
 
 	if p.Name == nil {
-		return fmt.Errorf("idsource %s not found in appliance %s", idSrcName, id_or_name)
+		return fmt.Errorf("idsource %s not found in appliance %s", idSrcName, idaName)
 	}
 
 	f := getExecEnvsFormatter(p.GetType())
@@ -126,7 +126,7 @@ func RenderExecEnvToWriter(c cli.Cli, id_or_name string, idSrcName string, sourc
 	}
 
 	lsa := []api.ExecEnvContainerDTO{p}
-	return f.ExecEnvWriter(ctx, id_or_name, lsa)
+	return f.ExecEnvWriter(ctx, idaName, lsa)
 }
 
 func getExecEnvsFormatter(pType string) formatter.ExecEnvFormatter {

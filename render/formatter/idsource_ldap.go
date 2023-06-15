@@ -8,7 +8,8 @@ import (
 
 const (
 	ldapTFFormat = `resource "iamtf_idsource_ldap" "{{.Name}}" {
-	name = "{{.Name}}"
+    ida = "{{.ApplianceName}}"
+    name = "{{.Name}}"
 }`
 	LdapPrettyFormat = `
  Directory Identity Source (built-in)
@@ -46,8 +47,9 @@ General:
 
 type idSourceLdapWrapper struct {
 	HeaderContext
-	trunc bool
-	p     *api.LdapIdentitySourceDTO
+	trunc   bool
+	idaName string
+	p       *api.LdapIdentitySourceDTO
 }
 
 // NewApplianceFormat returns a format for rendering an ApplianceContext
@@ -95,8 +97,9 @@ func LdapWrite(ctx IdSourceContext, idsourcedb []api.LdapIdentitySourceDTO) erro
 func LdapFormat(ctx IdSourceContext, idSourceLdaps []api.LdapIdentitySourceDTO, format func(subContext SubContext) error) error {
 	for _, idSourceLdap := range idSourceLdaps {
 		c := idSourceLdapWrapper{
-			p:     &idSourceLdap,
-			trunc: false,
+			idaName: ctx.IdaName,
+			p:       &idSourceLdap,
+			trunc:   false,
 		}
 		if err := format(&c); err != nil {
 			return err
@@ -130,6 +133,10 @@ func (c *idSourceLdapWrapper) ID() string {
 // General
 func (c *idSourceLdapWrapper) Name() string {
 	return c.p.GetName()
+}
+
+func (c *idSourceLdapWrapper) ApplianceName() string {
+	return c.idaName
 }
 
 func (c *idSourceLdapWrapper) Id() int64 {

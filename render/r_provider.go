@@ -13,11 +13,11 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 	{
 		PType:   "IdentityProvider",
 		PFormat: formatter.NewIdPFormat,
-		PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
+		PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {
 			var providers []api.IdentityProviderDTO
 			for _, c := range containers {
 				if c.GetType() == "IdentityProvider" {
-					p, err := ctx.Client.Client().GetIdp(id_or_name, c.GetName())
+					p, err := ctx.Client.Client().GetIdp(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -31,11 +31,11 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 	{
 		PType:   "InternalSaml2ServiceProvider",
 		PFormat: formatter.NewIntSaml2SpFormat,
-		PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
+		PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {
 			var providers []formatter.IntSaml2SpWrapper
 			for _, container := range containers {
 				if container.GetType() == "InternalSaml2ServiceProvider" {
-					provider, err := ctx.Client.Client().GetIntSaml2Sp(id_or_name, container.GetName())
+					provider, err := ctx.Client.Client().GetIntSaml2Sp(idaName, container.GetName())
 					if err != nil {
 						return err
 					}
@@ -55,11 +55,11 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 	{
 		PType:   "ExternalOpenIDConnectRelayingParty",
 		PFormat: formatter.NewOidcRpFormat,
-		PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
+		PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {
 			var providers []api.ExternalOpenIDConnectRelayingPartyDTO
 			for _, c := range containers {
 				if c.GetType() == "ExternalOpenIDConnectRelayingParty" {
-					p, err := ctx.Client.Client().GetOidcRp(id_or_name, c.GetName())
+					p, err := ctx.Client.Client().GetOidcRp(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -72,11 +72,11 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 	{
 		PType:   "ExternalSaml2ServiceProvider",
 		PFormat: formatter.NewExtSaml2SpFormat,
-		PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
+		PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {
 			var providers []formatter.ExtSaml2SpWrapper
 			for _, c := range containers {
 				if c.GetType() == "ExternalSaml2ServiceProvider" {
-					p, err := ctx.Client.Client().GetExtSaml2Sp(id_or_name, c.GetName())
+					p, err := ctx.Client.Client().GetExtSaml2Sp(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -97,7 +97,7 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 var DefaultProviderFormatter = formatter.ProviderFormatter{
 	PType:   "__default__",
 	PFormat: formatter.NewProviderContainerFormat,
-	PWriter: func(ctx formatter.ProviderContext, id_or_name string, containers []api.ProviderContainerDTO) error {
+	PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {
 		var providers []api.FederatedProviderDTO
 		for _, c := range containers {
 			if c.FederatedProvider != nil {
@@ -110,23 +110,23 @@ var DefaultProviderFormatter = formatter.ProviderFormatter{
 	},
 }
 
-func RenderProviderToFile(c cli.Cli, id_or_name string, pName string, source string, quiet bool, fName string, replace bool) error {
+func RenderProviderToFile(c cli.Cli, idaName string, pName string, source string, quiet bool, fName string, replace bool) error {
 	var f = func(out io.Writer) {
-		RenderProviderToWriter(c, id_or_name, pName, source, quiet, out)
+		RenderProviderToWriter(c, idaName, pName, source, quiet, out)
 	}
 
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderProviderToWriter(c cli.Cli, id_or_name string, pName string, source string, quiet bool, out io.Writer) error {
+func RenderProviderToWriter(c cli.Cli, idaName string, pName string, source string, quiet bool, out io.Writer) error {
 
-	p, err := c.Client().GetProvider(id_or_name, pName)
+	p, err := c.Client().GetProvider(idaName, pName)
 	if err != nil {
 		return err
 	}
 
 	if p.Name == nil {
-		return fmt.Errorf("provider! %s not found in appliance %s", pName, id_or_name)
+		return fmt.Errorf("provider! %s not found in appliance %s", pName, idaName)
 	}
 
 	f := GetProviderFormatter(p.GetType())
@@ -139,7 +139,7 @@ func RenderProviderToWriter(c cli.Cli, id_or_name string, pName string, source s
 	}
 
 	lsa := []api.ProviderContainerDTO{p}
-	return f.PWriter(ctx, id_or_name, lsa)
+	return f.PWriter(ctx, idaName, lsa)
 }
 
 func GetProviderFormatter(pType string) formatter.ProviderFormatter {

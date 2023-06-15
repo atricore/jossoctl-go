@@ -13,11 +13,11 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 	{
 		IdSourceType:   "DbIdentitySource",
 		IdSourceFormat: formatter.NewDbIdSouceFormat,
-		IdSourceWriter: func(ctx formatter.IdSourceContext, id_or_name string, containers []api.IdSourceContainerDTO) error {
+		IdSourceWriter: func(ctx formatter.IdSourceContext, idaName string, containers []api.IdSourceContainerDTO) error {
 			var idsource []api.DbIdentitySourceDTO
 			for _, c := range containers {
 				if c.GetType() == "DbIdentitySource" {
-					db, err := ctx.Client.Client().GetDbIdentitySourceDTO(id_or_name, c.GetName())
+					db, err := ctx.Client.Client().GetDbIdentitySourceDTO(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -31,11 +31,11 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 	{
 		IdSourceType:   "EmbeddedIdentityVault",
 		IdSourceFormat: formatter.NewIdVaultFormat,
-		IdSourceWriter: func(ctx formatter.IdSourceContext, id_or_name string, containers []api.IdSourceContainerDTO) error {
+		IdSourceWriter: func(ctx formatter.IdSourceContext, idaName string, containers []api.IdSourceContainerDTO) error {
 			var Embeddedidsource []api.EmbeddedIdentityVaultDTO
 			for _, c := range containers {
 				if c.GetType() == "EmbeddedIdentityVault" {
-					emd, err := ctx.Client.Client().GetIdVault(id_or_name, c.GetName())
+					emd, err := ctx.Client.Client().GetIdVault(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -48,11 +48,11 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 	{
 		IdSourceType:   "LdapIdentitySource",
 		IdSourceFormat: formatter.NewLdapFormat,
-		IdSourceWriter: func(ctx formatter.IdSourceContext, id_or_name string, containers []api.IdSourceContainerDTO) error {
+		IdSourceWriter: func(ctx formatter.IdSourceContext, idaName string, containers []api.IdSourceContainerDTO) error {
 			var Ldapidsource []api.LdapIdentitySourceDTO
 			for _, c := range containers {
 				if c.GetType() == "LdapIdentitySource" {
-					ldap, err := ctx.Client.Client().GetIdSourceLdap(id_or_name, c.GetName())
+					ldap, err := ctx.Client.Client().GetIdSourceLdap(idaName, c.GetName())
 					if err != nil {
 						return err
 					}
@@ -67,7 +67,7 @@ var IdSourcesFormatters = []formatter.IdSourceFormatter{
 var DefaultIdSourcesFormatters = formatter.IdSourceFormatter{
 	IdSourceType:   "__default__",
 	IdSourceFormat: formatter.NewIdSourceContainerFormat,
-	IdSourceWriter: func(ctx formatter.IdSourceContext, id_or_name string, containers []api.IdSourceContainerDTO) error {
+	IdSourceWriter: func(ctx formatter.IdSourceContext, idaName string, containers []api.IdSourceContainerDTO) error {
 		var idsources []api.IdentitySourceDTO
 
 		for _, c := range containers {
@@ -77,28 +77,29 @@ var DefaultIdSourcesFormatters = formatter.IdSourceFormatter{
 	},
 }
 
-func RenderIDSourceToFile(c cli.Cli, id_or_name string, pName string, source string, quiet bool, fName string, replace bool) error {
+func RenderIDSourceToFile(c cli.Cli, idaName string, pName string, source string, quiet bool, fName string, replace bool) error {
 	var f = func(out io.Writer) {
-		RenderIDSourceToWriter(c, id_or_name, pName, source, quiet, out)
+		RenderIDSourceToWriter(c, idaName, pName, source, quiet, out)
 	}
 
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderIDSourceToWriter(c cli.Cli, id_or_name string, idSrcName string, source string, quiet bool, out io.Writer) error {
-	p, err := c.Client().GetIdSource(id_or_name, idSrcName)
+func RenderIDSourceToWriter(c cli.Cli, idaName string, idSrcName string, source string, quiet bool, out io.Writer) error {
+	p, err := c.Client().GetIdSource(idaName, idSrcName)
 	if err != nil {
 		return err
 	}
 
 	if p.Name == nil {
-		return fmt.Errorf("idsource %s not found in appliance %s", idSrcName, id_or_name)
+		return fmt.Errorf("idsource %s not found in appliance %s", idSrcName, idaName)
 	}
 
 	f := getIdSourcesFormatter(p.GetType())
 
 	ctx := formatter.IdSourceContext{
-		Client: c,
+		Client:  c,
+		IdaName: idaName,
 		Context: formatter.Context{
 			Output: out,
 			Format: f.IdSourceFormat(source, quiet),
@@ -106,7 +107,7 @@ func RenderIDSourceToWriter(c cli.Cli, id_or_name string, idSrcName string, sour
 	}
 
 	lsa := []api.IdSourceContainerDTO{p}
-	return f.IdSourceWriter(ctx, id_or_name, lsa)
+	return f.IdSourceWriter(ctx, idaName, lsa)
 }
 
 func getIdSourcesFormatter(pType string) formatter.IdSourceFormatter {

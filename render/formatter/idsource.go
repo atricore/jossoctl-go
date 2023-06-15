@@ -12,12 +12,13 @@ const (
 type IdSourceFormatter struct {
 	IdSourceType     string
 	IdSourceFormat   func(source string, quiet bool) Format
-	IdSourceWriter   func(ctx IdSourceContext, id_or_name string, idsources []api.IdSourceContainerDTO) error
+	IdSourceWriter   func(ctx IdSourceContext, idaName string, idsources []api.IdSourceContainerDTO) error
 	IdSourceResolver func(n string) (interface{}, error)
 }
 
 type IdSourceContext struct {
-	Client clicmd.Cli
+	IdaName string
+	Client  clicmd.Cli
 	Context
 }
 

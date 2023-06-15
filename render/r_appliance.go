@@ -9,23 +9,23 @@ import (
 	"github.com/atricore/josso-cli-go/render/formatter"
 )
 
-func RenderApplianceToFile(c cli.Cli, id_or_name string, source string, quiet bool, fName string, replace bool) error {
+func RenderApplianceToFile(c cli.Cli, idaName string, source string, quiet bool, fName string, replace bool) error {
 	var f = func(out io.Writer) {
-		RenderApplianceToWriter(c, id_or_name, source, quiet, out)
+		RenderApplianceToWriter(c, idaName, source, quiet, out)
 	}
 
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderApplianceToWriter(c cli.Cli, id_or_name string, source string, quiet bool, out io.Writer) error {
+func RenderApplianceToWriter(c cli.Cli, idaName string, source string, quiet bool, out io.Writer) error {
 
-	a, err := c.Client().GetApplianceContainer(id_or_name)
+	a, err := c.Client().GetApplianceContainer(idaName)
 	if err != nil {
 		return err
 	}
 
 	if a.Appliance == nil {
-		return fmt.Errorf("appliance %s not found", id_or_name)
+		return fmt.Errorf("appliance %s not found", idaName)
 	}
 
 	ctx := formatter.ApplianceContext{
