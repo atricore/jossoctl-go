@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/atricore/josso-cli-go/render"
 
@@ -16,27 +15,19 @@ var genTFApplianceCmd = &cobra.Command{
 	Short:   "view appliance",
 	Long:    `generate identity appliance terraform resource file`,
 	Args:    cobra.ExactArgs(0),
-	Run:     genTFApplianceRun,
+	Run:     func(cmd *cobra.Command, args []string) { genTFRun(cmd, args, genTFAppliance) },
 }
 
-func genTFApplianceRun(cmd *cobra.Command, args []string) {
-	err := genTFAppliance(id_or_name, outputType, fName, replace)
-	if err != nil {
-		Client.Error(err)
-		os.Exit(1)
-	}
-}
-
-func genTFAppliance(id_or_name string, oType string, oFile string, replace bool) error {
+func genTFAppliance(idaName string, iName string, oType string, oFile string, replace bool) error {
 
 	// Check output type var
 	if oType == "file" {
 		if oFile == "" {
-			oFile = id_or_name + "-appliance-" + id_or_name + ".tf"
+			oFile = idaName + "-appliance-" + idaName + ".tf"
 		}
-		return render.RenderApplianceToFile(Client, id_or_name, "tf", quiet, oFile, replace)
+		return render.RenderApplianceToFile(Client, idaName, "tf", quiet, oFile, replace)
 	} else if oType == "stdout" {
-		return render.RenderApplianceToWriter(Client, id_or_name, "tf", quiet, Client.Out())
+		return render.RenderApplianceToWriter(Client, idaName, "tf", quiet, Client.Out())
 	} else {
 		return fmt.Errorf("invalid output type: %s", oType)
 	}

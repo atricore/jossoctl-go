@@ -20,47 +20,63 @@ var fName, outputType string
 var replace bool
 
 func genTF(cmd *cobra.Command, args []string) {
-	err := GenTF(id_or_name)
+
+	idaName, err := getIdaName(id_or_name)
+	err = GenTF(idaName)
 	if err != nil {
 		Client.Error(err)
 		os.Exit(1)
 	}
 }
 
-func GenTF(id_or_name string) error {
+func genTFRun(cmd *cobra.Command, args []string, generateFn func(idaName string, pName string, oType string, oFile string, replace bool) error) {
+	idaName, err := getIdaName(id_or_name)
+	if err != nil {
+		Client.Error(err)
+		os.Exit(1)
+	}
+	err = generateFn(idaName, args[0], outputType, fName, replace)
+	if err != nil {
+		Client.Error(err)
+		os.Exit(1)
+	}
 
-	err := genTFAppliance(id_or_name, outputType, "", replace)
+}
+
+func GenTF(idaName string) error {
+
+	err := genTFAppliance(idaName, idaName, outputType, "", replace)
 	if err != nil {
 		return err
 	}
 
 	// If appliance was generated, then generate providers
 
-	ps, err := Client.Client().GetProviders(id_or_name)
+	ps, err := Client.Client().GetProviders(idaName)
 	if err != nil {
 		return err
 	}
 
-	is, err := Client.Client().GetIdSources(id_or_name)
+	is, err := Client.Client().GetIdSources(idaName)
 	if err != nil {
 		return err
 	}
 
-	ex, err := Client.Client().GetExecEnvs(id_or_name)
+	ex, err := Client.Client().GetExecEnvs(idaName)
 	if err != nil {
 		return err
 	}
 
 	for _, p := range ps {
-		genTFProvider(id_or_name, *p.Name, outputType, "", replace)
+		genTFProvider(idaName, *p.Name, outputType, "", replace)
 	}
 
 	for _, i := range is {
-		genTFIDSource(id_or_name, *i.Name, outputType, "", replace)
+		genTFIDSource(idaName, *i.Name, outputType, "", replace)
 	}
 
 	for _, e := range ex {
-		genTFExecEnv(id_or_name, *e.Name, outputType, "", replace)
+		genTFExecEnv(idaName, *e.Name, outputType, "", replace)
 	}
 
 	return nil
@@ -71,4 +87,13 @@ func init() {
 	genTFCmd.PersistentFlags().BoolVarP(&replace, "replace", "r", false, "Replace output file if it exists")
 	genTFCmd.PersistentFlags().StringVarP(&outputType, "output", "o", "stdout", "Output type (file or stdout)")
 
+}
+
+func getIdaName(id_or_name string) (string, error) {
+	// Resolve to ida name in case we have an ID
+	a, err := Client.Client().GetApplianceContainer(id_or_name)
+	if err != nil {
+		return "", err
+	}
+	return *a.Appliance.Name, nil
 }

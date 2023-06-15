@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/atricore/josso-cli-go/render"
 	"github.com/spf13/cobra"
@@ -13,28 +12,19 @@ var genTFProviderCmd = &cobra.Command{
 	Aliases: []string{"p"},
 	Short:   "generate terraform resource descriptor for provider",
 	Long:    `generate terraform resource descriptor for federated provider`,
-	Run:     genTFProviderRun,
+	Run:     func(cmd *cobra.Command, args []string) { genTFRun(cmd, args, genTFProvider) },
 	Args:    cobra.ExactArgs(1),
 }
 
-func genTFProviderRun(cmd *cobra.Command, args []string) {
-	err := genTFProvider(id_or_name, args[0], outputType, fName, replace)
-	if err != nil {
-		Client.Error(err)
-		os.Exit(1)
-	}
-
-}
-
-func genTFProvider(id_or_name string, pName string, oType string, oFile string, replace bool) error {
+func genTFProvider(idaName string, pName string, oType string, oFile string, replace bool) error {
 	if oType == "file" {
-		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+id_or_name+.tf"
+		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+idaName+.tf"
 		if oFile == "" {
-			oFile = id_or_name + "-provider-" + pName + ".tf"
+			oFile = idaName + "-provider-" + pName + ".tf"
 		}
-		return render.RenderProviderToFile(Client, id_or_name, pName, "tf", quiet, oFile, replace)
+		return render.RenderProviderToFile(Client, idaName, pName, "tf", quiet, oFile, replace)
 	} else if outputType == "stdout" {
-		return render.RenderProviderToWriter(Client, id_or_name, pName, "tf", quiet, Client.Out())
+		return render.RenderProviderToWriter(Client, idaName, pName, "tf", quiet, Client.Out())
 
 	}
 
