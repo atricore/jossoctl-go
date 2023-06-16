@@ -20,8 +20,10 @@ type IntSaml2SpWrapper struct {
 	Container *api.ProviderContainerDTO
 }
 
-type spFcWrapper struct {
-	fc *api.FederatedConnectionDTO
+type SPFcWrapper struct {
+	Preferred bool
+	IdP       string
+	Fc        *api.FederatedConnectionDTO
 }
 
 const (
@@ -52,14 +54,12 @@ const (
 	{{ range $idp := .IdPs }}
 	idp {
 		name         = "{{ $idp.IdP }}"
-		is_preferred = {{ $idp.Preferred }}
+		is_preferred = {{ $idp.IsPreferred }}
 		{{- if $idp.SpFc.OverrideProvider}}
 		` + spSaml2TFFormat + `
 		{{- end}}				
 	}
 	{{- end}}
-
-	
 	
 	` + keystoreTFFormat + `
 }`
@@ -111,7 +111,7 @@ General
     Federated connections {{ range $fc := .FederatedConnections}}
     	IDP Channel:                    {{$fc.ChannelName}}
     	Target Provider:                {{$fc.ConnectionName}}		
-    	Preferred:                      {{$fc.Preferred}}
+    	Preferred:                      {{$fc.IsPreferred}}
     	Override provider setup:        {{$fc.OverrideProvider}}
     	{{- if $fc.OverrideProvider }}
     	Account linkage:                {{$fc.AccountLinkage}}
@@ -392,10 +392,10 @@ func (c *IntSaml2SpWrapper) SignatureHash() string {
 	return c.Provider.GetSignatureHash()
 }
 
-func (c *IntSaml2SpWrapper) FederatedConnections() []spFcWrapper {
-	var fcWrappers []spFcWrapper
+func (c *IntSaml2SpWrapper) FederatedConnections() []SPFcWrapper {
+	var fcWrappers []SPFcWrapper
 	for i := range c.Provider.FederatedConnectionsB {
-		fcWrappers = append(fcWrappers, spFcWrapper{fc: &c.Provider.FederatedConnectionsB[i]})
+		fcWrappers = append(fcWrappers, SPFcWrapper{Fc: &c.Provider.FederatedConnectionsB[i]})
 	}
 	return fcWrappers
 }
@@ -432,12 +432,12 @@ func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, e
 func (c *IntSaml2SpWrapper) KeystorePassword() string {
 	cfg := c.Provider.GetConfig()
 
-	idpCfg, err := cfg.ToSamlR2SPConfig()
+	spCfg, err := cfg.ToSamlR2SPConfig()
 	if err != nil {
 		return err.Error()
 	}
 
-	singer := idpCfg.GetSigner()
+	singer := spCfg.GetSigner()
 
 	return singer.GetPassword()
 
@@ -446,12 +446,12 @@ func (c *IntSaml2SpWrapper) KeystorePassword() string {
 func (c *IntSaml2SpWrapper) HasKeyPassword() bool {
 	cfg := c.Provider.GetConfig()
 
-	idpCfg, err := cfg.ToSamlR2SPConfig()
+	spCfg, err := cfg.ToSamlR2SPConfig()
 	if err != nil {
 		return false
 	}
 
-	singer := idpCfg.GetSigner()
+	singer := spCfg.GetSigner()
 
 	return singer.GetPrivateKeyPassword() != ""
 }
@@ -472,12 +472,12 @@ func (c *IntSaml2SpWrapper) KeyPassword() string {
 
 func (c *IntSaml2SpWrapper) HasCertificateAlias() bool {
 	cfg := c.Provider.GetConfig()
-	idpCfg, err := cfg.ToSamlR2SPConfig()
+	spCfg, err := cfg.ToSamlR2SPConfig()
 	if err != nil {
 		return false
 	}
 
-	singer := idpCfg.GetSigner()
+	singer := spCfg.GetSigner()
 	return singer.GetCertificateAlias() != ""
 
 }
@@ -580,17 +580,15 @@ func (c *IntSaml2SpWrapper) Type() string {
 	return api.AsString(c.Provider.AdditionalProperties["@c"], "N/A")
 }
 
-func (c *IntSaml2SpWrapper) IdPs() []FederatedConnectionToIdP {
+func (c *IntSaml2SpWrapper) IdPs() []SPFcWrapper {
 
-	var idps []FederatedConnectionToIdP
+	var idps []SPFcWrapper
 
 	for _, fc := range c.Provider.GetFederatedConnectionsB() {
-		idps = append(idps, FederatedConnectionToIdP{
+		idps = append(idps, SPFcWrapper{
 			Preferred: false,
 			IdP:       fc.GetName(),
-			SpFc: spFcWrapper{
-				&fc,
-			},
+			Fc:        &fc,
 		})
 	}
 
@@ -599,75 +597,109 @@ func (c *IntSaml2SpWrapper) IdPs() []FederatedConnectionToIdP {
 }
 
 // Federated Connection
-func (c *spFcWrapper) ChannelName() string {
-	return c.fc.ChannelB.GetName()
+func (c *SPFcWrapper) ChannelName() string {
+	return c.Fc.ChannelB.GetName()
 }
 
-func (c *spFcWrapper) AccountLinkage() string {
-	idpChannel, err := c.fc.GetIDPChannel()
+func (c *SPFcWrapper) AccountLinkage() string {
+	idpChannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return err.Error()
 	}
 	return idpChannel.AccountLinkagePolicy.GetName()
 }
 
-func (c *spFcWrapper) IdentityMapping() string {
-	idpChannel, err := c.fc.GetIDPChannel()
+func (c *SPFcWrapper) IdentityMapping() string {
+	idpChannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return err.Error()
 	}
 	return idpChannel.IdentityMappingPolicy.GetName()
 }
 
-func (c *spFcWrapper) OverrideProvider() bool {
-	return c.fc.ChannelB.GetOverrideProviderSetup()
+func (c *SPFcWrapper) OverrideProvider() bool {
+	return c.Fc.ChannelB.GetOverrideProviderSetup()
 }
 
-func (c *spFcWrapper) ConnectionName() string {
-	return c.fc.GetName()
+func (c *SPFcWrapper) ConnectionName() string {
+	return c.Fc.GetName()
 }
 
-func (c *spFcWrapper) SignAuthenticationRequests() bool {
-	idpChannel, err := c.fc.GetIDPChannel()
+func (c *SPFcWrapper) SignAuthenticationRequests() bool {
+	idpChannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return false
 	}
 	return idpChannel.GetSignAuthenticationRequests()
 }
 
-func (c *spFcWrapper) WantAssertionSigned() bool {
-	idpChannel, err := c.fc.GetIDPChannel()
+func (c *SPFcWrapper) WantAssertionSigned() bool {
+	idpChannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return false
 	}
 	return idpChannel.GetWantAssertionSigned()
 }
 
-func (c *spFcWrapper) Bindings() string {
+func (c *SPFcWrapper) Bindings() string {
 	// concatenate c.p.GetActiveBindings() as a single string
-	return strings.Join(c.fc.ChannelB.GetActiveBindings(), ", ")
+	return strings.Join(c.Fc.ChannelB.GetActiveBindings(), ", ")
 }
 
-func (c *spFcWrapper) Location() string {
-	l := c.fc.ChannelB.GetLocation()
+func (c *SPFcWrapper) HttpPostBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_HTTP_POST")
+}
+
+func (c *SPFcWrapper) HttpRedirectBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_HTTP_REDIRECT")
+}
+
+func (c *SPFcWrapper) SoapBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_SOAP")
+}
+
+func (c *SPFcWrapper) ArtifactBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_ARTIFACT")
+}
+
+func (c *SPFcWrapper) LocalBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_LOCAL")
+}
+
+func (c *SPFcWrapper) HasBinding(b string) bool {
+	for _, binding := range c.Fc.ChannelB.GetActiveBindings() {
+		if binding == b {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *SPFcWrapper) Location() string {
+	l := c.Fc.ChannelB.GetLocation()
 	return cli.LocationToStr(&l)
 }
 
-func (c *spFcWrapper) Metadata() string {
+func (c *SPFcWrapper) Metadata() string {
 	return c.Location() + "/SAML2/MD"
 }
 
-func (c *spFcWrapper) Preferred() bool {
-	idpchannel, err := c.fc.GetIDPChannel()
+func (c *SPFcWrapper) IsPreferred() bool {
+	idpchannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return false
 	}
 	return idpchannel.GetPreferred()
 }
 
-func (c *spFcWrapper) SignatureHash() string {
+func (c *SPFcWrapper) SignatureHash() string {
 
-	idpchannel, err := c.fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return err.Error()
 	}
@@ -675,9 +707,9 @@ func (c *spFcWrapper) SignatureHash() string {
 	return idpchannel.GetSignatureHash()
 }
 
-func (c *spFcWrapper) MessageTTL() int32 {
+func (c *SPFcWrapper) MessageTTL() int32 {
 
-	idpchannel, err := c.fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return 0
 	}
@@ -685,9 +717,9 @@ func (c *spFcWrapper) MessageTTL() int32 {
 	return idpchannel.GetMessageTtl()
 }
 
-func (c *spFcWrapper) MessageTTLTolerance() int32 {
+func (c *SPFcWrapper) MessageTTLTolerance() int32 {
 
-	idpchannel, err := c.fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return 0
 	}
@@ -695,9 +727,9 @@ func (c *spFcWrapper) MessageTTLTolerance() int32 {
 	return idpchannel.GetMessageTtlTolerance()
 }
 
-func (c *spFcWrapper) EnableProxyExtension() bool {
+func (c *SPFcWrapper) EnableProxyExtension() bool {
 
-	idpchannel, err := c.fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetIDPChannel()
 	if err != nil {
 		return false
 	}

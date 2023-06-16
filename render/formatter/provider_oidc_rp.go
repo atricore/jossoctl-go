@@ -313,10 +313,10 @@ func (c *OidcRpWrapper) TrustedIdPs() string {
 
 }
 
-func (c *OidcRpWrapper) FederatedConnections() []idpFcWrapper {
-	var fcWrappers []idpFcWrapper
+func (c *OidcRpWrapper) FederatedConnections() []IdPFcWrapper {
+	var fcWrappers []IdPFcWrapper
 	for _, fc := range c.p.FederatedConnectionsA {
-		fcWrappers = append(fcWrappers, idpFcWrapper{fc: &fc})
+		fcWrappers = append(fcWrappers, IdPFcWrapper{Fc: &fc})
 	}
 	return fcWrappers
 }
@@ -385,14 +385,15 @@ func (c *OidcRpWrapper) Type() string {
 	return api.AsString(c.p.AdditionalProperties["@c"], "N/A")
 }
 
-func (c *OidcRpWrapper) IdPs() []FederatedConnectionToIdP {
+func (c *OidcRpWrapper) IdPs() []SPFcWrapper {
 
-	var idps []FederatedConnectionToIdP
+	var idps []SPFcWrapper
 
 	for _, fc := range c.p.GetFederatedConnectionsB() {
-		idps = append(idps, FederatedConnectionToIdP{
+		idps = append(idps, SPFcWrapper{
 			Preferred: false,
 			IdP:       fc.GetName(),
+			Fc:        &fc,
 		})
 	}
 

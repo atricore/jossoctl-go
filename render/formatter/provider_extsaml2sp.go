@@ -191,10 +191,10 @@ func (c *ExtSaml2SpWrapper) Bindings() string {
 	return strings.Join(c.Provider.GetActiveBindings(), ", ")
 }
 
-func (c *ExtSaml2SpWrapper) FederatedConnections() []spFcWrapper {
-	var fcWrappers []spFcWrapper
+func (c *ExtSaml2SpWrapper) FederatedConnections() []SPFcWrapper {
+	var fcWrappers []SPFcWrapper
 	for i := range c.Provider.FederatedConnectionsB {
-		fcWrappers = append(fcWrappers, spFcWrapper{fc: &c.Provider.FederatedConnectionsB[i]})
+		fcWrappers = append(fcWrappers, SPFcWrapper{Fc: &c.Provider.FederatedConnectionsB[i]})
 	}
 	return fcWrappers
 }
@@ -391,14 +391,15 @@ func (c *ExtSaml2SpWrapper) ExtMetadataB64() string {
 	return "N/A"
 }
 
-func (c *ExtSaml2SpWrapper) IdPs() []FederatedConnectionToIdP {
+func (c *ExtSaml2SpWrapper) IdPs() []SPFcWrapper {
 
-	var idps []FederatedConnectionToIdP
+	var idps []SPFcWrapper
 
 	for _, fc := range c.Provider.GetFederatedConnectionsB() {
-		idps = append(idps, FederatedConnectionToIdP{
+		idps = append(idps, SPFcWrapper{
 			Preferred: false,
 			IdP:       fc.GetName(),
+			Fc:        &fc,
 		})
 	}
 

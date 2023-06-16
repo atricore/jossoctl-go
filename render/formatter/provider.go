@@ -26,12 +26,6 @@ type ProviderContext struct {
 	Context
 }
 
-type FederatedConnectionToIdP struct {
-	Preferred bool
-	IdP       string
-	SpFc      spFcWrapper
-}
-
 type providerContainerWrapper struct {
 	HeaderContext
 	trunc   bool
