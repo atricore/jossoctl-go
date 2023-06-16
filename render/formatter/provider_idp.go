@@ -45,7 +45,25 @@ const (
 	}
 	{{- end }}
 	{{- end}}
-` + keystoreTFFormat + `		
+
+	oauth2 {
+		enabled                   = {{.OAuth2Enabled }}
+		{{- if .OAuth2Enabled }}
+		shared_key                = "{{.OAuth2SharedKey}}"
+		token_validity            = {{.OAuth2TokenValidity}}
+		rememberme_token_validity = {{.OAuth2RememberMeTokenValidity}}
+
+		pwdless_authn_enabled     = {{.PwdlessAuthnEnabled}}
+
+		{{- if .PwdlessAuthnEnabled}}
+		pwdless_authn_subject     = "{{.PwdlessAuthnSubject}}"
+		pwdless_authn_template    = "{{.PwdlessAuthnTemplate}}"
+		pwdless_authn_to          = "{{.PwdlessAuthnTo}}"
+		pwdless_authn_from        = "{{.PwdlessAuthnFrom}}"
+		{{- end }}{{- end }}
+	}
+
+` + keystoreTFFormat + `
 
 }`
 
@@ -160,7 +178,7 @@ General
         User claims in access token: {{.UserClaimsInAccessToken}}
     
 	OAuth2
-        Enabled:    {{.EnabledOauth2}}
+        Enabled:    {{.OAuth2Enabled}}
         
     Claims/Attributes
         Profile:                     {{.Profile}}
@@ -461,11 +479,6 @@ func (c *idPWrapper) UserClaimsInAccessToken() bool {
 	return c.p.GetOidcIncludeUserClaimsInAccessToken()
 }
 
-// OAuth2
-func (c *idPWrapper) EnabledOauth2() bool {
-	return c.p.GetOauth2Enabled()
-}
-
 // OpenId Connect
 func (c *idPWrapper) EnabledOpenIdConnect() bool {
 	return c.p.GetOpenIdEnabled()
@@ -515,8 +528,6 @@ func (c *idPWrapper) OverrideChannel() bool {
 	return false
 
 }
-
-
 
 // keystore
 func DecodePkcs12(pkcs string, password string) (*x509.Certificate, *rsa.PrivateKey, error) {
@@ -738,8 +749,6 @@ func (c *idPWrapper) FederatedConnections() []IdPFcWrapper {
 	return ws
 }
 
-
-
 func (c *idPWrapper) Authns() []asWrapper {
 	var asWrappers []asWrapper
 	for i := range c.p.AuthenticationMechanisms {
@@ -747,5 +756,3 @@ func (c *idPWrapper) Authns() []asWrapper {
 	}
 	return asWrappers
 }
-
-
