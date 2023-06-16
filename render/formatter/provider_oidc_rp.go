@@ -53,6 +53,8 @@ const (
 	idp {
 		name         = "{{ $idp.IdP }}"
 		is_preferred = {{ $idp.Preferred }}
+
+		# WARN : SAML2 Settings NOT generated for OIDC RP
 	}
 	{{- end}}
 }`

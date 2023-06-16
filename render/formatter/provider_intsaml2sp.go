@@ -16,6 +16,7 @@ type IntSaml2SpWrapper struct {
 	trunc     bool
 	IdaName   string
 	Provider  *api.InternalSaml2ServiceProviderDTO
+	Resource  *api.JOSSO1ResourceDTO
 	Container *api.ProviderContainerDTO
 }
 
@@ -25,9 +26,65 @@ type spFcWrapper struct {
 
 const (
 	intSaml2SpTFFormat = `resource "iamtf_app_agent" "{{.AppName}}" {
-	ida = "{{.ApplianceName}}"
-	name = "{{.AppName}}"
+	ida                   = "{{.ApplianceName}}"
+	name                  = "{{.AppName}}"
+	sp_id                 = "{{.SpId}}"
+	description           = "{{.DisplayName}}"
+
+	app_location          = "{{.AppLocation}}"
+	{{- if .HasSloLocation}}
+	app_slo_location      = "{{.SloLocation}}"
+	{{- end}}
+	{{- if .HasDefaultResource}}
+	default_resource      = "{{.DefaultResource}}"
+	{{- end}}
+	{{- if .HasIgnoredWebResources}}
+	ignored_web_resources = [{{.IgnoredWebResources}}]
+	{{- end}}
+	exec_env              = "{{.ExecEnv}}"
+	error_binding         = "{{.ErrorBinding}}"
+	{{- if .HasDashboardURL}}
+	dashboard_url         = "{{.DashboardURL}}" 
+	{{- end}}
+
+	` + spSaml2TFFormat + `
+
+	{{ range $idp := .IdPs }}
+	idp {
+		name         = "{{ $idp.IdP }}"
+		is_preferred = {{ $idp.Preferred }}
+		{{- if $idp.SpFc.OverrideProvider}}
+		` + spSaml2TFFormat + `
+		{{- end}}				
+	}
+	{{- end}}
+
+	
+	
+	` + keystoreTFFormat + `
 }`
+
+	spSaml2TFFormat = `	saml2 {
+		account_linkage              = "{{.Saml2AccountLinkage}}"
+		identity_mapping             = "{{.Saml2IdentityMapping}}"
+
+		sign_requests                = {{.SignRequests}}
+		sign_authentication_requests = {{.SingAuthnReq}}
+		want_assertion_signed        = {{.WantAssertionSigned}}
+		signature_hash               = "{{.SignatureHash}}"
+
+		bindings {
+			http_post                = {{.HttpPostBinding}}
+			http_redirect            = {{.HttpRedirectBinding}}
+			artifact                 = {{.ArtifactBinding}}
+			soap                     = {{.SoapBinding}}
+			local                    = {{.LocalBinding}}
+		}
+
+		message_ttl                  = {{.MessageTTL}}
+		message_ttl_tolerance        = {{.MessageTTLTolerance}}
+	}`
+
 	IntSaml2SpPrettyFormat = `
 SAML Service Provider (built-in)    
 
@@ -145,6 +202,11 @@ func (c *IntSaml2SpWrapper) Name() string {
 	return c.Provider.GetName()
 }
 
+func (c *IntSaml2SpWrapper) SpId() string {
+
+	return *c.Provider.Name
+}
+
 func (c *IntSaml2SpWrapper) ApplianceName() string {
 	return c.IdaName
 }
@@ -190,21 +252,66 @@ func (c *IntSaml2SpWrapper) Location() string {
 	return cli.LocationToStr(c.Provider.Location)
 }
 
+func (c *IntSaml2SpWrapper) AppLocation() string {
+	return cli.LocationToStr(c.Resource.PartnerAppLocation)
+}
+
+func (c *IntSaml2SpWrapper) HasSloLocation() bool {
+	return c.Resource.GetSloLocationEnabled()
+}
+
+func (c *IntSaml2SpWrapper) SloLocation() string {
+	return cli.LocationToStr(c.Resource.SloLocation)
+}
+
+func (c *IntSaml2SpWrapper) HasDefaultResource() bool {
+	return c.Resource.DefaultResource != nil
+}
+
+func (c *IntSaml2SpWrapper) DefaultResource() string {
+	return c.Resource.GetDefaultResource()
+}
+
+func (c *IntSaml2SpWrapper) ExecEnv() string {
+	return *c.Resource.Activation.Name
+}
+
 func (c *IntSaml2SpWrapper) Description() string {
 	return c.Provider.GetDescription()
+}
+
+func (c *IntSaml2SpWrapper) HasIgnoredWebResources() bool {
+	return len(c.Resource.IgnoredWebResources) > 0
+}
+
+func (c *IntSaml2SpWrapper) IgnoredWebResources() string {
+	return strings.Join(c.Resource.GetIgnoredWebResources(), ", ")
 }
 
 func (c *IntSaml2SpWrapper) AccountLinkage() string {
 	return c.Provider.AccountLinkagePolicy.GetName()
 }
 
+func (c *IntSaml2SpWrapper) Saml2AccountLinkage() string {
+	return c.Provider.AccountLinkagePolicy.GetLinkEmitterType()
+}
+
 func (c *IntSaml2SpWrapper) IdentityMapping() string {
 	return c.Provider.IdentityMappingPolicy.GetName()
+}
+
+func (c *IntSaml2SpWrapper) Saml2IdentityMapping() string {
+	return c.Provider.IdentityMappingPolicy.GetMappingType()
 }
 
 func (c *IntSaml2SpWrapper) DashboardURL() string {
 	return c.Provider.GetDashboardUrl()
 }
+
+func (c *IntSaml2SpWrapper) HasDashboardURL() bool {
+	return c.Provider.GetDashboardUrl() != ""
+}
+
 func (c *IntSaml2SpWrapper) ErrorBinding() string {
 	return c.Provider.GetErrorBinding()
 }
@@ -217,6 +324,40 @@ func (c *IntSaml2SpWrapper) Metadata() string {
 func (c *IntSaml2SpWrapper) Bindings() string {
 	// concatenate c.p.GetActiveBindings() as a single string
 	return strings.Join(c.Provider.GetActiveBindings(), ", ")
+}
+
+func (c *IntSaml2SpWrapper) HttpPostBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_HTTP_POST")
+}
+
+func (c *IntSaml2SpWrapper) HttpRedirectBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_HTTP_REDIRECT")
+}
+
+func (c *IntSaml2SpWrapper) SoapBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_SOAP")
+}
+
+func (c *IntSaml2SpWrapper) ArtifactBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_ARTIFACT")
+}
+
+func (c *IntSaml2SpWrapper) LocalBinding() bool {
+	// return true if c.Provider.GetActiveBindings() containes "HTTP_POST"
+	return c.HasBinding("SAMLR2_LOCAL")
+}
+
+func (c *IntSaml2SpWrapper) HasBinding(b string) bool {
+	for _, binding := range c.Provider.GetActiveBindings() {
+		if binding == b {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *IntSaml2SpWrapper) SingAuthnReq() bool {
@@ -259,16 +400,25 @@ func (c *IntSaml2SpWrapper) FederatedConnections() []spFcWrapper {
 	return fcWrappers
 }
 
-// keystore
+func (c *IntSaml2SpWrapper) HasKeystore() bool {
+	cfg := c.Provider.GetConfig()
+	spCfg, _ := cfg.ToSamlR2SPConfig()
+	return !spCfg.GetUseSampleStore() && !spCfg.GetUseSystemStore()
+}
+
+func (c *IntSaml2SpWrapper) KeystoreResource() string {
+	cfg := c.Provider.GetConfig()
+	spCfg, _ := cfg.ToSamlR2SPConfig()
+	return *spCfg.GetSigner().Store.Value
+}
 
 func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, err error) {
 	cfg := c.Provider.GetConfig()
+	spCfg, _ := cfg.ToSamlR2SPConfig()
 
-	idpCfg, _ := cfg.ToSamlR2SPConfig()
-
-	singer := idpCfg.GetSigner()
-	pass := singer.GetPassword()
-	store := singer.GetStore()
+	signer := spCfg.GetSigner()
+	pass := signer.GetPassword()
+	store := signer.GetStore()
 	vl := store.GetValue()
 
 	cert, _, err = DecodePkcs12(vl, pass)
@@ -278,9 +428,62 @@ func (c *IntSaml2SpWrapper) getCertificateForSinger() (cert *x509.Certificate, e
 
 	return cert, err
 }
-func (c *IntSaml2SpWrapper) CertificateAlias() string {
+
+func (c *IntSaml2SpWrapper) KeystorePassword() string {
 	cfg := c.Provider.GetConfig()
 
+	idpCfg, err := cfg.ToSamlR2SPConfig()
+	if err != nil {
+		return err.Error()
+	}
+
+	singer := idpCfg.GetSigner()
+
+	return singer.GetPassword()
+
+}
+
+func (c *IntSaml2SpWrapper) HasKeyPassword() bool {
+	cfg := c.Provider.GetConfig()
+
+	idpCfg, err := cfg.ToSamlR2SPConfig()
+	if err != nil {
+		return false
+	}
+
+	singer := idpCfg.GetSigner()
+
+	return singer.GetPrivateKeyPassword() != ""
+}
+
+func (c *IntSaml2SpWrapper) KeyPassword() string {
+	cfg := c.Provider.GetConfig()
+
+	idpCfg, err := cfg.ToSamlR2SPConfig()
+	if err != nil {
+		return err.Error()
+	}
+
+	singer := idpCfg.GetSigner()
+
+	return singer.GetPrivateKeyPassword()
+
+}
+
+func (c *IntSaml2SpWrapper) HasCertificateAlias() bool {
+	cfg := c.Provider.GetConfig()
+	idpCfg, err := cfg.ToSamlR2SPConfig()
+	if err != nil {
+		return false
+	}
+
+	singer := idpCfg.GetSigner()
+	return singer.GetCertificateAlias() != ""
+
+}
+
+func (c *IntSaml2SpWrapper) CertificateAlias() string {
+	cfg := c.Provider.GetConfig()
 	idpCfg, err := cfg.ToSamlR2SPConfig()
 	if err != nil {
 		return err.Error()
@@ -372,8 +575,27 @@ func (c *IntSaml2SpWrapper) NotAfter() string {
 func (c *IntSaml2SpWrapper) ElementId() string {
 	return c.Provider.GetElementId()
 }
+
 func (c *IntSaml2SpWrapper) Type() string {
 	return api.AsString(c.Provider.AdditionalProperties["@c"], "N/A")
+}
+
+func (c *IntSaml2SpWrapper) IdPs() []FederatedConnectionToIdP {
+
+	var idps []FederatedConnectionToIdP
+
+	for _, fc := range c.Provider.GetFederatedConnectionsB() {
+		idps = append(idps, FederatedConnectionToIdP{
+			Preferred: false,
+			IdP:       fc.GetName(),
+			SpFc: spFcWrapper{
+				&fc,
+			},
+		})
+	}
+
+	return idps
+
 }
 
 // Federated Connection

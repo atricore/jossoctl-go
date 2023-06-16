@@ -33,7 +33,6 @@ const (
 	}
 	{{- end}}
 
-	
 	medatada	= "{{.ExtMetadataB64}}"
 
 }`

@@ -11,19 +11,6 @@ const (
 	defaultProviderTableFormat = "table {{.Name}}\t{{.Type}}\t{{.Location}}"
 	defaultProviderFormat      = `Name:		{{.Name}}
 Location:	{{.Location}}`
-	keystoreFormat = `    Keystore
- Certificate Alias: {{.CertificateAlias}}
- Key Alias: {{.KeyAlias}}
-
- Version:       {{.Version}}
- Serial Number: {{.SerialNumber}}
- Issuer:        {{.Issuer}}
- Subjects:      {{.Subjects}}
- Not Before:    {{.NotBefore}}
- Not After:     {{.NotAfter}}
-
- Certificate:                
-{{.Certificate}} `
 )
 
 type ProviderFormatter struct {
@@ -42,6 +29,7 @@ type ProviderContext struct {
 type FederatedConnectionToIdP struct {
 	Preferred bool
 	IdP       string
+	SpFc      spFcWrapper
 }
 
 type providerContainerWrapper struct {

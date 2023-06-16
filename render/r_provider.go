@@ -40,11 +40,17 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 						return err
 					}
 
+					jossoResource, err := ctx.Client.Client().GetJosso1Resource(idaName, *provider.GetServiceConnection().Name)
+					if err != nil {
+						return err
+					}
+
 					// create instance of IntSaml2SpWrapper
 					w := formatter.IntSaml2SpWrapper{
 						IdaName:   ctx.IdaName,
 						Container: &container,
 						Provider:  &provider,
+						Resource:  &jossoResource,
 					}
 
 					providers = append(providers, w)
