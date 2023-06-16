@@ -397,3 +397,7 @@ func (c *asWrapper) Keytab() string {
 
 	return wia.KeyTab.GetValue()
 }
+
+func (c *asWrapper) IsCustomAuthn() bool {
+	return false
+}
