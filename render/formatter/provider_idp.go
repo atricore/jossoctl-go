@@ -63,6 +63,15 @@ const (
 		{{- end }}{{- end }}
 	}
 
+	oidc {
+		enabled                     = {{.OIDCEnabled }}
+		access_token_ttl		    = {{.OIDCAccessTokenTTL}}
+		authz_code_ttl			    = {{.OIDCAuthzCodeTTL}}
+		id_token_ttl			    = {{.OIDCIDTokenTTL}}
+		user_claims_in_access_token = {{.OIDCUserClaimsInAccessToken}}
+
+	}
+
 ` + keystoreTFFormat + `
 
 }`
