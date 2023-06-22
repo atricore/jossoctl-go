@@ -9,15 +9,16 @@ import (
 	"github.com/atricore/josso-cli-go/render/formatter"
 )
 
-func RenderApplianceToFile(c cli.Cli, idaName string, source string, quiet bool, fName string, replace bool) error {
+func RenderApplianceToFile(c cli.Cli, idaName string, _ string, source string, quiet bool, fName string, replace bool) error {
 	var f = func(out io.Writer) {
-		RenderApplianceToWriter(c, idaName, source, quiet, out)
+		RenderApplianceToWriter(c, idaName, idaName, source, quiet, out)
 	}
 
 	return RenderToFile(f, fName, replace)
 }
 
-func RenderApplianceToWriter(c cli.Cli, idaName string, source string, quiet bool, out io.Writer) error {
+//c cli.Cli, idaName string, idaName1 string, source string, quiet bool, out io.Writer
+func RenderApplianceToWriter(c cli.Cli, idaName string, idaName1 string, source string, quiet bool, out io.Writer) error {
 
 	a, err := c.Client().GetApplianceContainer(idaName)
 	if err != nil {

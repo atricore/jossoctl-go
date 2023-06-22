@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/atricore/josso-cli-go/render"
 
 	"github.com/spf13/cobra"
@@ -18,19 +16,9 @@ var genTFApplianceCmd = &cobra.Command{
 	Run:     func(cmd *cobra.Command, args []string) { genTFRun(cmd, args, genTFAppliance) },
 }
 
-func genTFAppliance(idaName string, iName string, oType string, oFile string, replace bool) error {
-
-	// Check output type var
-	if oType == "file" {
-		if oFile == "" {
-			oFile = idaName + "-appliance-" + idaName + ".tf"
-		}
-		return render.RenderApplianceToFile(Client, idaName, "tf", quiet, oFile, replace)
-	} else if oType == "stdout" {
-		return render.RenderApplianceToWriter(Client, idaName, "tf", quiet, Client.Out())
-	} else {
-		return fmt.Errorf("invalid output type: %s", oType)
-	}
+func genTFAppliance(idaName string, iName string, oType string, oPrefix string, oFile string, replace bool) error {
+	return genTFForResource(idaName, iName, oType, oPrefix, oFile, replace,
+		render.RenderApplianceToFile, render.RenderApplianceToWriter)
 }
 
 func init() {

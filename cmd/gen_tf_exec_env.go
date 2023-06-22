@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/atricore/josso-cli-go/render"
 	"github.com/spf13/cobra"
 )
@@ -16,19 +14,9 @@ var genTFExecEnvCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 }
 
-func genTFExecEnv(idaName string, eName string, oType string, oFile string, replace bool) error {
-
-	if oType == "file" {
-		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+idaName+.tf"
-		if oFile == "" {
-			oFile = idaName + "-execenv-" + eName + ".tf"
-		}
-		return render.RenderExecEnvToFile(Client, idaName, eName, "tf", quiet, oFile, replace)
-	} else if outputType == "stdout" {
-		return render.RenderExecEnvToWriter(Client, idaName, eName, "tf", quiet, Client.Out())
-	}
-
-	return fmt.Errorf("invalid output type: %s", outputType)
+func genTFExecEnv(idaName string, eName string, oType string, oPrefix string, oFile string, replace bool) error {
+	return genTFForResource(idaName, eName, oType, oPrefix, oFile, replace,
+		render.RenderExecEnvToFile, render.RenderExecEnvToWriter)
 
 }
 

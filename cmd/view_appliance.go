@@ -26,7 +26,7 @@ var viewApplianceCmd = &cobra.Command{
 }
 
 func viewAppliance(cmd *cobra.Command, args []string) {
-	err := render.RenderApplianceToWriter(Client, id_or_name, source(), quiet, Client.Out())
+	err := render.RenderApplianceToWriter(Client, id_or_name, id_or_name, source(), quiet, Client.Out())
 	if err != nil {
 		Client.Error(err)
 	}

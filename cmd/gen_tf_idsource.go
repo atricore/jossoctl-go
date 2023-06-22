@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/atricore/josso-cli-go/render"
 	"github.com/spf13/cobra"
 )
@@ -16,20 +14,9 @@ var genTFIDSourceCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 }
 
-func genTFIDSource(idaName string, iName string, oType string, oFile string, replace bool) error {
-
-	if oType == "file" {
-		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+idaName+.tf"
-		if oFile == "" {
-			oFile = idaName + "-idsource-" + idaName + "-" + iName + ".tf"
-		}
-		return render.RenderIDSourceToFile(Client, idaName, iName, "tf", quiet, oFile, replace)
-	} else if outputType == "stdout" {
-		return render.RenderIDSourceToWriter(Client, idaName, iName, "tf", quiet, Client.Out())
-	}
-
-	return fmt.Errorf("invalid output type: %s", outputType)
-
+func genTFIDSource(idaName string, iName string, oType string, oPrefix string, oFile string, replace bool) error {
+	return genTFForResource(idaName, iName, oType, oPrefix, oFile, replace,
+		render.RenderIDSourceToFile, render.RenderIDSourceToWriter)
 }
 
 func init() {

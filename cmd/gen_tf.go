@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+	"io"
 	"os"
 
+	cli "github.com/atricore/josso-cli-go/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +21,7 @@ var genTFCmd = &cobra.Command{
 
 var fName, outputType string
 var replace bool
+var prefix string
 
 func genTF(cmd *cobra.Command, args []string) {
 
@@ -29,13 +33,13 @@ func genTF(cmd *cobra.Command, args []string) {
 	}
 }
 
-func genTFRun(cmd *cobra.Command, args []string, generateFn func(idaName string, pName string, oType string, oFile string, replace bool) error) {
+func genTFRun(cmd *cobra.Command, args []string, generateFn func(idaName string, pName string, oType string, oPrefix string, oFile string, replace bool) error) {
 	idaName, err := getIdaName(id_or_name)
 	if err != nil {
 		Client.Error(err)
 		os.Exit(1)
 	}
-	err = generateFn(idaName, args[0], outputType, fName, replace)
+	err = generateFn(idaName, args[0], outputType, prefix, fName, replace)
 	if err != nil {
 		Client.Error(err)
 		os.Exit(1)
@@ -45,7 +49,7 @@ func genTFRun(cmd *cobra.Command, args []string, generateFn func(idaName string,
 
 func GenTF(idaName string) error {
 
-	err := genTFAppliance(idaName, idaName, outputType, "", replace)
+	err := genTFAppliance(idaName, idaName, outputType, prefix, "", replace)
 	if err != nil {
 		return err
 	}
@@ -68,24 +72,48 @@ func GenTF(idaName string) error {
 	}
 
 	for _, p := range ps {
-		genTFProvider(idaName, *p.Name, outputType, "", replace)
+		genTFProvider(idaName, *p.Name, outputType, prefix, "", replace)
 	}
 
 	for _, i := range is {
-		genTFIDSource(idaName, *i.Name, outputType, "", replace)
+		genTFIDSource(idaName, *i.Name, outputType, prefix, "", replace)
 	}
 
 	for _, e := range ex {
-		genTFExecEnv(idaName, *e.Name, outputType, "", replace)
+		genTFExecEnv(idaName, *e.Name, outputType, prefix, "", replace)
 	}
 
 	return nil
+}
+
+/**
+ * Generate terraform resource file for an appliance
+ */
+func genTFForResource(idaName string, iName string, oType string, oPrefix string, oFile string, replace bool,
+	fileRenderFunc func(cli.Cli, string, string, string, bool, string, bool) error,
+	stdoutRenderFunc func(cli.Cli, string, string, string, bool, io.Writer) error) error {
+	switch oType {
+	case "file":
+		if oFile == "" {
+			oFile = getTFFileName(oPrefix, idaName, iName, idaName)
+		}
+		msg := fmt.Sprintf("Generating terraform resource file %s\n", oFile)
+
+		Client.Out().Write([]byte(msg))
+
+		return fileRenderFunc(Client, idaName, iName, "tf", quiet, oFile, replace)
+	case "stdout":
+		return stdoutRenderFunc(Client, idaName, iName, "tf", quiet, Client.Out())
+	default:
+		return fmt.Errorf("invalid output type: %s", oType)
+	}
 }
 
 func init() {
 	rootCmd.AddCommand(genTFCmd)
 	genTFCmd.PersistentFlags().BoolVarP(&replace, "replace", "r", false, "Replace output file if it exists")
 	genTFCmd.PersistentFlags().StringVarP(&outputType, "output", "o", "stdout", "Output type (file or stdout)")
+	genTFCmd.PersistentFlags().StringVarP(&prefix, "prefix", "p", "", "Resource file prefix, default is the appliance name")
 
 }
 
@@ -96,4 +124,12 @@ func getIdaName(id_or_name string) (string, error) {
 		return "", err
 	}
 	return *a.Appliance.Name, nil
+}
+
+func getTFFileName(oPrefix string, idaName string, oType string, oName string) string {
+	prefix := idaName
+	if oPrefix != "" {
+		prefix = oPrefix
+	}
+	return prefix + "-" + oType + "-" + oName + ".tf"
 }

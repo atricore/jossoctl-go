@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/atricore/josso-cli-go/render"
 	"github.com/spf13/cobra"
 )
@@ -16,19 +14,9 @@ var genTFProviderCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 }
 
-func genTFProvider(idaName string, pName string, oType string, oFile string, replace bool) error {
-	if oType == "file" {
-		// if fName has a value use it, otherwise use the default : "iamtf_appliance_+idaName+.tf"
-		if oFile == "" {
-			oFile = idaName + "-provider-" + pName + ".tf"
-		}
-		return render.RenderProviderToFile(Client, idaName, pName, "tf", quiet, oFile, replace)
-	} else if outputType == "stdout" {
-		return render.RenderProviderToWriter(Client, idaName, pName, "tf", quiet, Client.Out())
-
-	}
-
-	return fmt.Errorf("invalid output type: %s", outputType)
+func genTFProvider(idaName string, pName string, oType string, oPrefix string, oFile string, replace bool) error {
+	return genTFForResource(idaName, pName, oType, oPrefix, oFile, replace,
+		render.RenderProviderToFile, render.RenderProviderToWriter)
 
 }
 
