@@ -24,7 +24,7 @@ const (
 	intSaml2SpTFFormat = `resource "iamtf_app_agent" "{{.AppName}}" {
 	ida                   = "{{.ApplianceName}}"
 	name                  = "{{.AppName}}"
-	sp_id                 = "{{.SpId}}"
+	
 	description           = "{{.DisplayName}}"
 
 	app_location          = "{{.AppLocation}}"
@@ -49,7 +49,7 @@ const (
 	idp {
 		name         = "{{ $idp.IdP }}"
 		is_preferred = {{ $idp.IsPreferred }}
-		{{- if $idp.SpFc.OverrideProvider}}
+		{{- if $idp.OverrideProvider}}
 		saml2 ` + spSaml2TFFormat + `
 		{{- end}}				
 	}

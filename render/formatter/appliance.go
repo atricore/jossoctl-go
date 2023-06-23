@@ -22,7 +22,7 @@ const (
     {{- if .HasBundles}}
     bundles     = [{{.Bundles}}]
     {{- end}}
-    branding    = {{.BrandingCode}}
+    branding    = "{{.BrandingCode}}"
 }`
 
 	defaultAppliancePrettyFormat = `ID:          {{.ID}}
@@ -177,7 +177,10 @@ func (c *applianceWrapper) State() string {
 }
 
 func (c *applianceWrapper) Location() string {
-	return cli.LocationToStr(c.a.GetIdApplianceDefinition().Location)
+	l := c.a.GetIdApplianceDefinition().Location
+	l.SetContext("")
+	l.SetUri("")
+	return cli.LocationToStr(l)
 }
 
 func (c *applianceWrapper) Description() string {

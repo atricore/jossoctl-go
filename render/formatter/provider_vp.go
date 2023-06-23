@@ -26,6 +26,8 @@ type VPFcWrapper struct {
 	Fc        *api.FederatedConnectionDTO
 }
 
+// TODO : add list of sps
+
 const (
 	vpTFFormat = `resource "iamtf_vp" "{{.Name}}" {
     ida                   = "{{.ApplianceName}}"
