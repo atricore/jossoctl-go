@@ -17,12 +17,12 @@ const (
 	defaultApplianceTFFormat = `resource "iamtf_identity_appliance" "{{.Name}}" {
     name        = "{{.Name}}"
     location    = "{{.Location}}"
-	namespace   = "{{.Namespace}}"
-	description = "{{.Description}}"
-	{{- if .HasBundles}}
-	bundles     = [{{.Bundles}}]
-	{{- end}}
-	branding    = {{.Branding}}
+    namespace   = "{{.Namespace}}"
+    description = "{{.Description}}"
+    {{- if .HasBundles}}
+    bundles     = [{{.Bundles}}]
+    {{- end}}
+    branding    = {{.BrandingCode}}
 }`
 
 	defaultAppliancePrettyFormat = `ID:          {{.ID}}
@@ -246,6 +246,6 @@ func (c *applianceWrapper) Bundles() string {
 	return strings.Join(c.a.IdApplianceDefinition.GetRequiredBundles(), ", ")
 }
 
-func (c *applianceWrapper) Branding() string {
-	return *c.a.IdApplianceDefinition.UserDashboardBranding.Name
+func (c *applianceWrapper) BrandingCode() string {
+	return *c.a.IdApplianceDefinition.UserDashboardBranding.Id
 }

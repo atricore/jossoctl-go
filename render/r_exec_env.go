@@ -115,6 +115,10 @@ func RenderExecEnvToWriter(c cli.Cli, idaName string, idSrcName string, source s
 		return fmt.Errorf("exec env %s not found in appliance %s", idSrcName, idaName)
 	}
 
+	if p.GetCaptive() {
+		return fmt.Errorf("exec env %s is captive, cannot be exported", idSrcName)
+	}
+
 	f := getExecEnvsFormatter(p.GetType())
 
 	ctx := formatter.ExecEnvContext{

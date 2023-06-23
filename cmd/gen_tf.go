@@ -39,7 +39,12 @@ func genTFRun(cmd *cobra.Command, args []string, generateFn func(idaName string,
 		Client.Error(err)
 		os.Exit(1)
 	}
-	err = generateFn(idaName, args[0], outputType, prefix, fName, replace)
+
+	rName := ""
+	if len(args) > 0 {
+		rName = args[0]
+	}
+	err = generateFn(idaName, rName, outputType, prefix, fName, replace)
 	if err != nil {
 		Client.Error(err)
 		os.Exit(1)
@@ -80,6 +85,11 @@ func GenTF(idaName string) error {
 	}
 
 	for _, e := range ex {
+
+		if e.GetCaptive() {
+			continue
+		}
+
 		genTFExecEnv(idaName, *e.Name, outputType, prefix, "", replace)
 	}
 
