@@ -34,9 +34,8 @@ const (
 	session_timeout              = {{.SessionTimeout}}
 	max_sessions_per_user        = {{.MaxSessionPerUser}}
 	destroy_previous_session     = {{.DestroyPreviousSession}}
-	subject_authn_policies       = [{{ .SubjectAuthnPolicies }}]
 
-	{{ range $as := .Authns }}{{- if $as.IsBasicAuthn }}
+    {{ range $as := .Authns }}{{- if $as.IsBasicAuthn }}
 	authn_basic {
 		priority                 = {{ $as.Priority }}
 		pwd_ash                  = "{{$as.PasswordHash}}"
@@ -124,8 +123,14 @@ const (
         {{ end     }}    
         {{ end     }}
 	}
+	{{- if .HasSubjectAuthnPolicies }}
+    subject_authn_policies       = {
+        {{- range $sap := .SubjectAuthnPolicies }}
+        name                     = "{{$sap.Name}}"
+        {{- end }}
+	}
+    {{- end }}
 
-	
 
 ` + idpSaml2TFFormat + `
 
@@ -487,15 +492,14 @@ func (c *idPWrapper) IdSources() string {
 
 }
 
-func (c *idPWrapper) SubjectAuthnPolicies() string {
+func (c *idPWrapper) HasSubjectAuthnPolicies() bool {
+	return c.Provider.GetSubjectAuthnPolicies() != nil &&
+		len(c.Provider.GetSubjectAuthnPolicies()) > 0
+}
 
+func (c *idPWrapper) SubjectAuthnPolicies() []api.SubjectAuthenticationPolicyDTO {
 	// go over c.p.GetIdentityLookups() dtos and join the name property as a csv string
-	var names []string
-	for _, policy := range c.Provider.GetSubjectAuthnPolicies() {
-		names = append(names, "\""+policy.GetName()+"\"")
-	}
-
-	return strings.Join(names, ", ")
+	return c.Provider.GetSubjectAuthnPolicies()
 
 }
 

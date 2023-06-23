@@ -445,8 +445,8 @@ func (c *VpWrapper) IdPFederatedConnections() []IdPFcWrapper {
 
 func (c *VpWrapper) HasKeystore() bool {
 	cfg := c.Provider.GetConfig()
-	idpCfg, _ := cfg.ToSamlR2IDPConfig()
-	return !idpCfg.GetUseSampleStore() && !idpCfg.GetUseSystemStore()
+	samlCfg, _ := cfg.ToSamlR2IDPConfig()
+	return !samlCfg.GetUseSampleStore() && !samlCfg.GetUseSystemStore()
 }
 
 func (c *VpWrapper) KeystoreResource() string {
