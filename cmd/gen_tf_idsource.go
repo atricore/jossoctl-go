@@ -15,7 +15,7 @@ var genTFIDSourceCmd = &cobra.Command{
 }
 
 func genTFIDSource(idaName string, iName string, oType string, oPrefix string, oFile string, replace bool) error {
-	return genTFForResource(idaName, iName, oType, oPrefix, oFile, replace,
+	return genTFForResource(idaName, "idsource", iName, oType, oPrefix, oFile, replace,
 		render.RenderIDSourceToFile, render.RenderIDSourceToWriter)
 }
 

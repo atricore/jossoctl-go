@@ -15,7 +15,7 @@ var genTFExecEnvCmd = &cobra.Command{
 }
 
 func genTFExecEnv(idaName string, eName string, oType string, oPrefix string, oFile string, replace bool) error {
-	return genTFForResource(idaName, eName, oType, oPrefix, oFile, replace,
+	return genTFForResource(idaName, "execenv", eName, oType, oPrefix, oFile, replace,
 		render.RenderExecEnvToFile, render.RenderExecEnvToWriter)
 
 }

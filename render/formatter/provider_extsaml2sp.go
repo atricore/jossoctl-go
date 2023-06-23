@@ -33,7 +33,7 @@ const (
 	}
 	{{- end}}
 
-	medatada	= "{{.ExtMetadataB64}}"
+	metadata	= "{{.ExtMetadataB64}}"
 
 }`
 	ExtSaml2SpPrettyFormat = `

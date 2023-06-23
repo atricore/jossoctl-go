@@ -15,7 +15,7 @@ var genTFProviderCmd = &cobra.Command{
 }
 
 func genTFProvider(idaName string, pName string, oType string, oPrefix string, oFile string, replace bool) error {
-	return genTFForResource(idaName, pName, oType, oPrefix, oFile, replace,
+	return genTFForResource(idaName, "provider", pName, oType, oPrefix, oFile, replace,
 		render.RenderProviderToFile, render.RenderProviderToWriter)
 
 }

@@ -89,13 +89,13 @@ func GenTF(idaName string) error {
 /**
  * Generate terraform resource file for an appliance
  */
-func genTFForResource(idaName string, iName string, oType string, oPrefix string, oFile string, replace bool,
+func genTFForResource(idaName string, rType string, iName string, oType string, oPrefix string, oFile string, replace bool,
 	fileRenderFunc func(cli.Cli, string, string, string, bool, string, bool) error,
 	stdoutRenderFunc func(cli.Cli, string, string, string, bool, io.Writer) error) error {
 	switch oType {
 	case "file":
 		if oFile == "" {
-			oFile = getTFFileName(oPrefix, idaName, iName, idaName)
+			oFile = getTFFileName(oPrefix, idaName, rType, iName)
 		}
 		msg := fmt.Sprintf("Generating terraform resource file %s\n", oFile)
 
@@ -126,10 +126,10 @@ func getIdaName(id_or_name string) (string, error) {
 	return *a.Appliance.Name, nil
 }
 
-func getTFFileName(oPrefix string, idaName string, oType string, oName string) string {
+func getTFFileName(oPrefix string, idaName string, rType string, rName string) string {
 	prefix := idaName
 	if oPrefix != "" {
 		prefix = oPrefix
 	}
-	return prefix + "-" + oType + "-" + oName + ".tf"
+	return prefix + "-" + rType + "-" + rName + ".tf"
 }

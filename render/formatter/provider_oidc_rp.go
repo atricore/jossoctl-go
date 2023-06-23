@@ -29,6 +29,7 @@ const (
 
 	grant_types = [{{.Grants}}]
 	response_types = [{{.ResponseTypes}}]	
+	response_modes = [{{.ResponseModes}}]
 
 	redirect_uris = [{{.URIs}}]
 	post_logout_redirect_uris = [{{.PostLogoutURIs}}]
@@ -223,12 +224,35 @@ func (c *OidcRpWrapper) Authentication() string {
 
 func (c *OidcRpWrapper) URIs() string {
 	// join strings in a single value
-	return strings.Join(c.p.GetAuthorizedURIs(), ", ")
+	uris := c.p.GetAuthorizedURIs()
+	var sb strings.Builder
+
+	for i, uri := range uris {
+		if i != 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("\"")
+		sb.WriteString(uri)
+		sb.WriteString("\"")
+	}
+
+	return sb.String()
 }
 
 func (c *OidcRpWrapper) PostLogoutURIs() string {
-	// join strings in a single value
-	return strings.Join(c.p.GetPostLogoutRedirectionURIs(), ", ")
+	uris := c.p.GetPostLogoutRedirectionURIs()
+	var sb strings.Builder
+
+	for i, uri := range uris {
+		if i != 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("\"")
+		sb.WriteString(uri)
+		sb.WriteString("\"")
+	}
+
+	return sb.String()
 }
 
 func (c *OidcRpWrapper) Metadata() string {
@@ -248,15 +272,40 @@ func (c *OidcRpWrapper) Grants() string {
 
 	if g, ok := c.p.GetGrantsOk(); ok {
 		if len(g) > 0 {
-			return strings.Join(g, ", ")
+			var sb strings.Builder
+			for i, uri := range g {
+				if i != 0 {
+					sb.WriteString(", ")
+				}
+				sb.WriteString("\"")
+				sb.WriteString(uri)
+				sb.WriteString("\"")
+			}
+
+			return sb.String()
 		}
 	}
-	return "AUTHORIZATION_CODE"
+	return "\"AUTHORIZATION_CODE\""
 }
 
 // Print response types
 func (c *OidcRpWrapper) ResponseTypes() string {
-	return strings.Join(c.p.GetResponseTypes(), ", ")
+	var sb strings.Builder
+	for i, uri := range c.p.GetResponseTypes() {
+		if i != 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("\"")
+		sb.WriteString(uri)
+		sb.WriteString("\"")
+	}
+
+	return sb.String()
+
+}
+
+func (c *OidcRpWrapper) ResponseModes() string {
+	return "\"QUERY\""
 }
 
 // Print signature algorithm
@@ -271,7 +320,12 @@ func (c *OidcRpWrapper) HasEncryption() bool {
 
 // Print encryption algorithm
 func (c *OidcRpWrapper) EncryptionAlgorithm() string {
-	return c.p.GetEncryptionAlg()
+
+	e := c.p.GetEncryptionAlg()
+	if e == "NULL" {
+		return "NONE"
+	}
+	return e
 }
 
 // Print encryption method

@@ -72,11 +72,7 @@ func (c *IdPFcWrapper) SignatureHash() string {
 		return err.Error()
 	}
 
-	s := idpchannel.GetSignatureHash()
-	if s == "" {
-		return "SHA256"
-	}
-	return s
+	return mapSaml2SignatureToTF(idpchannel.GetSignatureHash())
 }
 
 func (c *IdPFcWrapper) MessageTTL() int32 {

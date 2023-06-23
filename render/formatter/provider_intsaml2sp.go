@@ -43,14 +43,14 @@ const (
 	dashboard_url         = "{{.DashboardURL}}" 
 	{{- end}}
 
-	` + spSaml2TFFormat + `
+	saml2 ` + spSaml2TFFormat + `
 
 	{{ range $idp := .IdPs }}
 	idp {
 		name         = "{{ $idp.IdP }}"
 		is_preferred = {{ $idp.IsPreferred }}
 		{{- if $idp.SpFc.OverrideProvider}}
-		` + spSaml2TFFormat + `
+		saml2 ` + spSaml2TFFormat + `
 		{{- end}}				
 	}
 	{{- end}}
@@ -58,7 +58,7 @@ const (
 	` + keystoreTFFormat + `
 }`
 
-	spSaml2TFFormat = `	saml2 {
+	spSaml2TFFormat = `{
 		account_linkage              = "{{.Saml2AccountLinkage}}"
 		identity_mapping             = "{{.Saml2IdentityMapping}}"
 
@@ -383,7 +383,7 @@ func (c *IntSaml2SpWrapper) Profiles() int {
 }
 
 func (c *IntSaml2SpWrapper) SignatureHash() string {
-	return c.Provider.GetSignatureHash()
+	return mapSaml2SignatureToTF(c.Provider.GetSignatureHash())
 }
 
 func (c *IntSaml2SpWrapper) FederatedConnections() []SPFcWrapper {

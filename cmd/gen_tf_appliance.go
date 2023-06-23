@@ -17,7 +17,7 @@ var genTFApplianceCmd = &cobra.Command{
 }
 
 func genTFAppliance(idaName string, iName string, oType string, oPrefix string, oFile string, replace bool) error {
-	return genTFForResource(idaName, iName, oType, oPrefix, oFile, replace,
+	return genTFForResource(idaName, "appliance", iName, oType, oPrefix, oFile, replace,
 		render.RenderApplianceToFile, render.RenderApplianceToWriter)
 }
 

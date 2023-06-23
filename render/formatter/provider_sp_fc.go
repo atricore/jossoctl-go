@@ -124,7 +124,7 @@ func (c *SPFcWrapper) SignatureHash() string {
 		return err.Error()
 	}
 
-	return idpchannel.GetSignatureHash()
+	return mapSaml2SignatureToTF(idpchannel.GetSignatureHash())
 }
 
 func (c *SPFcWrapper) MessageTTL() int32 {

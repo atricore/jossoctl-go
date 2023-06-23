@@ -61,8 +61,9 @@ const (
 		saml_authn_ctx           = "{{$as.SamlAuthnCtx}}"
 		search_scope             = "{{$as.SearchScope}}"
 		referrals                = "{{$as.Referrals}}"
-		operational_attrs        = "{{$as.OperationalAttrs}}"
+		operational_attrs        = "{{$as.OperationalAttrs}}"    
 ` + extensionTFFormat + `
+    }
 	{{- end}}
 	{{- if $as.IsClientCertAuthn }}
 	authn_client_cert {
@@ -564,15 +565,11 @@ func (c *idPWrapper) EncryptAssertion() bool {
 }
 
 func (c *idPWrapper) EncryptAlgorithm() string {
-	return c.Provider.GetEncryptAssertionAlgorithm()
+	return mapSaml2EncryptionToTF(c.Provider.GetEncryptAssertionAlgorithm())
 }
 
 func (c *idPWrapper) SignatureHash() string {
-	h := c.Provider.GetSignatureHash()
-	if h == "" {
-		return "SHA256"
-	}
-	return h
+	return mapSaml2SignatureToTF(c.Provider.GetSignatureHash())
 }
 
 func (c *idPWrapper) MessageTTL() int32 {

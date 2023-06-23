@@ -28,36 +28,56 @@ type VPFcWrapper struct {
 
 const (
 	vpTFFormat = `resource "iamtf_vp" "{{.Name}}" {
-	ida                   = "{{.ApplianceName}}"
-	name                  = "{{.Name}}"
-	description           = "{{.DisplayName}}"
+    ida                   = "{{.ApplianceName}}"
+    name                  = "{{.Name}}"
+    description           = "{{.DisplayName}}"
 
-	app_location          = "{{.AppLocation}}"
-	{{- if .HasSloLocation}}
-	app_slo_location      = "{{.SloLocation}}"
-	{{- end}}
-	{{- if .HasDefaultResource}}
-	default_resource      = "{{.DefaultResource}}"
-	{{- end}}
-	{{- if .HasIgnoredWebResources}}
-	ignored_web_resources = [{{.IgnoredWebResources}}]
-	{{- end}}
-	exec_env              = "{{.ExecEnv}}"
-	error_binding         = "{{.ErrorBinding}}"
 	{{- if .HasDashboardURL}}
-	dashboard_url         = "{{.DashboardURL}}" 
+    dashboard_url         = "{{.DashboardURL}}" 
 	{{- end}}
+    error_binding         = "{{.ErrorBinding}}"
+    session_timeout       = "{{.SessionTimeout}}"
 
-	` + spSaml2TFFormat + `
+    saml2_sp {
+        account_linkage       = "{{.Saml2AccountLinkage}}"
+        identity_mapping      = "{{.Saml2IdentityMapping}}"
+        sign_requests         = {{.SignReq}}
+        sign_authentication_requests = {{.SingAuthnReq}}
+		want_assertion_signed = {{.WantAssertionSigned}}
+        bindings {
+            http_post         = {{.HttpPostBinding}}
+            http_redirect     = {{.HttpRedirectBinding}}
+            artifact          = {{.ArtifactBinding}}
+            soap              = {{.SoapBinding}}
+            local             = {{.LocalBinding}}
+        }
+		signature_hash        = "{{.SpSignatureHash}}"
+        message_ttl           = {{.MessageTTL}}
+        message_ttl_tolerance = {{.MessageTTLTolerance}}
+    }
+
+    saml2_idp {
+        want_authn_req_signed = {{.WantAuthnSigned}} 
+        want_req_signed       = {{.WantReqSigned}}
+        sign_reqs             = {{.SignReq}}
+        signature_hash        = "{{.IdPSignatureHash}}"
+        encrypt_algorithm     = "{{.EncryptAlgorithm}}"
+        bindings {
+            http_post         = {{.HttpPostBinding}}
+            http_redirect     = {{.HttpRedirectBinding}}
+            artifact          = {{.ArtifactBinding}}
+            soap              = {{.SoapBinding}}
+            local             = {{.LocalBinding}}
+        }
+        message_ttl           = {{.MessageTTL}}
+        message_ttl_tolerance = {{.MessageTTLTolerance}}
+    }
 
 	{{ range $idp := .IdPs }}
-	idp {
-		name         = "{{ $idp.IdP }}"
-		is_preferred = {{ $idp.IsPreferred }}
-		{{- if $idp.SpFc.OverrideProvider}}
-		` + spSaml2TFFormat + `
-		{{- end}}				
-	}
+    idp {
+        name         = "{{ $idp.IdP }}"
+        is_preferred = {{ $idp.IsPreferred }}
+    }
 	{{- end}}
 	
 	` + keystoreTFFormat + `
@@ -329,7 +349,7 @@ func (c *VpWrapper) EncryptAssertion() bool {
 }
 
 func (c *VpWrapper) EncryptAlgorithm() string {
-	return c.Provider.GetEncryptAssertionAlgorithm()
+	return mapSaml2EncryptionToTF(c.Provider.GetEncryptAssertionAlgorithm())
 }
 
 func (c *VpWrapper) Bindings() string {
@@ -400,11 +420,11 @@ func (c *VpWrapper) Profiles() int {
 }
 
 func (c *VpWrapper) SpSignatureHash() string {
-	return c.Provider.GetSpSignatureHash()
+	return mapSaml2SignatureToTF(c.Provider.GetSpSignatureHash())
 }
 
 func (c *VpWrapper) IdPSignatureHash() string {
-	return c.Provider.GetIdpSignatureHash()
+	return mapSaml2SignatureToTF(c.Provider.GetIdpSignatureHash())
 }
 
 func (c *VpWrapper) SPFederatedConnections() []SPFcWrapper {
@@ -425,21 +445,21 @@ func (c *VpWrapper) IdPFederatedConnections() []IdPFcWrapper {
 
 func (c *VpWrapper) HasKeystore() bool {
 	cfg := c.Provider.GetConfig()
-	spCfg, _ := cfg.ToSamlR2SPConfig()
-	return !spCfg.GetUseSampleStore() && !spCfg.GetUseSystemStore()
+	idpCfg, _ := cfg.ToSamlR2IDPConfig()
+	return !idpCfg.GetUseSampleStore() && !idpCfg.GetUseSystemStore()
 }
 
 func (c *VpWrapper) KeystoreResource() string {
 	cfg := c.Provider.GetConfig()
-	spCfg, _ := cfg.ToSamlR2SPConfig()
-	return *spCfg.GetSigner().Store.Value
+	idpCfg, _ := cfg.ToSamlR2IDPConfig()
+	return *idpCfg.GetSigner().Store.Value
 }
 
 func (c *VpWrapper) getCertificateForSinger() (cert *x509.Certificate, err error) {
 	cfg := c.Provider.GetConfig()
-	spCfg, _ := cfg.ToSamlR2SPConfig()
+	idpCfg, _ := cfg.ToSamlR2IDPConfig()
 
-	signer := spCfg.GetSigner()
+	signer := idpCfg.GetSigner()
 	pass := signer.GetPassword()
 	store := signer.GetStore()
 	vl := store.GetValue()
@@ -455,12 +475,12 @@ func (c *VpWrapper) getCertificateForSinger() (cert *x509.Certificate, err error
 func (c *VpWrapper) KeystorePassword() string {
 	cfg := c.Provider.GetConfig()
 
-	spCfg, err := cfg.ToSamlR2SPConfig()
+	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return err.Error()
 	}
 
-	singer := spCfg.GetSigner()
+	singer := idpCfg.GetSigner()
 
 	return singer.GetPassword()
 
@@ -469,12 +489,12 @@ func (c *VpWrapper) KeystorePassword() string {
 func (c *VpWrapper) HasKeyPassword() bool {
 	cfg := c.Provider.GetConfig()
 
-	spCfg, err := cfg.ToSamlR2SPConfig()
+	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return false
 	}
 
-	singer := spCfg.GetSigner()
+	singer := idpCfg.GetSigner()
 
 	return singer.GetPrivateKeyPassword() != ""
 }
@@ -482,7 +502,7 @@ func (c *VpWrapper) HasKeyPassword() bool {
 func (c *VpWrapper) KeyPassword() string {
 	cfg := c.Provider.GetConfig()
 
-	idpCfg, err := cfg.ToSamlR2SPConfig()
+	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return err.Error()
 	}
@@ -495,19 +515,19 @@ func (c *VpWrapper) KeyPassword() string {
 
 func (c *VpWrapper) HasCertificateAlias() bool {
 	cfg := c.Provider.GetConfig()
-	spCfg, err := cfg.ToSamlR2SPConfig()
+	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return false
 	}
 
-	singer := spCfg.GetSigner()
+	singer := idpCfg.GetSigner()
 	return singer.GetCertificateAlias() != ""
 
 }
 
 func (c *VpWrapper) CertificateAlias() string {
 	cfg := c.Provider.GetConfig()
-	idpCfg, err := cfg.ToSamlR2SPConfig()
+	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return err.Error()
 	}
@@ -521,7 +541,7 @@ func (c *VpWrapper) CertificateAlias() string {
 func (c *VpWrapper) KeyAlias() string {
 	cfg := c.Provider.GetConfig()
 
-	idpCfg, err := cfg.ToSamlR2SPConfig()
+	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return err.Error()
 	}
@@ -608,8 +628,10 @@ func (c *VpWrapper) IdPs() []VPFcWrapper {
 	var idps []VPFcWrapper
 
 	for _, fc := range c.Provider.GetFederatedConnectionsB() {
+
+		idpChannel, _ := fc.GetIDPChannel()
 		idps = append(idps, VPFcWrapper{
-			Preferred: false,
+			Preferred: idpChannel.GetPreferred(),
 			IdP:       fc.GetName(),
 			Fc:        &fc,
 		})
@@ -713,11 +735,7 @@ func (c *VPFcWrapper) Metadata() string {
 }
 
 func (c *VPFcWrapper) IsPreferred() bool {
-	idpchannel, err := c.Fc.GetIDPChannel()
-	if err != nil {
-		return false
-	}
-	return idpchannel.GetPreferred()
+	return c.Preferred
 }
 
 func (c *VPFcWrapper) SignatureHash() string {
@@ -727,7 +745,7 @@ func (c *VPFcWrapper) SignatureHash() string {
 		return err.Error()
 	}
 
-	return idpchannel.GetSignatureHash()
+	return mapSaml2SignatureToTF(idpchannel.GetSignatureHash())
 }
 
 func (c *VPFcWrapper) MessageTTL() int32 {

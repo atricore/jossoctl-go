@@ -143,3 +143,34 @@ func newProviderContainerWrapper() *providerContainerWrapper {
 	}
 	return &providerWrapper
 }
+
+func mapSaml2SignatureToTF(signature string) string {
+	if signature == "" {
+		return "SHA256"
+	}
+
+	return signature
+}
+
+func mapSaml2EncryptionToTF(encryption string) string {
+
+	// "NONE", "AES-128", "AES-256", "AES-3DES"
+
+	// disabled
+	// "http://www.w3.org/2001/04/xmlenc#aes128-cbc";
+	// "http://www.w3.org/2001/04/xmlenc#aes256-cbc";
+	// "http://www.w3.org/2001/04/xmlenc#tripledes-cbc";
+
+	switch encryption {
+	case "disabled":
+		return "NONE"
+	case "http://www.w3.org/2001/04/xmlenc#aes128-cbc":
+		return "AES128"
+	case "http://www.w3.org/2001/04/xmlenc#aes256-cbc":
+		return "AES256"
+	case "http://www.w3.org/2001/04/xmlenc#tripledes-cbc":
+		return "AES3DES"
+	default:
+		return "NONE"
+	}
+}

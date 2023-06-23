@@ -15,7 +15,14 @@ const (
 	defaultApplianceTableFormat = "table {{.ID}}\t{{.Name}}\t{{.State}}\t{{.Location}}"
 
 	defaultApplianceTFFormat = `resource "iamtf_identity_appliance" "{{.Name}}" {
-	name = "{{.Name}}"
+    name        = "{{.Name}}"
+    location    = "{{.Location}}"
+	namespace   = "{{.Namespace}}"
+	description = "{{.Description}}"
+	{{- if .HasBundles}}
+	bundles     = [{{.Bundles}}]
+	{{- end}}
+	branding    = {{.Branding}}
 }`
 
 	defaultAppliancePrettyFormat = `ID:          {{.ID}}
