@@ -16,9 +16,9 @@ import (
 
 type idPWrapper struct {
 	HeaderContext
-	trunc   bool
-	IdaName string
-	p       *api.IdentityProviderDTO
+	trunc    bool
+	IdaName  string
+	Provider *api.IdentityProviderDTO
 }
 
 const (
@@ -351,7 +351,7 @@ func IdPWrite(ctx ProviderContext, providers []api.IdentityProviderDTO) error {
 	render := func(format func(subContext SubContext) error) error {
 
 		for _, provider := range providers {
-			c := idPWrapper{IdaName: ctx.IdaName, p: &provider}
+			c := idPWrapper{IdaName: ctx.IdaName, Provider: &provider}
 			if err := format(&c); err != nil {
 				return err
 			}
@@ -380,7 +380,7 @@ func (c *idPWrapper) MarshalJSON() ([]byte, error) {
 
 func (c *idPWrapper) ID() string {
 
-	id := strconv.FormatInt(c.p.GetId(), 10)
+	id := strconv.FormatInt(c.Provider.GetId(), 10)
 	if c.trunc {
 		return TruncateID(id, 6)
 	}
@@ -393,50 +393,50 @@ func (c *idPWrapper) ApplianceName() string {
 }
 
 func (c *idPWrapper) Name() string {
-	return c.p.GetName()
+	return c.Provider.GetName()
 }
 
 func (c *idPWrapper) Id() int64 {
-	return c.p.GetId()
+	return c.Provider.GetId()
 }
 
 func (c *idPWrapper) Location() string {
-	return cli.LocationToStr(c.p.Location)
+	return cli.LocationToStr(c.Provider.Location)
 }
 
 func (c *idPWrapper) Description() string {
-	return c.p.GetDescription()
+	return c.Provider.GetDescription()
 }
 
 func (c *idPWrapper) DashboardURL() string {
-	return c.p.GetDashboardUrl()
+	return c.Provider.GetDashboardUrl()
 }
 
 // Session
 func (c *idPWrapper) SessionTimeout() int32 {
-	return c.p.GetSsoSessionTimeout()
+	return c.Provider.GetSsoSessionTimeout()
 }
 
 func (c *idPWrapper) MaxSessionPerUser() int32 {
-	return c.p.GetMaxSessionsPerUser()
+	return c.Provider.GetMaxSessionsPerUser()
 }
 
 func (c *idPWrapper) DestroyPreviousSession() bool {
-	return c.p.GetDestroyPreviousSession()
+	return c.Provider.GetDestroyPreviousSession()
 }
 
 func (c *idPWrapper) SessionManager() string {
-	return c.p.SessionManagerFactory.GetName()
+	return c.Provider.SessionManagerFactory.GetName()
 }
 
 //    User Identifier
 func (c *idPWrapper) Type() string {
-	return api.AsString(c.p.AdditionalProperties["@c"], "N/A")
+	return api.AsString(c.Provider.AdditionalProperties["@c"], "N/A")
 }
 
 func (c *idPWrapper) SingerValue() string {
 
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
@@ -450,35 +450,35 @@ func (c *idPWrapper) SingerValue() string {
 }
 
 func (c *idPWrapper) Attribute() string {
-	ap := c.p.AttributeProfile.GetName()
+	ap := c.Provider.AttributeProfile.GetName()
 	return ap
 
 }
 
 func (c *idPWrapper) IgnoreRequestedUserIDType() bool {
-	return c.p.GetIgnoreRequestedNameIDPolicy()
+	return c.Provider.GetIgnoreRequestedNameIDPolicy()
 }
 
 // Authentication
 
 //    User Interface
 func (c *idPWrapper) Branding() string {
-	return c.p.GetUserDashboardBranding()
+	return c.Provider.GetUserDashboardBranding()
 }
 
 func (c *idPWrapper) ErrorBinding() string {
-	return c.p.GetErrorBinding()
+	return c.Provider.GetErrorBinding()
 }
 
 func (c *idPWrapper) DashboardUrl() string {
-	return c.p.GetDashboardUrl()
+	return c.Provider.GetDashboardUrl()
 }
 
 func (c *idPWrapper) IdSources() string {
 
 	// go over c.p.GetIdentityLookups() dtos and join the name property as a csv string
 	var names []string
-	for _, idSource := range c.p.GetIdentityLookups() {
+	for _, idSource := range c.Provider.GetIdentityLookups() {
 		names = append(names, "\""+idSource.GetName()+"\"")
 	}
 
@@ -490,7 +490,7 @@ func (c *idPWrapper) SubjectAuthnPolicies() string {
 
 	// go over c.p.GetIdentityLookups() dtos and join the name property as a csv string
 	var names []string
-	for _, policy := range c.p.GetSubjectAuthnPolicies() {
+	for _, policy := range c.Provider.GetSubjectAuthnPolicies() {
 		names = append(names, "\""+policy.GetName()+"\"")
 	}
 
@@ -501,12 +501,12 @@ func (c *idPWrapper) SubjectAuthnPolicies() string {
 // SAML 2
 
 func (c *idPWrapper) Profiles() int {
-	return len(c.p.GetActiveProfiles())
+	return len(c.Provider.GetActiveProfiles())
 }
 
 func (c *idPWrapper) Bindings() string {
 	// concatenate c.p.GetActiveBindings() as a single string
-	return strings.Join(c.p.GetActiveBindings(), ", ")
+	return strings.Join(c.Provider.GetActiveBindings(), ", ")
 }
 
 func (c *idPWrapper) HttpPostBinding() bool {
@@ -535,7 +535,7 @@ func (c *idPWrapper) LocalBinding() bool {
 }
 
 func (c *idPWrapper) HasBinding(b string) bool {
-	for _, binding := range c.p.GetActiveBindings() {
+	for _, binding := range c.Provider.GetActiveBindings() {
 		if binding == b {
 			return true
 		}
@@ -548,27 +548,27 @@ func (c *idPWrapper) Metadata() string {
 }
 
 func (c *idPWrapper) WantAuthnSigned() bool {
-	return c.p.GetWantAuthnRequestsSigned()
+	return c.Provider.GetWantAuthnRequestsSigned()
 }
 
 func (c *idPWrapper) WantReqSigned() bool {
-	return c.p.GetWantSignedRequests()
+	return c.Provider.GetWantSignedRequests()
 }
 
 func (c *idPWrapper) SignReq() bool {
-	return c.p.GetSignRequests()
+	return c.Provider.GetSignRequests()
 }
 
 func (c *idPWrapper) EncryptAssertion() bool {
-	return c.p.GetEncryptAssertion()
+	return c.Provider.GetEncryptAssertion()
 }
 
 func (c *idPWrapper) EncryptAlgorithm() string {
-	return c.p.GetEncryptAssertionAlgorithm()
+	return c.Provider.GetEncryptAssertionAlgorithm()
 }
 
 func (c *idPWrapper) SignatureHash() string {
-	h := c.p.GetSignatureHash()
+	h := c.Provider.GetSignatureHash()
 	if h == "" {
 		return "SHA256"
 	}
@@ -576,60 +576,60 @@ func (c *idPWrapper) SignatureHash() string {
 }
 
 func (c *idPWrapper) MessageTTL() int32 {
-	return c.p.GetMessageTtl()
+	return c.Provider.GetMessageTtl()
 }
 
 func (c *idPWrapper) MessageTTLTolerance() int32 {
-	return c.p.GetMessageTtlTolerance()
+	return c.Provider.GetMessageTtlTolerance()
 }
 
 // Open ID Connect
 func (c *idPWrapper) Enabled() bool {
-	return c.p.GetOpenIdEnabled()
+	return c.Provider.GetOpenIdEnabled()
 }
 
 func (c *idPWrapper) IdTokenTTL() int32 {
-	return c.p.GetOidcIdTokenTimeToLive()
+	return c.Provider.GetOidcIdTokenTimeToLive()
 }
 
 func (c *idPWrapper) AccessTokenTTL() int32 {
-	return c.p.GetOidcAccessTokenTimeToLive()
+	return c.Provider.GetOidcAccessTokenTimeToLive()
 }
 
 func (c *idPWrapper) AuthnCodeTTL() int32 {
-	return c.p.GetOidcAuthzCodeTimeToLive()
+	return c.Provider.GetOidcAuthzCodeTimeToLive()
 }
 
 func (c *idPWrapper) UserClaimsInAccessToken() bool {
-	return c.p.GetOidcIncludeUserClaimsInAccessToken()
+	return c.Provider.GetOidcIncludeUserClaimsInAccessToken()
 }
 
 // OpenId Connect
 func (c *idPWrapper) EnabledOpenIdConnect() bool {
-	return c.p.GetOpenIdEnabled()
+	return c.Provider.GetOpenIdEnabled()
 }
 
 // Subjets Attrubutes
 
 func (c *idPWrapper) Profile() string {
-	atp := c.p.GetAttributeProfile()
+	atp := c.Provider.GetAttributeProfile()
 	profile := atp.GetName()
 	return profile
 }
 
 func (c *idPWrapper) IncludeUnmappedClaims() bool {
-	atp := c.p.GetAttributeProfile()
+	atp := c.Provider.GetAttributeProfile()
 	return atp.ToAttributeMapperProfile().GetIncludeNonMappedProperties()
 }
 
 func (c *idPWrapper) ProfileType() string {
-	atp := c.p.AttributeProfile
+	atp := c.Provider.AttributeProfile
 	profileT := atp.GetProfileType()
 	return profileT
 }
 
 func (c *idPWrapper) IsCustomClass() bool {
-	atp := c.p.GetAttributeProfile()
+	atp := c.Provider.GetAttributeProfile()
 	pt := atp.GetProfileType()
 	if pt != "CUSTOM" {
 		return false
@@ -640,7 +640,7 @@ func (c *idPWrapper) IsCustomClass() bool {
 
 func (c *idPWrapper) AttributeMapping() []amWrapper {
 	var amWrappers []amWrapper
-	ap := c.p.AttributeProfile.ToAttributeMapperProfile()
+	ap := c.Provider.AttributeProfile.ToAttributeMapperProfile()
 	for i := range ap.GetAttributeMaps() {
 		amWrappers = append(amWrappers, amWrapper{am: &ap.GetAttributeMaps()[i]})
 	}
@@ -648,7 +648,7 @@ func (c *idPWrapper) AttributeMapping() []amWrapper {
 }
 
 func (c *idPWrapper) OverrideChannel() bool {
-	for _, fc := range c.p.GetFederatedConnectionsA() {
+	for _, fc := range c.Provider.GetFederatedConnectionsA() {
 		if fc.ChannelA.GetOverrideProviderSetup() {
 			return true
 		}
@@ -678,7 +678,7 @@ func DecodePkcs12(pkcs string, password string) (*x509.Certificate, *rsa.Private
 }
 
 func (c *idPWrapper) getCertificateForSinger() (cert *x509.Certificate, err error) {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, _ := cfg.ToSamlR2IDPConfig()
 
@@ -696,7 +696,7 @@ func (c *idPWrapper) getCertificateForSinger() (cert *x509.Certificate, err erro
 }
 
 func (c *idPWrapper) getCertificateForEncrypter() (cert *x509.Certificate, err error) {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 	idpCfg, _ := cfg.ToSamlR2IDPConfig()
 	encypter := idpCfg.GetEncrypter()
 	pass := encypter.GetPassword()
@@ -712,19 +712,19 @@ func (c *idPWrapper) getCertificateForEncrypter() (cert *x509.Certificate, err e
 }
 
 func (c *idPWrapper) HasKeystore() bool {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 	idpCfg, _ := cfg.ToSamlR2IDPConfig()
 	return !idpCfg.GetUseSampleStore() && !idpCfg.GetUseSystemStore()
 }
 
 func (c *idPWrapper) KeystoreResource() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 	idpCfg, _ := cfg.ToSamlR2IDPConfig()
 	return *idpCfg.GetSigner().Store.Value
 }
 
 func (c *idPWrapper) KeystorePassword() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
@@ -738,7 +738,7 @@ func (c *idPWrapper) KeystorePassword() string {
 }
 
 func (c *idPWrapper) HasKeyPassword() bool {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
@@ -751,7 +751,7 @@ func (c *idPWrapper) HasKeyPassword() bool {
 }
 
 func (c *idPWrapper) KeyPassword() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
@@ -764,7 +764,7 @@ func (c *idPWrapper) KeyPassword() string {
 }
 
 func (c *idPWrapper) HasCertificateAlias() bool {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
 		return false
@@ -776,7 +776,7 @@ func (c *idPWrapper) HasCertificateAlias() bool {
 }
 
 func (c *idPWrapper) CertificateAlias() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
@@ -790,7 +790,7 @@ func (c *idPWrapper) CertificateAlias() string {
 }
 
 func (c *idPWrapper) KeyAlias() string {
-	cfg := c.p.GetConfig()
+	cfg := c.Provider.GetConfig()
 
 	idpCfg, err := cfg.ToSamlR2IDPConfig()
 	if err != nil {
@@ -869,18 +869,18 @@ func (c *idPWrapper) NotAfter() string {
 
 func (c *idPWrapper) FederatedConnections() []IdPFcWrapper {
 	// create an empty array of idpFcWrapper to hold the results
-	ws := make([]IdPFcWrapper, len(c.p.GetFederatedConnectionsA()))
-	for i := range c.p.GetFederatedConnectionsA() {
+	ws := make([]IdPFcWrapper, len(c.Provider.GetFederatedConnectionsA()))
+	for i := range c.Provider.GetFederatedConnectionsA() {
 		// Do NOT use FC
-		ws[i] = IdPFcWrapper{idx: i, Fc: &c.p.GetFederatedConnectionsA()[i]}
+		ws[i] = IdPFcWrapper{idx: i, Fc: &c.Provider.GetFederatedConnectionsA()[i]}
 	}
 	return ws
 }
 
 func (c *idPWrapper) Authns() []asWrapper {
 	var asWrappers []asWrapper
-	for i := range c.p.AuthenticationMechanisms {
-		asWrappers = append(asWrappers, asWrapper{as: &c.p.AuthenticationMechanisms[i]})
+	for i := range c.Provider.AuthenticationMechanisms {
+		asWrappers = append(asWrappers, asWrapper{as: &c.Provider.AuthenticationMechanisms[i]})
 	}
 	return asWrappers
 }

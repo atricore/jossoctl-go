@@ -7,12 +7,16 @@ import (
 	cli "github.com/atricore/josso-sdk-go"
 )
 
+/**
+ * Wrap a connection to a service provider (FC -> channelA as SPChannel)
+ */
 type IdPFcWrapper struct {
 	idx       int
 	Override  bool
 	Preferred bool
-	SP        string
-	Fc        *api.FederatedConnectionDTO
+	/* target service provider */
+	SP string
+	Fc *api.FederatedConnectionDTO
 }
 
 // SPs
@@ -20,7 +24,7 @@ func (c *idPWrapper) SPs() []IdPFcWrapper {
 
 	var sps []IdPFcWrapper
 
-	for _, fc := range c.p.GetFederatedConnectionsA() {
+	for _, fc := range c.Provider.GetFederatedConnectionsA() {
 
 		if fc.ChannelA.GetOverrideProviderSetup() {
 			sps = append(sps, IdPFcWrapper{
@@ -63,7 +67,7 @@ func (c *IdPFcWrapper) OverrideProvider() bool {
 }
 
 func (c *IdPFcWrapper) SignatureHash() string {
-	idpchannel, err := c.Fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetSPChannel()
 	if err != nil {
 		return err.Error()
 	}
@@ -76,7 +80,7 @@ func (c *IdPFcWrapper) SignatureHash() string {
 }
 
 func (c *IdPFcWrapper) MessageTTL() int32 {
-	idpchannel, err := c.Fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetSPChannel()
 	if err != nil {
 		return 1
 	}
@@ -84,51 +88,11 @@ func (c *IdPFcWrapper) MessageTTL() int32 {
 }
 
 func (c *IdPFcWrapper) MessageTTLTolerance() int32 {
-	idpchannel, err := c.Fc.GetIDPChannel()
+	idpchannel, err := c.Fc.GetSPChannel()
 	if err != nil {
 		return 1
 	}
 	return idpchannel.GetMessageTtlTolerance()
-}
-
-func (c *IdPFcWrapper) AccountLinkagePolicy() string {
-	idpchannel, err := c.Fc.GetIDPChannel()
-	if err != nil {
-		return err.Error()
-	}
-	return idpchannel.AccountLinkagePolicy.GetLinkEmitterType()
-}
-
-func (c *IdPFcWrapper) EnableProxyExtension() bool {
-	idpchannel, err := c.Fc.GetIDPChannel()
-	if err != nil {
-		return false
-	}
-	return idpchannel.GetEnableProxyExtension()
-}
-
-func (c *IdPFcWrapper) IdentityMappingPolicy() string {
-	idpchannel, err := c.Fc.GetIDPChannel()
-	if err != nil {
-		return err.Error()
-	}
-	return idpchannel.IdentityMappingPolicy.GetMappingType()
-}
-
-func (c *IdPFcWrapper) SignAuthenticationRequests() bool {
-	idpchannel, err := c.Fc.GetIDPChannel()
-	if err != nil {
-		return false
-	}
-	return idpchannel.GetSignAuthenticationRequests()
-}
-
-func (c *IdPFcWrapper) WantAssertionSigned() bool {
-	idpchannel, err := c.Fc.GetIDPChannel()
-	if err != nil {
-		return false
-	}
-	return idpchannel.GetWantAssertionSigned()
 }
 
 func (c *IdPFcWrapper) WantAuthnSigned() bool {
@@ -137,7 +101,6 @@ func (c *IdPFcWrapper) WantAuthnSigned() bool {
 }
 
 func (c *IdPFcWrapper) WantReqSigned() bool {
-
 	return false
 }
 

@@ -29,6 +29,31 @@ var ProviderFormatters = []formatter.ProviderFormatter{
 		},
 	},
 	{
+		PType:   "VirtualSaml2ServiceProvider",
+		PFormat: formatter.NewVpFormat,
+		PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {
+			var providers []formatter.VpWrapper
+			for _, container := range containers {
+				if container.GetType() == "VirtualSaml2ServiceProvider" {
+					provider, err := ctx.Client.Client().GetVirtSaml2Sp(idaName, container.GetName())
+					if err != nil {
+						return err
+					}
+
+					// create instance of IntSaml2SpWrapper
+					w := formatter.VpWrapper{
+						IdaName:   ctx.IdaName,
+						Container: &container,
+						Provider:  &provider,
+					}
+
+					providers = append(providers, w)
+				}
+			}
+			return formatter.VpWrite(ctx, providers)
+		},
+	},
+	{
 		PType:   "InternalSaml2ServiceProvider",
 		PFormat: formatter.NewIntSaml2SpFormat,
 		PWriter: func(ctx formatter.ProviderContext, idaName string, containers []api.ProviderContainerDTO) error {

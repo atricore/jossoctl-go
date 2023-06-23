@@ -1,37 +1,37 @@
 package formatter
 
 func (c *idPWrapper) OAuth2Enabled() bool {
-	return c.p.GetOauth2Enabled()
+	return c.Provider.GetOauth2Enabled()
 }
 
 func (c *idPWrapper) OAuth2SharedKey() string {
-	return c.p.GetOauth2Key()
+	return c.Provider.GetOauth2Key()
 }
 
 func (c *idPWrapper) OAuth2TokenValidity() int64 {
-	return c.p.GetOauth2TokenValidity()
+	return c.Provider.GetOauth2TokenValidity()
 }
 
 func (c *idPWrapper) OAuth2RememberMeTokenValidity() int64 {
-	return c.p.GetOauth2RememberMeTokenValidity()
+	return c.Provider.GetOauth2RememberMeTokenValidity()
 }
 
 func (c *idPWrapper) PwdlessAuthnEnabled() bool {
-	return c.p.GetPwdlessAuthnEnabled()
+	return c.Provider.GetPwdlessAuthnEnabled()
 }
 
 func (c *idPWrapper) PwdlessAuthnSubject() string {
-	return c.p.GetPwdlessAuthnSubject()
+	return c.Provider.GetPwdlessAuthnSubject()
 }
 
 func (c *idPWrapper) PwdlessAuthnTemplate() string {
-	return c.p.GetPwdlessAuthnTemplate()
+	return c.Provider.GetPwdlessAuthnTemplate()
 }
 
 func (c *idPWrapper) PwdlessAuthnTo() string {
-	return c.p.GetPwdlessAuthnTo()
+	return c.Provider.GetPwdlessAuthnTo()
 }
 
 func (c *idPWrapper) PwdlessAuthnFrom() string {
-	return c.p.GetPwdlessAuthnFrom()
+	return c.Provider.GetPwdlessAuthnFrom()
 }
