@@ -238,6 +238,14 @@ func (c *applianceWrapper) ExecEnvs() []string {
 	return p
 }
 
+func (c *applianceWrapper) HasBundles() bool {
+	return len(c.a.IdApplianceDefinition.GetRequiredBundles()) > 0
+}
+
 func (c *applianceWrapper) Bundles() string {
 	return strings.Join(c.a.IdApplianceDefinition.GetRequiredBundles(), ", ")
+}
+
+func (c *applianceWrapper) Branding() string {
+	return *c.a.IdApplianceDefinition.UserDashboardBranding.Name
 }
