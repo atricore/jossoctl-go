@@ -132,6 +132,15 @@ func (c *asWrapper) Username() string {
 	return directoryAuthn.GetSecurityPrincipal()
 }
 
+func (c *asWrapper) Password() string {
+	directoryAuthn, err := c.as.DelegatedAuthentication.AuthnService.ToDirectoryAuthnSvc()
+	if err != nil {
+		return err.Error()
+	}
+
+	return directoryAuthn.GetSecurityCredential()
+}
+
 func (c *asWrapper) Authentication() string {
 	directoryAuthn, err := c.as.DelegatedAuthentication.AuthnService.ToDirectoryAuthnSvc()
 	if err != nil {

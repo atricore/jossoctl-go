@@ -23,175 +23,176 @@ type idPWrapper struct {
 
 const (
 	idpTFFormat = `resource "iamtf_idp" "{{.Name}}" {
-	ida                          = "{{.ApplianceName}}"
-	name                         = "{{.Name}}"
-	description                  = "{{.Description}}"
+    ida                          = "{{.ApplianceName}}"
+    name                         = "{{.Name}}"
+    description                  = "{{.Description}}"
     
-	branding                     = "{{.Branding}}"
+    branding                     = "{{.Branding}}"
     
-	dashboard_url                = "{{.DashboardURL}}"
-	error_binding                = "{{.ErrorBinding}}"
-	session_timeout              = {{.SessionTimeout}}
-	max_sessions_per_user        = {{.MaxSessionPerUser}}
-	destroy_previous_session     = {{.DestroyPreviousSession}}
+    dashboard_url                = "{{.DashboardURL}}"
+    error_binding                = "{{.ErrorBinding}}"
+    session_timeout              = {{.SessionTimeout}}
+    max_sessions_per_user        = {{.MaxSessionPerUser}}
+    destroy_previous_session     = {{.DestroyPreviousSession}}
 
     {{ range $as := .Authns }}{{- if $as.IsBasicAuthn }}
-	authn_basic {
-		priority                 = {{ $as.Priority }}
-		pwd_ash                  = "{{$as.PasswordHash}}"
-		pwd_encoding             = "{{$as.PasswordEncoding}}"
-		salt_prefix              = "{{$as.SaltPrefix}}"
-		salt_suffix              = "{{$as.SaltSuffix}}"
-		saml_authn_ctx           = "{{$as.SAMLAuthnCtx}}"
-		crypt_salt_length        = {{$as.SaltLength}}
+    authn_basic {
+        priority                 = {{ $as.Priority }}
+        pwd_ash                  = "{{$as.PasswordHash}}"
+        pwd_encoding             = "{{$as.PasswordEncoding}}"
+        salt_prefix              = "{{$as.SaltPrefix}}"
+        salt_suffix              = "{{$as.SaltSuffix}}"
+        saml_authn_ctx           = "{{$as.SAMLAuthnCtx}}"
+        crypt_salt_length        = {{$as.SaltLength}}
 ` + extensionTFFormat + `
 }
-	{{- end}} {{- if $as.IsDirectoryAuthn }}
-	authn_bind_ldap {
-		priority                 = {{ $as.Priority }}
-		initial_ctx_factory      = "{{$as.InitialCtxFactory}}"
-		provider_url             = "{{$as.ProviderUrl}}"
-		username                 = "{{$as.Username}}"
-		authentication           = "{{$as.Authentication}}"
-		password_policy          = "{{$as.PasswordPolicy}}"
-		perform_dn_search        = "{{$as.PerformDnSearch}}"
-		users_ctx_dn             = "{{$as.UsersCtxDn}}"
-		userid_attr              = "{{$as.UserIdAttr}}"
-		saml_authn_ctx           = "{{$as.SamlAuthnCtx}}"
-		search_scope             = "{{$as.SearchScope}}"
-		referrals                = "{{$as.Referrals}}"
-		operational_attrs        = "{{$as.OperationalAttrs}}"    
+    {{- end}} {{- if $as.IsDirectoryAuthn }}
+    authn_bind_ldap {
+        priority                 = {{ $as.Priority }}
+        initial_ctx_factory      = "{{$as.InitialCtxFactory}}"
+        provider_url             = "{{$as.ProviderUrl}}"
+        username                 = "{{$as.Username}}"
+        password                 = "{{$as.Password}}"
+        authentication           = "{{$as.Authentication}}"
+        password_policy          = "{{$as.PasswordPolicy}}"
+        perform_dn_search        = "{{$as.PerformDnSearch}}"
+        users_ctx_dn             = "{{$as.UsersCtxDn}}"
+        userid_attr              = "{{$as.UserIdAttr}}"
+        saml_authn_ctx           = "{{$as.SamlAuthnCtx}}"
+        search_scope             = "{{$as.SearchScope}}"
+        referrals                = "{{$as.Referrals}}"
+        operational_attrs        = "{{$as.OperationalAttrs}}"    
 ` + extensionTFFormat + `
     }
-	{{- end}}
-	{{- if $as.IsClientCertAuthn }}
-	authn_client_cert {
-		priority                 = {{$as.Priority}}
-		clr_enabled              = {{$as.CrlRefreshSeconds}}
-		crl_url                  = "{{$as.CrlUrl}}"
-		crl_refresh_seconds      = {{$as.CrlRefreshSeconds}}
-		ocsp_enabled             = {{$as.OcspEnabled}}
-		ocsp_server              = {{$as.OcspServer}}
-		uid                      = "{{$as.Uid}}"
-	}
+    {{- end}}
+    {{- if $as.IsClientCertAuthn }}
+    authn_client_cert {
+        priority                 = {{$as.Priority}}
+        clr_enabled              = {{$as.CrlRefreshSeconds}}
+        crl_url                  = "{{$as.CrlUrl}}"
+        crl_refresh_seconds      = {{$as.CrlRefreshSeconds}}
+        ocsp_enabled             = {{$as.OcspEnabled}}
+        ocsp_server              = {{$as.OcspServer}}
+        uid                      = "{{$as.Uid}}"
+    }
 ` + extensionTFFormat + `
-	{{- end}}
-	{{- if $as.IsWindowsAuthn }}
-	authn_wia {
-		priority                 = {{$as.Priority}}
-		domain                   = "{{$as.Domain}}"
-		domain_controller        = "{{$as.DomainController}}"
-		host                     = "{{$as.Host}}"
-		overwrite_kerberos_setup = {{$as.OverwriteKerberosSetup}}
-		protocol                 = "{{$as.Protocol}}"
-		service_class            = "{{$as.ServiceClass}}"
-		service_name             = "{{$as.ServiceName}}"
-		keytab                   = "{{$as.Keytab}}"
-	}
+    {{- end}}
+    {{- if $as.IsWindowsAuthn }}
+    authn_wia {
+        priority                 = {{$as.Priority}}
+        domain                   = "{{$as.Domain}}"
+        domain_controller        = "{{$as.DomainController}}"
+        host                     = "{{$as.Host}}"
+        overwrite_kerberos_setup = {{$as.OverwriteKerberosSetup}}
+        protocol                 = "{{$as.Protocol}}"
+        service_class            = "{{$as.ServiceClass}}"
+        service_name             = "{{$as.ServiceName}}"
+        keytab                   = "{{$as.Keytab}}"
+    }
 ` + extensionTFFormat + `
-	{{- end }}
-	{{- if $as.IsOauth2PreAuthn }}
-	authn_oauth2_pre {
-		priority                 = {{$as.Priority}}
-		authn_service            = "{{$as.AuthnService}}"
-		external_auth            = "{{$as.ExternalAuth}}"
-		remember_me              = {{$as.RememberMe}} 		
-	}
+    {{- end }}
+    {{- if $as.IsOauth2PreAuthn }}
+    authn_oauth2_pre {
+        priority                 = {{$as.Priority}}
+        authn_service            = "{{$as.AuthnService}}"
+        external_auth            = "{{$as.ExternalAuth}}"
+        remember_me              = {{$as.RememberMe}}         
+    }
 ` + extensionTFFormat + `
-	{{- end }}
-	{{- if $as.IsCustomAuthn }}
-		priority                 = {{$as.Priority}}
-		saml_authn_ctx           = "{{$as.SamlAuthnCtx}}"
-		claim_type               = "{{$as.ClaimType}}"
-		claim_names              = "{{$as.ClaimNames}}"
-		external_service         = "{{$as.ExternalService}}"
-		inject_id_source         = {{$as.InjectIdSource}}
+    {{- end }}
+    {{- if $as.IsCustomAuthn }}
+        priority                 = {{$as.Priority}}
+        saml_authn_ctx           = "{{$as.SamlAuthnCtx}}"
+        claim_type               = "{{$as.ClaimType}}"
+        claim_names              = "{{$as.ClaimNames}}"
+        external_service         = "{{$as.ExternalService}}"
+        inject_id_source         = {{$as.InjectIdSource}}
 ` + extensionTFFormat + `
-	{{- end }}
-	{{- end}}
-	
-	id_sources                   = [ {{ .IdSources }}]
+    {{- end }}
+    {{- end}}
+    
+    id_sources                   = [ {{ .IdSources }}]
 
-	attributes {
-		profile                  = "{{.Profile}}"
-		include_unmapped_claims  = {{.IncludeUnmappedClaims}}
-		{{- range $am := .AttributeMapping }} {{- if .IsCustomClass}}
+    attributes {
+        profile                  = "{{.Profile}}"
+        include_unmapped_claims  = {{.IncludeUnmappedClaims}}
+        {{- range $am := .AttributeMapping }} {{- if .IsCustomClass}}
         name                     = "{{$am.AttrName}}"
-		type                     = "{{$am.Type}}"
+        type                     = "{{$am.Type}}"
         mapping                  = "{{$am.ReportedAttrName}}"
         format                   = "{{$am.ReportedAttrNameFormat}}"
         {{ end     }}    
         {{ end     }}
-	}
-	{{- if .HasSubjectAuthnPolicies }}
-    subject_authn_policies       = {
+    }
+    {{- if .HasSubjectAuthnPolicies }}
+    subject_authn_policies       {
         {{- range $sap := .SubjectAuthnPolicies }}
         name                     = "{{$sap.Name}}"
         {{- end }}
-	}
+    }
     {{- end }}
 
 
 ` + idpSaml2TFFormat + `
 
-	{{- if .OverrideChannel }}
-	{{- range $sp := .SPs }}
-	sp {
-		name: "{{ $sp.Name }}"
-		` + idpSaml2TFFormat + `
-	}
-	{{- end }}
-	{{- end}}
+    {{- if .OverrideChannel }}
+    {{- range $sp := .SPs }}
+    sp {
+        name: "{{ $sp.Name }}"
+        ` + idpSaml2TFFormat + `
+    }
+    {{- end }}
+    {{- end}}
 
-	oauth2 {
-		enabled                   = {{.OAuth2Enabled }}
-		{{- if .OAuth2Enabled }}
-		shared_key                = "{{.OAuth2SharedKey}}"
-		token_validity            = {{.OAuth2TokenValidity}}
-		rememberme_token_validity = {{.OAuth2RememberMeTokenValidity}}
+    oauth2 {
+        enabled                   = {{.OAuth2Enabled }}
+        {{- if .OAuth2Enabled }}
+        shared_key                = "{{.OAuth2SharedKey}}"
+        token_validity            = {{.OAuth2TokenValidity}}
+        rememberme_token_validity = {{.OAuth2RememberMeTokenValidity}}
 
-		pwdless_authn_enabled     = {{.PwdlessAuthnEnabled}}
+        pwdless_authn_enabled     = {{.PwdlessAuthnEnabled}}
 
-		{{- if .PwdlessAuthnEnabled}}
-		pwdless_authn_subject     = "{{.PwdlessAuthnSubject}}"
-		pwdless_authn_template    = "{{.PwdlessAuthnTemplate}}"
-		pwdless_authn_to          = "{{.PwdlessAuthnTo}}"
-		pwdless_authn_from        = "{{.PwdlessAuthnFrom}}"
-		{{- end }}{{- end }}
-	}
+        {{- if .PwdlessAuthnEnabled}}
+        pwdless_authn_subject     = "{{.PwdlessAuthnSubject}}"
+        pwdless_authn_template    = "{{.PwdlessAuthnTemplate}}"
+        pwdless_authn_to          = "{{.PwdlessAuthnTo}}"
+        pwdless_authn_from        = "{{.PwdlessAuthnFrom}}"
+        {{- end }}{{- end }}
+    }
 
-	oidc {
-		enabled                     = {{.OIDCEnabled }}
-		{{- if .OIDCEnabled }}
-		access_token_ttl            = {{.OIDCAccessTokenTTL}}
-		authz_code_ttl              = {{.OIDCAuthzCodeTTL}}
-		id_token_ttl                = {{.OIDCIDTokenTTL}}
-		user_claims_in_access_token = {{.OIDCUserClaimsInAccessToken}}
-		{{- end }}
-	}
+    oidc {
+        enabled                     = {{.OIDCEnabled }}
+        {{- if .OIDCEnabled }}
+        access_token_ttl            = {{.OIDCAccessTokenTTL}}
+        authz_code_ttl              = {{.OIDCAuthzCodeTTL}}
+        id_token_ttl                = {{.OIDCIDTokenTTL}}
+        user_claims_in_access_token = {{.OIDCUserClaimsInAccessToken}}
+        {{- end }}
+    }
 
 ` + keystoreTFFormat + `
 
 }`
 
-	idpSaml2TFFormat = `	saml2 {
-		want_authn_req_signed        = {{.WantAuthnSigned}}
-		want_req_signed              = {{.WantReqSigned}}
-		sign_reqs                    = {{.SignReq}}
-		signature_hash               = "{{.SignatureHash}}"
-		encrypt_algorithm            = "{{.EncryptAlgorithm}}"
-		bindings {
-			http_post                = {{.HttpPostBinding}}
-			http_redirect            = {{.HttpRedirectBinding}}
-			artifact                 = {{.ArtifactBinding}}
-			soap                     = {{.SoapBinding}}
-			local                    = {{.LocalBinding}}
-		}
+	idpSaml2TFFormat = `    saml2 {
+        want_authn_req_signed        = {{.WantAuthnSigned}}
+        want_req_signed              = {{.WantReqSigned}}
+        sign_reqs                    = {{.SignReq}}
+        signature_hash               = "{{.SignatureHash}}"
+        encrypt_algorithm            = "{{.EncryptAlgorithm}}"
+        bindings {
+            http_post                = {{.HttpPostBinding}}
+            http_redirect            = {{.HttpRedirectBinding}}
+            artifact                 = {{.ArtifactBinding}}
+            soap                     = {{.SoapBinding}}
+            local                    = {{.LocalBinding}}
+        }
 
-		message_ttl                  = {{.MessageTTL}}
-		message_ttl_tolerance        = {{.MessageTTLTolerance}}
+        message_ttl                  = {{.MessageTTL}}
+        message_ttl_tolerance        = {{.MessageTTLTolerance}}
 
-	}`
+    }`
 
 	idpPrettyFormat = `
 Identity Provider (built-in)
@@ -260,7 +261,7 @@ General
             AuthnService:            {{$as.AuthnService}}
             ExternalAuth:            {{$as.ExternalAuth}}
             RememberMe:              {{$as.RememberMe}} 
-		{{ end }} {{ end }} 
+        {{ end }} {{ end }} 
     User Interface 
         Branding:                    {{.Branding}}
         ErrorBinding:                {{.ErrorBinding}}
@@ -284,14 +285,14 @@ General
         Authn code TTL (secs):       {{.AuthnCodeTTL}}
         User claims in access token: {{.UserClaimsInAccessToken}}
     
-	OAuth2
+    OAuth2
         Enabled:    {{.OAuth2Enabled}}
         
     Claims/Attributes
         Profile:                     {{.Profile}}
         Profile Type:                {{.ProfileType}} {{ range $am := .AttributeMapping }} {{- if .IsCustomClass}}
             Attribute:               {{$am.AttrName}}
-		    Mapping type:            {{$am.Type}}
+            Mapping type:            {{$am.Type}}
             Mapping expression:      {{$am.ReportedAttrName}}
             Reported Format:         {{$am.ReportedAttrNameFormat}}
         {{ end     }}    
@@ -302,7 +303,7 @@ General
         Target Provider:             {{$fc.ConnectionName}}
         Override Provider:           {{$fc.OverrideProvider}} {{- if $fc.OverrideProvider }}
         Location:                    {{$fc.Location}}
-		
+        
         SAML 2
             Metadata Svc:                {{$fc.Metadata}}
             Bindings:                    {{$fc.Bindings}}
@@ -614,7 +615,15 @@ func (c *idPWrapper) EnabledOpenIdConnect() bool {
 
 func (c *idPWrapper) Profile() string {
 	atp := c.Provider.GetAttributeProfile()
-	profile := atp.GetName()
+	profile := atp.GetProfileType()
+
+	//     BASIC("Basic", "urn:oasis:names:tc:SAML:2.0:profiles:attribute:basic"),
+	//JOSSO("JOSSO", "urn:org:atricore:SAML:2.0:profiles:attribute:josso"),
+	//ONE_TO_ONE("One To One", "urn:org:atricore:SAML:2.0:profiles:attribute:one-to-one"),
+	//EXTENSION("Extension", "urn:org:atricore:SAML:2.0:profiles:attribute:extension"),
+	//CUSTOM("CUSTOM", "urn:org:atricore:SAML:2.0:profiles:attribute:custom");
+
+	//
 	return profile
 }
 
