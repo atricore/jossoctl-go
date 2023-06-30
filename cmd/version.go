@@ -30,5 +30,5 @@ func versionCobra(cmd *cobra.Command, args []string) {
 }
 
 func version() {
-	fmt.Printf("v%s \n", VERSION)
+	fmt.Printf("%s \n", VERSION)
 }

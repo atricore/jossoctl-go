@@ -132,6 +132,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**GetApplianceState**](docs/DefaultApi.md#getappliancestate) | **Get** /iam-deploy/appliance/state | 
 *DefaultApi* | [**GetAppliances**](docs/DefaultApi.md#getappliances) | **Get** /iam-deploy/appliances | 
 *DefaultApi* | [**GetBranding**](docs/DefaultApi.md#getbranding) | **Get** /iam-branding/branding | 
+*DefaultApi* | [**GetBundles**](docs/DefaultApi.md#getbundles) | **Get** /iam-deploy/server/bundles | 
 *DefaultApi* | [**GetDbIdVault**](docs/DefaultApi.md#getdbidvault) | **Get** /iam-deploy/dbidvault | 
 *DefaultApi* | [**GetDbIdVaults**](docs/DefaultApi.md#getdbidvaults) | **Get** /iam-deploy/dbidvaults | 
 *DefaultApi* | [**GetExecEnv**](docs/DefaultApi.md#getexecenv) | **Get** /iam-deploy/execenv | 
@@ -226,6 +227,7 @@ Class | Method | HTTP request | Description
  - [BasicAuthenticationDTO](docs/BasicAuthenticationDTO.md)
  - [BindAuthenticationDTO](docs/BindAuthenticationDTO.md)
  - [BuiltInAttributeProfileDTO](docs/BuiltInAttributeProfileDTO.md)
+ - [BundleDescr](docs/BundleDescr.md)
  - [CalcLayoutReq](docs/CalcLayoutReq.md)
  - [CalcLayoutRes](docs/CalcLayoutRes.md)
  - [CustomAuthnServiceDTO](docs/CustomAuthnServiceDTO.md)
@@ -265,6 +267,8 @@ Class | Method | HTTP request | Description
  - [GetAppliancesRes](docs/GetAppliancesRes.md)
  - [GetBrandingReq](docs/GetBrandingReq.md)
  - [GetBrandingRes](docs/GetBrandingRes.md)
+ - [GetBundlesReq](docs/GetBundlesReq.md)
+ - [GetBundlesRes](docs/GetBundlesRes.md)
  - [GetDbIdVaultReq](docs/GetDbIdVaultReq.md)
  - [GetDbIdVaultRes](docs/GetDbIdVaultRes.md)
  - [GetDbIdVaultsRes](docs/GetDbIdVaultsRes.md)
