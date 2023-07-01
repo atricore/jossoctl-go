@@ -1,12 +1,70 @@
---- console-api-1.5.0-SNAPSHOT-swagger.json	2023-06-30 09:44:09.713116239 -0400
-+++ console-api-1.5.0-SNAPSHOT-swagger.json.new	2023-06-30 11:28:50.594132913 -0400
-@@ -3736,6 +3736,9 @@
-           },
-           "updateLocation" : {
-             "type" : "string"
-+          },
-+          "version" : {
-+            "type" : "string"
+--- console-api-1.5.0-SNAPSHOT-swagger.json	2023-06-30 11:30:00.405422554 -0400
++++ console-api-1.5.0-SNAPSHOT-swagger.json.new	2023-07-01 15:36:35.304120831 -0400
+@@ -2717,6 +2717,32 @@
+         }
+       }
+     },
++    "/iam-deploy/server/info" : {
++      "get" : {
++        "operationId" : "getInfo",
++        "requestBody" : {
++          "content" : {
++            "application/json" : {
++              "schema" : {
++                "$ref" : "#/components/schemas/GetServerInfoReq"
++              }
++            }
++          }
++        },
++        "responses" : {
++          "default" : {
++            "description" : "default response",
++            "content" : {
++              "application/json" : {
++                "schema" : {
++                  "$ref" : "#/components/schemas/GetServerInfoRes"
++                }
++              }
++            }
++          }
++        }
++      }
++    },
+     "/iam-deploy/sharepointrs" : {
+       "get" : {
+         "operationId" : "getSharepointRs",
+@@ -6032,6 +6066,34 @@
            }
          }
        },
++      "GetServerInfoReq" : {
++        "type" : "object",
++        "properties" : {
++          "idOrName" : {
++            "type" : "string"
++          }
++        }
++      },
++      "GetServerInfoRes" : {
++        "type" : "object",
++        "properties" : {
++          "error" : {
++            "type" : "string"
++          },
++          "nodeId" : {
++            "type" : "string"
++          },
++          "validationErrors" : {
++            "type" : "array",
++            "items" : {
++              "type" : "string"
++            }
++          },
++          "version" : {
++            "type" : "string"
++          }
++        }
++      },
+       "GetSharepointRsReq" : {
+         "type" : "object",
+         "properties" : {

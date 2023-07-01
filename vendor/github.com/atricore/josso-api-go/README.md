@@ -157,6 +157,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**GetIdpGoogles**](docs/DefaultApi.md#getidpgoogles) | **Get** /iam-deploy/idp_googles | 
 *DefaultApi* | [**GetIisExecEnv**](docs/DefaultApi.md#getiisexecenv) | **Get** /iam-deploy/iisexecenv | 
 *DefaultApi* | [**GetIisExecEnvs**](docs/DefaultApi.md#getiisexecenvs) | **Get** /iam-deploy/iisexecenvs | 
+*DefaultApi* | [**GetInfo**](docs/DefaultApi.md#getinfo) | **Get** /iam-deploy/server/info | 
 *DefaultApi* | [**GetIntSaml2Sp**](docs/DefaultApi.md#getintsaml2sp) | **Get** /iam-deploy/intsaml2sp | 
 *DefaultApi* | [**GetIntSaml2Sps**](docs/DefaultApi.md#getintsaml2sps) | **Get** /iam-deploy/intsaml2sps | 
 *DefaultApi* | [**GetJossoRs**](docs/DefaultApi.md#getjossors) | **Get** /iam-deploy/jossors | 
@@ -324,6 +325,8 @@ Class | Method | HTTP request | Description
  - [GetSelfSvcRsReq](docs/GetSelfSvcRsReq.md)
  - [GetSelfSvcRsRes](docs/GetSelfSvcRsRes.md)
  - [GetSelfSvcRssRes](docs/GetSelfSvcRssRes.md)
+ - [GetServerInfoReq](docs/GetServerInfoReq.md)
+ - [GetServerInfoRes](docs/GetServerInfoRes.md)
  - [GetSharepointRsReq](docs/GetSharepointRsReq.md)
  - [GetSharepointRsRes](docs/GetSharepointRsRes.md)
  - [GetSharepointRssRes](docs/GetSharepointRssRes.md)

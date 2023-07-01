@@ -2717,6 +2717,32 @@
         }
       }
     },
+    "/iam-deploy/server/info" : {
+      "get" : {
+        "operationId" : "getInfo",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/GetServerInfoReq"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetServerInfoRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/iam-deploy/sharepointrs" : {
       "get" : {
         "operationId" : "getSharepointRs",
@@ -6037,6 +6063,34 @@
             "items" : {
               "type" : "string"
             }
+          }
+        }
+      },
+      "GetServerInfoReq" : {
+        "type" : "object",
+        "properties" : {
+          "idOrName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GetServerInfoRes" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "nodeId" : {
+            "type" : "string"
+          },
+          "validationErrors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "version" : {
+            "type" : "string"
           }
         }
       },

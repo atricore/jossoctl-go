@@ -12,8 +12,9 @@ import (
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "start an identity appliance",
+	Use:     "start",
+	Aliases: []string{"s"},
+	Short:   "start an identity appliance",
 	Long: `Start an identity appliance.
 	
 	Depending on the appliance state, several actions may be required like building and deploying`,

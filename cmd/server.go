@@ -15,11 +15,10 @@ import (
 
 // listCmd represents the list command
 var serverCmd = &cobra.Command{
-	Use:     "server",
-	Aliases: []string{"s"},
-	Short:   "shows current server version",
-	Args:    cobra.MaximumNArgs(0),
-	Long:    `shows the version for the configured server`,
+	Use:   "server",
+	Short: "shows current server version",
+	Args:  cobra.MaximumNArgs(0),
+	Long:  `shows the version for the configured server`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		v, err := serverVersion()
 		if err != nil {
