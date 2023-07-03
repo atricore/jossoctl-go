@@ -1,7 +1,7 @@
-# github.com/atricore/josso-api-go v0.4.4 => ../josso-api-go
+# github.com/atricore/josso-api-go v0.5.0
 ## explicit
 github.com/atricore/josso-api-go
-# github.com/atricore/josso-sdk-go v0.4.6 => ../josso-sdk-go
+# github.com/atricore/josso-sdk-go v0.5.0
 ## explicit
 github.com/atricore/josso-sdk-go
 # github.com/fsnotify/fsnotify v1.5.1
@@ -112,5 +112,3 @@ google.golang.org/protobuf/types/descriptorpb
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
 gopkg.in/yaml.v2
-# github.com/atricore/josso-sdk-go => ../josso-sdk-go
-# github.com/atricore/josso-api-go => ../josso-api-go
