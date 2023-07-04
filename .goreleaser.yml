@@ -65,8 +65,12 @@ builds:
   binary: 'jossoctl_v{{ .Version }}'
 
 archives:
-- format: zip
-  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+- id: iamtfctl
+  format: zip
+  name_template: 'iamtfctl_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+- id: jossoctl
+  format: zip
+  name_template: 'jossoctl_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
