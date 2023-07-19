@@ -40,6 +40,11 @@ const (
     error_binding         = "{{.ErrorBinding}}"
     session_timeout       = "{{.SessionTimeout}}"
 
+    subject_id            = {{.SubjectAttrType}}
+    {{- if .HasSubjectAttrValue}}
+    subject_id_attr       = {{.SubjectAttrValue}}
+	{{- end}}
+
     saml2_sp {
         account_linkage       = "{{.Saml2AccountLinkage}}"
         identity_mapping      = "{{.Saml2IdentityMapping}}"
@@ -75,6 +80,19 @@ const (
         message_ttl_tolerance = {{.MessageTTLTolerance}}
     }
 
+	{{- if .OIDCEnabled}}
+    oidc_idp {
+        enabled = true
+        user_claims_in_access_token = {{.OIDCIncludeUserClaimsInAccessToken}}
+    }
+	{{- end}}
+
+	{{- if .OAuth2Enabled}}
+	oauth2_idp {
+		enabled = true
+	}
+	{{- end}}
+
 	{{ range $idp := .IdPs }}
     idp {
         name         = "{{ $idp.IdP }}"
@@ -109,7 +127,6 @@ Identity Provider Side
 
     User Identifier
         Type:                           {{.SubjectAttrType}}
-        Attribute:                      {{.SubjectAttrName}}
         Value:                          {{.SubjectAttrValue}}
         Ignore Requested UserIDType:    {{.IgnoreRequestedUserIDType}}
     
@@ -121,6 +138,12 @@ Identity Provider Side
         Encryption Algorithm:           {{.EncryptAlgorithm}}
         Signature Hash:                 {{.IdPSignatureHash}}
 
+    OIDC
+        Enabled:                        {{.OIDCEnabled}}	
+        User Claims in Access Token:    {{.OIDCIncludeUserClaimsInAccessToken}}
+
+    OAuth2
+        Enabled:                        {{.OAuth2Enabled}}	
 
     Federated connections {{ range $fc := .IdPFederatedConnections}}
         Target:                         {{$fc.ConnectionName}}{{- if $fc.OverrideProvider }} (Override SAML2)
@@ -283,7 +306,12 @@ func (c *VpWrapper) SubjectAttrType() string {
 }
 
 func (c *VpWrapper) SubjectAttrName() string {
-	return *c.Provider.SubjectNameIDPolicy.Name
+	return *c.Provider.GetSubjectNameIDPolicy().Name
+}
+
+func (c *VpWrapper) HasSubjectAttrValue() bool {
+	return c.Provider.GetSubjectNameIDPolicy().Name != nil &&
+		*c.Provider.GetSubjectNameIDPolicy().Name != ""
 }
 
 func (c *VpWrapper) SubjectAttrValue() string {
@@ -295,7 +323,7 @@ func (c *VpWrapper) IgnoreRequestedUserIDType() bool {
 }
 
 func (c *VpWrapper) AccountLinkage() string {
-	return c.Provider.AccountLinkagePolicy.GetName()
+	return c.Provider.AccountLinkagePolicy.GetLinkEmitterType()
 }
 
 func (c *VpWrapper) Saml2AccountLinkage() string {
@@ -303,7 +331,7 @@ func (c *VpWrapper) Saml2AccountLinkage() string {
 }
 
 func (c *VpWrapper) IdentityMapping() string {
-	return c.Provider.IdentityMappingPolicy.GetName()
+	return c.Provider.IdentityMappingPolicy.GetMappingType()
 }
 
 func (c *VpWrapper) Saml2IdentityMapping() string {
@@ -427,6 +455,20 @@ func (c *VpWrapper) SpSignatureHash() string {
 
 func (c *VpWrapper) IdPSignatureHash() string {
 	return mapSaml2SignatureToTF(c.Provider.GetIdpSignatureHash())
+}
+
+//
+
+func (c *VpWrapper) OIDCEnabled() bool {
+	return c.Provider.GetOpenIdEnabled()
+}
+
+func (c *VpWrapper) OIDCIncludeUserClaimsInAccessToken() bool {
+	return c.Provider.GetOidcIncludeUserClaimsInAccessToken()
+}
+
+func (c *VpWrapper) OAuth2Enabled() bool {
+	return c.Provider.GetOauth2Enabled()
 }
 
 func (c *VpWrapper) SPFederatedConnections() []SPFcWrapper {

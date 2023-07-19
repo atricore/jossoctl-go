@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -34,6 +35,7 @@ Location:    {{.Location}}
 Namespace:   {{.Namespace}}
 Revision:    {{.Revision}}
 Bundles:     {{.Bundles}}
+Branding:    {{.BrandingCode}}
 
 Id Sources:  {{.IdSourcesCount}} {{range .IdSources}}
              {{.}},{{- end}}
@@ -250,5 +252,12 @@ func (c *applianceWrapper) Bundles() string {
 }
 
 func (c *applianceWrapper) BrandingCode() string {
-	return *c.a.IdApplianceDefinition.UserDashboardBranding.Id
+
+	b, ok := c.a.IdApplianceDefinition.GetUserDashboardBrandingOk()
+	fmt.Printf("ok: %v %#v\n", ok, b)
+	if ok {
+		return b.GetId()
+	}
+	return ""
+
 }

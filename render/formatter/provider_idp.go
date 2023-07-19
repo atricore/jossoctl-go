@@ -35,6 +35,11 @@ const (
     max_sessions_per_user        = {{.MaxSessionPerUser}}
     destroy_previous_session     = {{.DestroyPreviousSession}}
 
+    subject_id            = {{.SubjectAttrType}}
+    {{- if .HasSubjectAttrValue}}
+    subject_id_attr       = {{.SubjectAttrValue}}
+	{{- end}}
+
     {{ range $as := .Authns }}{{- if $as.IsBasicAuthn }}
     authn_basic {
         priority                 = {{ $as.Priority }}
@@ -212,9 +217,9 @@ General
         Session manager:             {{.SessionManager}}
 
     User Identifier
-        Type:                        {{.Type}}
-        Attribute:                   {{.Attribute}}
-        Ignore Requested UserIDType: {{.IgnoreRequestedUserIDType}}
+        Type:                           {{.SubjectAttrType}}
+        Value:                          {{.SubjectAttrValue}}
+        Ignore Requested UserIDType:    {{.IgnoreRequestedUserIDType}}
 
     Authentication {{ range $as := .Authns }}
         Name:                        {{$as.Name}}
@@ -460,6 +465,23 @@ func (c *idPWrapper) Attribute() string {
 	ap := c.Provider.AttributeProfile.GetName()
 	return ap
 
+}
+
+func (c *idPWrapper) SubjectAttrType() string {
+	return *c.Provider.SubjectNameIDPolicy.Type
+}
+
+func (c *idPWrapper) SubjectAttrName() string {
+	return *c.Provider.GetSubjectNameIDPolicy().Name
+}
+
+func (c *idPWrapper) HasSubjectAttrValue() bool {
+	return c.Provider.GetSubjectNameIDPolicy().Name != nil &&
+		*c.Provider.GetSubjectNameIDPolicy().Name != ""
+}
+
+func (c *idPWrapper) SubjectAttrValue() string {
+	return c.Provider.SubjectNameIDPolicy.GetSubjectAttribute()
 }
 
 func (c *idPWrapper) IgnoreRequestedUserIDType() bool {
