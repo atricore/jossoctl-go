@@ -20,6 +20,7 @@
 
 .env
 dist
+.direnv
 
 bin/
 
