@@ -1,6 +1,5 @@
 /*
 Copyright © 2022 atricore <sgonzalez@atricore.com>
-
 */
 package cmd
 

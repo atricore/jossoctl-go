@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-//readFromFile
+// readFromFile
 func ReadFromFile(in string) (string, error) {
 	f, err := os.Open(in)
 	if err != nil {
