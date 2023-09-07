@@ -17,7 +17,7 @@ func RenderApplianceToFile(c cli.Cli, idaName string, _ string, source string, q
 	return RenderToFile(f, fName, replace)
 }
 
-//c cli.Cli, idaName string, idaName1 string, source string, quiet bool, out io.Writer
+// c cli.Cli, idaName string, idaName1 string, source string, quiet bool, out io.Writer
 func RenderApplianceToWriter(c cli.Cli, idaName string, idaName1 string, source string, quiet bool, out io.Writer) error {
 
 	a, err := c.Client().GetApplianceContainer(idaName)

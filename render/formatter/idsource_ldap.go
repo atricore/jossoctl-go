@@ -203,7 +203,7 @@ func (c *idSourceLdapWrapper) EnablePasswordUpdate() bool {
 	return c.p.GetUpdatePasswordEnabled()
 }
 
-//lookup
+// lookup
 func (c *idSourceLdapWrapper) UserProperty() string {
 	return c.p.GetUserPropertiesQueryString()
 }

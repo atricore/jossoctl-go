@@ -441,7 +441,7 @@ func (c *idPWrapper) SessionManager() string {
 	return c.Provider.SessionManagerFactory.GetName()
 }
 
-//    User Identifier
+// User Identifier
 func (c *idPWrapper) Type() string {
 	return api.AsString(c.Provider.AdditionalProperties["@c"], "N/A")
 }
@@ -490,7 +490,7 @@ func (c *idPWrapper) IgnoreRequestedUserIDType() bool {
 
 // Authentication
 
-//    User Interface
+// User Interface
 func (c *idPWrapper) Branding() string {
 	return c.Provider.GetUserDashboardBranding()
 }
