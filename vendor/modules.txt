@@ -1,7 +1,7 @@
 # github.com/atricore/josso-api-go v0.5.2
 ## explicit
 github.com/atricore/josso-api-go
-# github.com/atricore/josso-sdk-go v0.5.3
+# github.com/atricore/josso-sdk-go v0.5.4
 ## explicit
 github.com/atricore/josso-sdk-go
 # github.com/fsnotify/fsnotify v1.5.1

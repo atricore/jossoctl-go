@@ -18,7 +18,6 @@
               allowUnfree = true;
             };
           };
- 
 
         in
         with pkgs;
@@ -33,15 +32,12 @@
               gopkgs
               gocode-gomod
               godef
-              golint
+              golint              
               gofumpt
               terraform
             ];
-            shellHook = ''
-              echo "JOSSO/IAM.tf GO environment"
-              echo " - ${pkgs.go.name}"
-              echo " - ${terraform.name}"
-              echo " - ${gnumake.name}"
+	        shellHook = ''
+            echo "JOSSO/IAM.tf GO environment: ${go.name} / ${terraform.name}"
             '';
           };
         }
