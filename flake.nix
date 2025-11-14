@@ -36,6 +36,7 @@
               golint
               gofumpt
               terraform
+              goreleaser
             ];
             shellHook = ''
               echo "JOSSO/IAM.tf GO environment"
