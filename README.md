@@ -1,6 +1,6 @@
 # jossoctl
 
-Command line interface tools for managing JOSSO EE and IAM.tf identity appliances.
+Command line interface tool for managing JOSSO EE identity appliances.
 
 ## Installation
 
@@ -139,7 +139,7 @@ jossoctl server bundles
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `JOSSO_API_ENDPOINT` | JOSSO/IAM.tf server endpoint | `http://localhost:8081/atricore-rest/services` |
+| `JOSSO_API_ENDPOINT` | JOSSO server endpoint | `http://localhost:8081/atricore-rest/services` |
 | `JOSSO_API_CLIENT_ID` | OAuth2 client ID | - |
 | `JOSSO_API_SECRET` | OAuth2 client secret | - |
 | `JOSSO_API_APPLIANCE` | Default appliance name | - |
