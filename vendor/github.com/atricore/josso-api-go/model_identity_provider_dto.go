@@ -3,7 +3,7 @@ Atricore Console :: Remote : API
 
 # Atricore Console API
 
-API version: 1.5.1-SNAPSHOT
+API version: 1.5.3-SNAPSHOT
 Contact: sgonzalez@atricore.com
 */
 
@@ -43,7 +43,6 @@ type IdentityProviderDTO struct {
 	IdentityConfirmationOAuth2ClientId *string `json:"identityConfirmationOAuth2ClientId,omitempty"`
 	IdentityConfirmationOAuth2ClientSecret *string `json:"identityConfirmationOAuth2ClientSecret,omitempty"`
 	IdentityConfirmationPolicy *ExtensionDTO `json:"identityConfirmationPolicy,omitempty"`
-	IdentityLookups []IdentityLookupDTO `json:"identityLookups,omitempty"`
 	IgnoreRequestedNameIDPolicy *bool `json:"ignoreRequestedNameIDPolicy,omitempty"`
 	IsRemote *bool `json:"isRemote,omitempty"`
 	Location *LocationDTO `json:"location,omitempty"`
@@ -55,6 +54,7 @@ type IdentityProviderDTO struct {
 	Oauth2Clients []OAuth2ClientDTO `json:"oauth2Clients,omitempty"`
 	Oauth2ClientsConfig *string `json:"oauth2ClientsConfig,omitempty"`
 	Oauth2Enabled *bool `json:"oauth2Enabled,omitempty"`
+	Oauth2IncludeClaims *bool `json:"oauth2IncludeClaims,omitempty"`
 	Oauth2Key *string `json:"oauth2Key,omitempty"`
 	Oauth2RememberMeTokenValidity *int64 `json:"oauth2RememberMeTokenValidity,omitempty"`
 	Oauth2TokenValidity *int64 `json:"oauth2TokenValidity,omitempty"`
@@ -62,6 +62,7 @@ type IdentityProviderDTO struct {
 	OidcAuthzCodeTimeToLive *int32 `json:"oidcAuthzCodeTimeToLive,omitempty"`
 	OidcIdTokenTimeToLive *int32 `json:"oidcIdTokenTimeToLive,omitempty"`
 	OidcIncludeUserClaimsInAccessToken *bool `json:"oidcIncludeUserClaimsInAccessToken,omitempty"`
+	OidcRefreshTokenTimeToLive *int32 `json:"oidcRefreshTokenTimeToLive,omitempty"`
 	OpenIdEnabled *bool `json:"openIdEnabled,omitempty"`
 	PwdlessAuthnEnabled *bool `json:"pwdlessAuthnEnabled,omitempty"`
 	PwdlessAuthnFrom *string `json:"pwdlessAuthnFrom,omitempty"`
@@ -81,6 +82,7 @@ type IdentityProviderDTO struct {
 	WantSignedRequests *bool `json:"wantSignedRequests,omitempty"`
 	X *float64 `json:"x,omitempty"`
 	Y *float64 `json:"y,omitempty"`
+	IdentityLookups []IdentityLookupDTO `json:"identityLookups,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -935,38 +937,6 @@ func (o *IdentityProviderDTO) SetIdentityConfirmationPolicy(v ExtensionDTO) {
 	o.IdentityConfirmationPolicy = &v
 }
 
-// GetIdentityLookups returns the IdentityLookups field value if set, zero value otherwise.
-func (o *IdentityProviderDTO) GetIdentityLookups() []IdentityLookupDTO {
-	if o == nil || isNil(o.IdentityLookups) {
-		var ret []IdentityLookupDTO
-		return ret
-	}
-	return o.IdentityLookups
-}
-
-// GetIdentityLookupsOk returns a tuple with the IdentityLookups field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *IdentityProviderDTO) GetIdentityLookupsOk() ([]IdentityLookupDTO, bool) {
-	if o == nil || isNil(o.IdentityLookups) {
-    return nil, false
-	}
-	return o.IdentityLookups, true
-}
-
-// HasIdentityLookups returns a boolean if a field has been set.
-func (o *IdentityProviderDTO) HasIdentityLookups() bool {
-	if o != nil && !isNil(o.IdentityLookups) {
-		return true
-	}
-
-	return false
-}
-
-// SetIdentityLookups gets a reference to the given []IdentityLookupDTO and assigns it to the IdentityLookups field.
-func (o *IdentityProviderDTO) SetIdentityLookups(v []IdentityLookupDTO) {
-	o.IdentityLookups = v
-}
-
 // GetIgnoreRequestedNameIDPolicy returns the IgnoreRequestedNameIDPolicy field value if set, zero value otherwise.
 func (o *IdentityProviderDTO) GetIgnoreRequestedNameIDPolicy() bool {
 	if o == nil || isNil(o.IgnoreRequestedNameIDPolicy) {
@@ -1319,6 +1289,38 @@ func (o *IdentityProviderDTO) SetOauth2Enabled(v bool) {
 	o.Oauth2Enabled = &v
 }
 
+// GetOauth2IncludeClaims returns the Oauth2IncludeClaims field value if set, zero value otherwise.
+func (o *IdentityProviderDTO) GetOauth2IncludeClaims() bool {
+	if o == nil || isNil(o.Oauth2IncludeClaims) {
+		var ret bool
+		return ret
+	}
+	return *o.Oauth2IncludeClaims
+}
+
+// GetOauth2IncludeClaimsOk returns a tuple with the Oauth2IncludeClaims field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *IdentityProviderDTO) GetOauth2IncludeClaimsOk() (*bool, bool) {
+	if o == nil || isNil(o.Oauth2IncludeClaims) {
+    return nil, false
+	}
+	return o.Oauth2IncludeClaims, true
+}
+
+// HasOauth2IncludeClaims returns a boolean if a field has been set.
+func (o *IdentityProviderDTO) HasOauth2IncludeClaims() bool {
+	if o != nil && !isNil(o.Oauth2IncludeClaims) {
+		return true
+	}
+
+	return false
+}
+
+// SetOauth2IncludeClaims gets a reference to the given bool and assigns it to the Oauth2IncludeClaims field.
+func (o *IdentityProviderDTO) SetOauth2IncludeClaims(v bool) {
+	o.Oauth2IncludeClaims = &v
+}
+
 // GetOauth2Key returns the Oauth2Key field value if set, zero value otherwise.
 func (o *IdentityProviderDTO) GetOauth2Key() string {
 	if o == nil || isNil(o.Oauth2Key) {
@@ -1541,6 +1543,38 @@ func (o *IdentityProviderDTO) HasOidcIncludeUserClaimsInAccessToken() bool {
 // SetOidcIncludeUserClaimsInAccessToken gets a reference to the given bool and assigns it to the OidcIncludeUserClaimsInAccessToken field.
 func (o *IdentityProviderDTO) SetOidcIncludeUserClaimsInAccessToken(v bool) {
 	o.OidcIncludeUserClaimsInAccessToken = &v
+}
+
+// GetOidcRefreshTokenTimeToLive returns the OidcRefreshTokenTimeToLive field value if set, zero value otherwise.
+func (o *IdentityProviderDTO) GetOidcRefreshTokenTimeToLive() int32 {
+	if o == nil || isNil(o.OidcRefreshTokenTimeToLive) {
+		var ret int32
+		return ret
+	}
+	return *o.OidcRefreshTokenTimeToLive
+}
+
+// GetOidcRefreshTokenTimeToLiveOk returns a tuple with the OidcRefreshTokenTimeToLive field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *IdentityProviderDTO) GetOidcRefreshTokenTimeToLiveOk() (*int32, bool) {
+	if o == nil || isNil(o.OidcRefreshTokenTimeToLive) {
+    return nil, false
+	}
+	return o.OidcRefreshTokenTimeToLive, true
+}
+
+// HasOidcRefreshTokenTimeToLive returns a boolean if a field has been set.
+func (o *IdentityProviderDTO) HasOidcRefreshTokenTimeToLive() bool {
+	if o != nil && !isNil(o.OidcRefreshTokenTimeToLive) {
+		return true
+	}
+
+	return false
+}
+
+// SetOidcRefreshTokenTimeToLive gets a reference to the given int32 and assigns it to the OidcRefreshTokenTimeToLive field.
+func (o *IdentityProviderDTO) SetOidcRefreshTokenTimeToLive(v int32) {
+	o.OidcRefreshTokenTimeToLive = &v
 }
 
 // GetOpenIdEnabled returns the OpenIdEnabled field value if set, zero value otherwise.
@@ -2151,6 +2185,38 @@ func (o *IdentityProviderDTO) SetY(v float64) {
 	o.Y = &v
 }
 
+// GetIdentityLookups returns the IdentityLookups field value if set, zero value otherwise.
+func (o *IdentityProviderDTO) GetIdentityLookups() []IdentityLookupDTO {
+	if o == nil || isNil(o.IdentityLookups) {
+		var ret []IdentityLookupDTO
+		return ret
+	}
+	return o.IdentityLookups
+}
+
+// GetIdentityLookupsOk returns a tuple with the IdentityLookups field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *IdentityProviderDTO) GetIdentityLookupsOk() ([]IdentityLookupDTO, bool) {
+	if o == nil || isNil(o.IdentityLookups) {
+    return nil, false
+	}
+	return o.IdentityLookups, true
+}
+
+// HasIdentityLookups returns a boolean if a field has been set.
+func (o *IdentityProviderDTO) HasIdentityLookups() bool {
+	if o != nil && !isNil(o.IdentityLookups) {
+		return true
+	}
+
+	return false
+}
+
+// SetIdentityLookups gets a reference to the given []IdentityLookupDTO and assigns it to the IdentityLookups field.
+func (o *IdentityProviderDTO) SetIdentityLookups(v []IdentityLookupDTO) {
+	o.IdentityLookups = v
+}
+
 func (o IdentityProviderDTO) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.ActiveBindings) {
@@ -2231,9 +2297,6 @@ func (o IdentityProviderDTO) MarshalJSON() ([]byte, error) {
 	if !isNil(o.IdentityConfirmationPolicy) {
 		toSerialize["identityConfirmationPolicy"] = o.IdentityConfirmationPolicy
 	}
-	if !isNil(o.IdentityLookups) {
-		toSerialize["identityLookups"] = o.IdentityLookups
-	}
 	if !isNil(o.IgnoreRequestedNameIDPolicy) {
 		toSerialize["ignoreRequestedNameIDPolicy"] = o.IgnoreRequestedNameIDPolicy
 	}
@@ -2267,6 +2330,9 @@ func (o IdentityProviderDTO) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Oauth2Enabled) {
 		toSerialize["oauth2Enabled"] = o.Oauth2Enabled
 	}
+	if !isNil(o.Oauth2IncludeClaims) {
+		toSerialize["oauth2IncludeClaims"] = o.Oauth2IncludeClaims
+	}
 	if !isNil(o.Oauth2Key) {
 		toSerialize["oauth2Key"] = o.Oauth2Key
 	}
@@ -2287,6 +2353,9 @@ func (o IdentityProviderDTO) MarshalJSON() ([]byte, error) {
 	}
 	if !isNil(o.OidcIncludeUserClaimsInAccessToken) {
 		toSerialize["oidcIncludeUserClaimsInAccessToken"] = o.OidcIncludeUserClaimsInAccessToken
+	}
+	if !isNil(o.OidcRefreshTokenTimeToLive) {
+		toSerialize["oidcRefreshTokenTimeToLive"] = o.OidcRefreshTokenTimeToLive
 	}
 	if !isNil(o.OpenIdEnabled) {
 		toSerialize["openIdEnabled"] = o.OpenIdEnabled
@@ -2345,6 +2414,9 @@ func (o IdentityProviderDTO) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Y) {
 		toSerialize["y"] = o.Y
 	}
+	if !isNil(o.IdentityLookups) {
+		toSerialize["identityLookups"] = o.IdentityLookups
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -2389,7 +2461,6 @@ func (o *IdentityProviderDTO) UnmarshalJSON(bytes []byte) (err error) {
 		delete(additionalProperties, "identityConfirmationOAuth2ClientId")
 		delete(additionalProperties, "identityConfirmationOAuth2ClientSecret")
 		delete(additionalProperties, "identityConfirmationPolicy")
-		delete(additionalProperties, "identityLookups")
 		delete(additionalProperties, "ignoreRequestedNameIDPolicy")
 		delete(additionalProperties, "isRemote")
 		delete(additionalProperties, "location")
@@ -2401,6 +2472,7 @@ func (o *IdentityProviderDTO) UnmarshalJSON(bytes []byte) (err error) {
 		delete(additionalProperties, "oauth2Clients")
 		delete(additionalProperties, "oauth2ClientsConfig")
 		delete(additionalProperties, "oauth2Enabled")
+		delete(additionalProperties, "oauth2IncludeClaims")
 		delete(additionalProperties, "oauth2Key")
 		delete(additionalProperties, "oauth2RememberMeTokenValidity")
 		delete(additionalProperties, "oauth2TokenValidity")
@@ -2408,6 +2480,7 @@ func (o *IdentityProviderDTO) UnmarshalJSON(bytes []byte) (err error) {
 		delete(additionalProperties, "oidcAuthzCodeTimeToLive")
 		delete(additionalProperties, "oidcIdTokenTimeToLive")
 		delete(additionalProperties, "oidcIncludeUserClaimsInAccessToken")
+		delete(additionalProperties, "oidcRefreshTokenTimeToLive")
 		delete(additionalProperties, "openIdEnabled")
 		delete(additionalProperties, "pwdlessAuthnEnabled")
 		delete(additionalProperties, "pwdlessAuthnFrom")
@@ -2427,6 +2500,7 @@ func (o *IdentityProviderDTO) UnmarshalJSON(bytes []byte) (err error) {
 		delete(additionalProperties, "wantSignedRequests")
 		delete(additionalProperties, "x")
 		delete(additionalProperties, "y")
+		delete(additionalProperties, "identityLookups")
 		o.AdditionalProperties = additionalProperties
 	}
 

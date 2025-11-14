@@ -3,7 +3,7 @@ Atricore Console :: Remote : API
 
 # Atricore Console API
 
-API version: 1.5.1-SNAPSHOT
+API version: 1.5.3-SNAPSHOT
 Contact: sgonzalez@atricore.com
 */
 
@@ -49,6 +49,7 @@ type VirtualSaml2ServiceProviderDTO struct {
 	MultivaluedAttrUserDefined *bool `json:"multivaluedAttrUserDefined,omitempty"`
 	Name *string `json:"name,omitempty"`
 	Oauth2Enabled *bool `json:"oauth2Enabled,omitempty"`
+	Oauth2IncludeClaims *bool `json:"oauth2IncludeClaims,omitempty"`
 	Oauth2Key *string `json:"oauth2Key,omitempty"`
 	Oauth2RememberMeTokenValidity *int64 `json:"oauth2RememberMeTokenValidity,omitempty"`
 	Oauth2TokenValidity *int64 `json:"oauth2TokenValidity,omitempty"`
@@ -56,6 +57,7 @@ type VirtualSaml2ServiceProviderDTO struct {
 	OidcAuthzCodeTimeToLive *int32 `json:"oidcAuthzCodeTimeToLive,omitempty"`
 	OidcIdTokenTimeToLive *int32 `json:"oidcIdTokenTimeToLive,omitempty"`
 	OidcIncludeUserClaimsInAccessToken *bool `json:"oidcIncludeUserClaimsInAccessToken,omitempty"`
+	OidcRefreshTokenTimeToLive *int32 `json:"oidcRefreshTokenTimeToLive,omitempty"`
 	OpenIdEnabled *bool `json:"openIdEnabled,omitempty"`
 	Remote *bool `json:"remote,omitempty"`
 	Role *string `json:"role,omitempty"`
@@ -1118,6 +1120,38 @@ func (o *VirtualSaml2ServiceProviderDTO) SetOauth2Enabled(v bool) {
 	o.Oauth2Enabled = &v
 }
 
+// GetOauth2IncludeClaims returns the Oauth2IncludeClaims field value if set, zero value otherwise.
+func (o *VirtualSaml2ServiceProviderDTO) GetOauth2IncludeClaims() bool {
+	if o == nil || isNil(o.Oauth2IncludeClaims) {
+		var ret bool
+		return ret
+	}
+	return *o.Oauth2IncludeClaims
+}
+
+// GetOauth2IncludeClaimsOk returns a tuple with the Oauth2IncludeClaims field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *VirtualSaml2ServiceProviderDTO) GetOauth2IncludeClaimsOk() (*bool, bool) {
+	if o == nil || isNil(o.Oauth2IncludeClaims) {
+    return nil, false
+	}
+	return o.Oauth2IncludeClaims, true
+}
+
+// HasOauth2IncludeClaims returns a boolean if a field has been set.
+func (o *VirtualSaml2ServiceProviderDTO) HasOauth2IncludeClaims() bool {
+	if o != nil && !isNil(o.Oauth2IncludeClaims) {
+		return true
+	}
+
+	return false
+}
+
+// SetOauth2IncludeClaims gets a reference to the given bool and assigns it to the Oauth2IncludeClaims field.
+func (o *VirtualSaml2ServiceProviderDTO) SetOauth2IncludeClaims(v bool) {
+	o.Oauth2IncludeClaims = &v
+}
+
 // GetOauth2Key returns the Oauth2Key field value if set, zero value otherwise.
 func (o *VirtualSaml2ServiceProviderDTO) GetOauth2Key() string {
 	if o == nil || isNil(o.Oauth2Key) {
@@ -1340,6 +1374,38 @@ func (o *VirtualSaml2ServiceProviderDTO) HasOidcIncludeUserClaimsInAccessToken()
 // SetOidcIncludeUserClaimsInAccessToken gets a reference to the given bool and assigns it to the OidcIncludeUserClaimsInAccessToken field.
 func (o *VirtualSaml2ServiceProviderDTO) SetOidcIncludeUserClaimsInAccessToken(v bool) {
 	o.OidcIncludeUserClaimsInAccessToken = &v
+}
+
+// GetOidcRefreshTokenTimeToLive returns the OidcRefreshTokenTimeToLive field value if set, zero value otherwise.
+func (o *VirtualSaml2ServiceProviderDTO) GetOidcRefreshTokenTimeToLive() int32 {
+	if o == nil || isNil(o.OidcRefreshTokenTimeToLive) {
+		var ret int32
+		return ret
+	}
+	return *o.OidcRefreshTokenTimeToLive
+}
+
+// GetOidcRefreshTokenTimeToLiveOk returns a tuple with the OidcRefreshTokenTimeToLive field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *VirtualSaml2ServiceProviderDTO) GetOidcRefreshTokenTimeToLiveOk() (*int32, bool) {
+	if o == nil || isNil(o.OidcRefreshTokenTimeToLive) {
+    return nil, false
+	}
+	return o.OidcRefreshTokenTimeToLive, true
+}
+
+// HasOidcRefreshTokenTimeToLive returns a boolean if a field has been set.
+func (o *VirtualSaml2ServiceProviderDTO) HasOidcRefreshTokenTimeToLive() bool {
+	if o != nil && !isNil(o.OidcRefreshTokenTimeToLive) {
+		return true
+	}
+
+	return false
+}
+
+// SetOidcRefreshTokenTimeToLive gets a reference to the given int32 and assigns it to the OidcRefreshTokenTimeToLive field.
+func (o *VirtualSaml2ServiceProviderDTO) SetOidcRefreshTokenTimeToLive(v int32) {
+	o.OidcRefreshTokenTimeToLive = &v
 }
 
 // GetOpenIdEnabled returns the OpenIdEnabled field value if set, zero value otherwise.
@@ -1952,6 +2018,9 @@ func (o VirtualSaml2ServiceProviderDTO) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Oauth2Enabled) {
 		toSerialize["oauth2Enabled"] = o.Oauth2Enabled
 	}
+	if !isNil(o.Oauth2IncludeClaims) {
+		toSerialize["oauth2IncludeClaims"] = o.Oauth2IncludeClaims
+	}
 	if !isNil(o.Oauth2Key) {
 		toSerialize["oauth2Key"] = o.Oauth2Key
 	}
@@ -1972,6 +2041,9 @@ func (o VirtualSaml2ServiceProviderDTO) MarshalJSON() ([]byte, error) {
 	}
 	if !isNil(o.OidcIncludeUserClaimsInAccessToken) {
 		toSerialize["oidcIncludeUserClaimsInAccessToken"] = o.OidcIncludeUserClaimsInAccessToken
+	}
+	if !isNil(o.OidcRefreshTokenTimeToLive) {
+		toSerialize["oidcRefreshTokenTimeToLive"] = o.OidcRefreshTokenTimeToLive
 	}
 	if !isNil(o.OpenIdEnabled) {
 		toSerialize["openIdEnabled"] = o.OpenIdEnabled
@@ -2071,6 +2143,7 @@ func (o *VirtualSaml2ServiceProviderDTO) UnmarshalJSON(bytes []byte) (err error)
 		delete(additionalProperties, "multivaluedAttrUserDefined")
 		delete(additionalProperties, "name")
 		delete(additionalProperties, "oauth2Enabled")
+		delete(additionalProperties, "oauth2IncludeClaims")
 		delete(additionalProperties, "oauth2Key")
 		delete(additionalProperties, "oauth2RememberMeTokenValidity")
 		delete(additionalProperties, "oauth2TokenValidity")
@@ -2078,6 +2151,7 @@ func (o *VirtualSaml2ServiceProviderDTO) UnmarshalJSON(bytes []byte) (err error)
 		delete(additionalProperties, "oidcAuthzCodeTimeToLive")
 		delete(additionalProperties, "oidcIdTokenTimeToLive")
 		delete(additionalProperties, "oidcIncludeUserClaimsInAccessToken")
+		delete(additionalProperties, "oidcRefreshTokenTimeToLive")
 		delete(additionalProperties, "openIdEnabled")
 		delete(additionalProperties, "remote")
 		delete(additionalProperties, "role")
